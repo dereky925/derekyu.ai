@@ -3,10 +3,48 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FadeIn } from "@/components/fade-in";
-import { LoopSim } from "@/components/loop-sim";
+import { DamascusField } from "@/components/damascus-field";
 import { SilentClip } from "@/components/silent-clip";
 import { SilentYouTube, useInViewPlay } from "@/components/silent-youtube";
 import { photoClips } from "@/lib/photos";
+
+function TileFrame({
+  label,
+  detail,
+  children,
+}: {
+  label: string;
+  detail: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-black">
+      {children}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
+        <p className="text-sm text-foreground">{label}</p>
+        <p className="mt-0.5 text-xs text-muted">{detail}</p>
+      </div>
+    </div>
+  );
+}
+
+function PlayTile({
+  label,
+  detail,
+  children,
+}: {
+  label: string;
+  detail: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="min-w-0">
+      <TileFrame label={label} detail={detail}>
+        {children}
+      </TileFrame>
+    </div>
+  );
+}
 
 function Tile({
   href,
@@ -21,13 +59,9 @@ function Tile({
 }) {
   return (
     <Link href={href} className="group block min-w-0">
-      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-black">
+      <TileFrame label={label} detail={detail}>
         {children}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
-          <p className="text-sm text-foreground">{label}</p>
-          <p className="mt-0.5 text-xs text-muted">{detail}</p>
-        </div>
-      </div>
+      </TileFrame>
     </Link>
   );
 }
@@ -131,20 +165,18 @@ export function HighlightRows() {
     <>
       <Row kicker="Work" title="Where the days go." href="/work">
         <div className="grid gap-3 md:grid-cols-2">
-          <Tile
-            href="/work"
-            label="Anduril"
-            detail="Modeling, simulation & analysis"
-          >
-            <LoopSim theme="anduril" className="absolute inset-0 h-full w-full" />
-          </Tile>
-          <Tile
-            href="/work"
-            label="Northrop Grumman"
-            detail="GNC, RF, sensors"
-          >
-            <LoopSim theme="northrop" className="absolute inset-0 h-full w-full" />
-          </Tile>
+          <PlayTile label="Anduril" detail="Modeling, simulation & analysis">
+            <DamascusField
+              theme="anduril"
+              className="absolute inset-0 h-full w-full"
+            />
+          </PlayTile>
+          <PlayTile label="Northrop Grumman" detail="GNC, RF, sensors">
+            <DamascusField
+              theme="northrop"
+              className="absolute inset-0 h-full w-full"
+            />
+          </PlayTile>
         </div>
       </Row>
 
