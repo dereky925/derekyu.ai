@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Derek Yu — Projects";
+export const alt = "Derek Yu — Aerospace Engineering, Aerial Photography, Coding Projects";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -31,8 +31,8 @@ export default function OpenGraphImage() {
           >
             Derek Yu
           </div>
-          <div style={{ fontSize: 32, color: "#8a8a93", maxWidth: 720 }}>
-            Projects in AR, systems, and games.
+          <div style={{ fontSize: 32, color: "#8a8a93", maxWidth: 880 }}>
+            Aerospace Engineering, Aerial Photography, Coding Projects
           </div>
         </div>
       </div>

@@ -8,8 +8,7 @@ export const metadata: Metadata = {
   title: {
     absolute: site.name,
   },
-  description:
-    "Derek Yu is a modeling and simulation engineer at Anduril, with drone photography, AR, and public software projects.",
+  description: "Aerospace Engineering, Aerial Photography, Coding Projects",
   alternates: { canonical: "/" },
 };
 
