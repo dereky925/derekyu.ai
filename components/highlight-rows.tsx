@@ -141,6 +141,8 @@ function Row({
 const canyon = photoClips[0]!;
 const sedona = photoClips[1]!;
 const cove = photoClips.find((clip) => clip.title === "Crystal Cove")!;
+const la = photoClips.find((clip) => clip.title === "Los Angeles")!;
+const fireworks = photoClips.find((clip) => clip.title === "LA fireworks")!;
 
 export function HighlightRows() {
   return (
@@ -188,28 +190,46 @@ export function HighlightRows() {
       </Row>
 
       <Row kicker="Photography" title="From the air." href="/photography">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <StreamTile
-            href="/photography"
-            label={cove.title}
-            detail={cove.location}
-            clipId={cove.id}
-            poster={cove.poster}
-          />
-          <StreamTile
-            href="/photography"
-            label={canyon.title}
-            detail={canyon.location}
-            clipId={canyon.id}
-            poster={canyon.poster}
-          />
-          <StreamTile
-            href="/photography"
-            label={sedona.title}
-            detail={sedona.location}
-            clipId={sedona.id}
-            poster={sedona.poster}
-          />
+        <div className="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <StreamTile
+              href="/photography"
+              label={cove.title}
+              detail={cove.location}
+              clipId={cove.id}
+              poster={cove.poster}
+            />
+            <StreamTile
+              href="/photography"
+              label={canyon.title}
+              detail={canyon.location}
+              clipId={canyon.id}
+              poster={canyon.poster}
+            />
+            <StreamTile
+              href="/photography"
+              label={sedona.title}
+              detail={sedona.location}
+              clipId={sedona.id}
+              poster={sedona.poster}
+            />
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <StreamTile
+              href="/photography"
+              label={la.title}
+              detail={la.location}
+              clipId={la.id}
+              poster={la.poster}
+            />
+            <StreamTile
+              href="/photography"
+              label={fireworks.title}
+              detail={fireworks.location}
+              clipId={fireworks.id}
+              poster={fireworks.poster}
+            />
+          </div>
         </div>
       </Row>
     </>
