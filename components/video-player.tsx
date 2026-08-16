@@ -127,8 +127,6 @@ export function VideoPlayer({ poster, title, video }: VideoPlayerProps) {
               poster={poster}
               onError={() => setFailed(true)}
               onPlaying={() => setMediaReady(true)}
-              onCanPlay={() => setMediaReady(true)}
-              onWaiting={() => setMediaReady(false)}
             >
               <source src={hostedSrc} type="video/mp4" />
             </video>
