@@ -27,18 +27,10 @@ function TileFrame({
   return (
     <div className="relative aspect-video overflow-hidden rounded-2xl bg-black">
       {children}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-3">
-        <p className="text-sm text-foreground drop-shadow-[0_1px_8px_rgba(0,0,0,0.8)]">
-          {label}
-        </p>
-        {role ? (
-          <p className="mt-0.5 text-xs text-muted drop-shadow-[0_1px_8px_rgba(0,0,0,0.8)]">
-            {role}
-          </p>
-        ) : null}
-        <p className="mt-0.5 text-xs text-muted drop-shadow-[0_1px_8px_rgba(0,0,0,0.8)]">
-          {detail}
-        </p>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-16">
+        <p className="text-sm text-foreground">{label}</p>
+        {role ? <p className="mt-0.5 text-xs text-muted">{role}</p> : null}
+        <p className="mt-0.5 text-xs text-muted">{detail}</p>
       </div>
     </div>
   );
