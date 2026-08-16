@@ -17,9 +17,92 @@ const ISO_START = -0.35;
 const ISO_END = 2.15;
 const ISO_STEP = 0.46;
 
+type Pt = [number, number];
+type Seg = [Pt, Pt];
+
 function interp(iso: number, a: number, b: number, va: number, vb: number) {
   const t = (iso - va) / (vb - va || 1);
   return a + (b - a) * Math.min(1, Math.max(0, t));
+}
+
+function pointKey(p: Pt) {
+  return `${Math.round(p[0] * 2)},${Math.round(p[1] * 2)}`;
+}
+
+function stitch(segs: Seg[]) {
+  const used = new Uint8Array(segs.length);
+  const byKey = new Map<string, number[]>();
+
+  const add = (p: Pt, i: number) => {
+    const key = pointKey(p);
+    const list = byKey.get(key);
+    if (list) list.push(i);
+    else byKey.set(key, [i]);
+  };
+
+  for (let i = 0; i < segs.length; i++) {
+    add(segs[i]![0], i);
+    add(segs[i]![1], i);
+  }
+
+  const other = (seg: Seg, p: Pt): Pt =>
+    pointKey(seg[0]) === pointKey(p) ? seg[1] : seg[0];
+
+  const extend = (from: Pt, into: Pt[]) => {
+    let cur = from;
+    while (true) {
+      const cand = byKey.get(pointKey(cur));
+      if (!cand) break;
+      let next = -1;
+      for (let i = 0; i < cand.length; i++) {
+        const idx = cand[i]!;
+        if (!used[idx]) {
+          next = idx;
+          break;
+        }
+      }
+      if (next < 0) break;
+      used[next] = 1;
+      const nxt = other(segs[next]!, cur);
+      into.push(nxt);
+      cur = nxt;
+    }
+  };
+
+  const chains: Pt[][] = [];
+  for (let i = 0; i < segs.length; i++) {
+    if (used[i]) continue;
+    used[i] = 1;
+    const start = segs[i]!;
+    const forward: Pt[] = [start[0], start[1]];
+    extend(start[1], forward);
+    const back: Pt[] = [];
+    extend(start[0], back);
+    chains.push(back.length ? [...back.reverse(), ...forward] : forward);
+  }
+  return chains;
+}
+
+function strokeChain(c: CanvasRenderingContext2D, pts: Pt[]) {
+  if (pts.length < 2) return;
+  const first = pts[0]!;
+  c.moveTo(first[0], first[1]);
+  if (pts.length === 2) {
+    c.lineTo(pts[1]![0], pts[1]![1]);
+    return;
+  }
+  for (let i = 1; i < pts.length - 1; i++) {
+    const cur = pts[i]!;
+    const next = pts[i + 1]!;
+    c.quadraticCurveTo(
+      cur[0],
+      cur[1],
+      (cur[0] + next[0]) * 0.5,
+      (cur[1] + next[1]) * 0.5,
+    );
+  }
+  const last = pts[pts.length - 1]!;
+  c.lineTo(last[0], last[1]);
 }
 
 /**
@@ -60,8 +143,8 @@ export function HeroField() {
       node.width = Math.max(1, Math.floor(width * dpr));
       node.height = Math.max(1, Math.floor(height * dpr));
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      gx = Math.max(72, Math.round(width / 9));
-      gy = Math.max(46, Math.round(height / 9));
+      gx = Math.max(96, Math.round(width / 6));
+      gy = Math.max(60, Math.round(height / 6));
       field = new Float32Array((gx + 1) * (gy + 1));
     }
 
@@ -130,9 +213,11 @@ export function HeroField() {
       const cw = width / nx;
       const ch = height / ny;
       const stride = nx + 1;
+      const segs: Seg[] = [];
 
       c.beginPath();
       for (let iso = ISO_START; iso <= ISO_END; iso += ISO_STEP) {
+        segs.length = 0;
         for (let j = 0; j < ny; j++) {
           const y0 = j * ch;
           const y1 = y0 + ch;
@@ -156,10 +241,7 @@ export function HeroField() {
               edge(which, x0, y0, x1, y1, v0, v1, v2, v3, iso);
 
             const seg = (a: number, b: number) => {
-              const p = pt(a);
-              const q = pt(b);
-              c.moveTo(p[0], p[1]);
-              c.lineTo(q[0], q[1]);
+              segs.push([pt(a), pt(b)]);
             };
 
             switch (idx) {
@@ -198,6 +280,11 @@ export function HeroField() {
             }
           }
         }
+
+        const chains = stitch(segs);
+        for (let i = 0; i < chains.length; i++) {
+          strokeChain(c, chains[i]!);
+        }
       }
       c.stroke();
     }
@@ -208,8 +295,8 @@ export function HeroField() {
       c.fillStyle = "#050505";
       c.fillRect(0, 0, width, height);
       fillField(t);
-      c.strokeStyle = "rgba(244,244,245,0.92)";
-      c.lineWidth = 2.35;
+      c.strokeStyle = "rgba(154,154,162,0.88)";
+      c.lineWidth = 2.25;
       c.lineJoin = "round";
       c.lineCap = "round";
       march(c);
