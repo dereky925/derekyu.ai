@@ -5,7 +5,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Derek Yu is an aerospace engineer working on augmented reality, trading systems, and games.",
+    "Derek Yu is an aerospace engineer working on augmented reality, trading systems, games, and drone photography.",
   alternates: { canonical: "/about" },
 };
 
@@ -25,6 +25,11 @@ const experience = [
     title: "Games",
     detail: "Browser canvases: To Mars and Beyond, Flappy Fury.",
   },
+  {
+    period: "—",
+    title: "Drone photography",
+    detail: "Mavic 3 Pro, Avata 1, and Avata 2 stills and clips.",
+  },
 ];
 
 export default function AboutPage() {
@@ -40,12 +45,12 @@ export default function AboutPage() {
             Aerospace engineer. I like systems that have to work in the
             real world: a camera pointed at a bench, a strategy that only
             fires in market hours, a game that still runs at 60fps on a
-            phone.
+            phone, a drone frame that has to hold still.
           </p>
           <p>
             Recent work sits at the overlap of vision models, trading
-            infrastructure, and small interactive worlds. This site is
-            the public set.
+            infrastructure, small interactive worlds, and aerial
+            photography. This site is the public set.
           </p>
         </div>
       </FadeIn>

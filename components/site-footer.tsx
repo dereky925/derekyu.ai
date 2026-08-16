@@ -9,6 +9,9 @@ export function SiteFooter() {
           © {new Date().getFullYear()} {site.name}
         </p>
         <div className="flex gap-5">
+          <Link href="/photography" className="transition-colors hover:text-foreground">
+            Photo
+          </Link>
           <Link href="/about" className="transition-colors hover:text-foreground">
             About
           </Link>

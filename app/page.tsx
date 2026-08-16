@@ -1,6 +1,9 @@
 import { FadeIn } from "@/components/fade-in";
 import { ProjectCard } from "@/components/project-card";
+import { featuredPhotos } from "@/lib/photos";
 import { projects } from "@/lib/projects";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   const [featured, ...rest] = projects;
@@ -34,6 +37,43 @@ export default function Home() {
             </FadeIn>
           ))}
         </div>
+      </section>
+
+      <section className="mt-28 scroll-mt-24" id="photo">
+        <FadeIn>
+          <div className="mb-8 flex items-end justify-between gap-6">
+            <div>
+              <p className="text-sm text-muted">Photography</p>
+              <h2 className="mt-2 text-2xl tracking-tight sm:text-3xl">
+                Drone stills
+              </h2>
+            </div>
+            <Link
+              href="/photography"
+              className="text-sm text-muted transition-colors hover:text-foreground"
+            >
+              View all
+            </Link>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {featuredPhotos.map((photo) => (
+              <Link
+                key={photo.src}
+                href="/photography"
+                className="relative overflow-hidden rounded-xl bg-surface"
+              >
+                <Image
+                  src={photo.src}
+                  alt="Drone photograph by Derek Yu"
+                  width={photo.width}
+                  height={photo.height}
+                  sizes="(min-width: 640px) 33vw, 100vw"
+                  className="h-auto w-full"
+                />
+              </Link>
+            ))}
+          </div>
+        </FadeIn>
       </section>
     </main>
   );
