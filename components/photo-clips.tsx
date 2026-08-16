@@ -59,7 +59,6 @@ export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
               active={Boolean(visible[clip.id])}
               className="aspect-video rounded-xl"
             />
-            <p className="mt-3 text-sm text-muted">{clip.title}</p>
           </div>
         </li>
       ))}
