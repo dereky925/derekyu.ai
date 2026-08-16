@@ -9,6 +9,7 @@ import { clipPlaceDetail, photoClips } from "@/lib/photos";
 import {
   grokeyeYouTube,
   hunterYouTube,
+  streamClipAspect,
   streamClips,
   streamPoster,
 } from "@/lib/stream";
@@ -79,7 +80,7 @@ function StreamTile({
   clipId,
   poster,
   external,
-  coverScale,
+  mediaAspect,
 }: {
   href: string;
   label: string;
@@ -88,7 +89,7 @@ function StreamTile({
   clipId: string;
   poster: string;
   external?: boolean;
-  coverScale?: number;
+  mediaAspect?: number;
 }) {
   const { ref, active } = useInViewPlay();
   return (
@@ -99,7 +100,7 @@ function StreamTile({
           poster={poster}
           title={label}
           active={active}
-          coverScale={coverScale}
+          mediaAspect={mediaAspect}
           className="absolute inset-0"
         />
       </Tile>
@@ -187,7 +188,7 @@ export function HighlightRows() {
             detail="8-bit Starship run · Starbase to Voyager 1"
             clipId={streamClips.mars}
             poster={streamPoster(streamClips.mars)}
-            coverScale={1.25}
+            mediaAspect={streamClipAspect[streamClips.mars]}
           />
           <StreamTile
             href={hunterYouTube}

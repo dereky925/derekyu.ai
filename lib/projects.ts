@@ -163,7 +163,6 @@ export type ProjectListing = {
   summary: string;
   poster?: string;
   streamId?: string;
-  coverScale?: number;
   href?: string;
   external?: boolean;
 };
@@ -203,7 +202,6 @@ export const projectListings: ProjectListing[] = [
     summary: "An 8-bit Starship run from Starbase to Voyager 1.",
     poster: streamPoster(streamClips.mars),
     streamId: streamClips.mars,
-    coverScale: 1.12,
     href: "/projects/to-mars-and-beyond",
   },
   {

@@ -8,11 +8,19 @@ export const streamClips = {
   mars: "8a6f9f54e141af9e1134927570ac894a",
 } as const;
 
+/** Pixel aspect of the uploaded file (Stream kept 1664×1080 for Mars). */
+export const streamClipAspect: Partial<Record<(typeof streamClips)[keyof typeof streamClips], number>> =
+  {
+    [streamClips.mars]: 1664 / 1080,
+  };
+
 export const grokeyeYouTube = "https://www.youtube.com/watch?v=lC4oP8kb9KE";
 export const hunterYouTube = "https://www.youtube.com/watch?v=nB1vAQlGqa4";
 
 export function streamPoster(id: string) {
-  return `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/thumbnails/thumbnail.jpg`;
+  const src = `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/thumbnails/thumbnail.jpg`;
+  if (!(id in streamClipAspect)) return src;
+  return `${src}?width=1920&height=1080&fit=crop`;
 }
 
 export function streamHlsSrc(id: string) {

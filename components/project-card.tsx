@@ -5,7 +5,7 @@ import Link from "next/link";
 import { SilentClip } from "@/components/silent-clip";
 import { useInViewPlay } from "@/components/silent-youtube";
 import type { ProjectListing } from "@/lib/projects";
-import { streamPoster } from "@/lib/stream";
+import { streamClipAspect, streamPoster } from "@/lib/stream";
 
 export function ProjectCard({ project }: { project: ProjectListing }) {
   const { ref, active } = useInViewPlay();
@@ -22,7 +22,8 @@ export function ProjectCard({ project }: { project: ProjectListing }) {
         poster={poster || streamPoster(streamId)}
         title={project.title}
         active={active}
-        coverScale={project.coverScale}
+        mediaAspect={streamClipAspect[streamId]}
+        frameAspect={16 / 10}
         className="absolute inset-0"
       />
     </div>
