@@ -23,7 +23,7 @@ const now = [
   { label: "Air", value: "Part 107 · Mavic · Avata" },
 ];
 
-const stripClips = [photoClips[1]!, photoClips[7]!, photoClips[8]!];
+const stripClips = [photoClips[0]!, photoClips[1]!, photoClips[7]!];
 const photographyClip = photoClips[6]!;
 
 export default function Home() {

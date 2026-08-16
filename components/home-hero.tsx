@@ -7,7 +7,7 @@ import { SilentClip } from "@/components/silent-clip";
 import { photoClips } from "@/lib/photos";
 import { site } from "@/lib/site";
 
-const heroClip = photoClips[0]!;
+const heroClip = photoClips.find((clip) => clip.title === "Crystal Cove")!;
 
 export function HomeHero() {
   const rootRef = useRef<HTMLElement>(null);
