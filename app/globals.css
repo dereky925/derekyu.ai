@@ -21,6 +21,7 @@
 html {
   color-scheme: dark;
   background: var(--background);
+  overflow-x: hidden;
 }
 
 body {
@@ -32,6 +33,12 @@ body {
 ::selection {
   background: #ececef;
   color: #111;
+}
+
+.silent-clip video::-webkit-media-controls,
+.silent-clip video::-webkit-media-controls-enclosure,
+.silent-clip video::-webkit-media-controls-panel {
+  display: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

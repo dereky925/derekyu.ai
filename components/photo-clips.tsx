@@ -1,93 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import { useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import {
-  STREAM_CUSTOMER,
-  clipDateLabel,
-  type PhotoClip,
-} from "@/lib/photos";
-
-function supportsHls() {
-  if (typeof document === "undefined") return false;
-  const video = document.createElement("video");
-  return video.canPlayType("application/vnd.apple.mpegURL") !== "";
-}
-
-function AutoplayClip({ clip, active }: { clip: PhotoClip; active: boolean }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [hls, setHls] = useState(false);
-  const [iframeReady, setIframeReady] = useState(false);
-  const reduce = useReducedMotion();
-  const shouldPlay = active && !reduce;
-
-  useEffect(() => {
-    setHls(supportsHls());
-  }, []);
-
-  useEffect(() => {
-    const node = videoRef.current;
-    if (!node) return;
-    if (shouldPlay) {
-      node.play().catch(() => {});
-    } else {
-      node.pause();
-    }
-  }, [shouldPlay]);
-
-  const hlsSrc = `https://${STREAM_CUSTOMER}.cloudflarestream.com/${clip.id}/manifest/video.m3u8`;
-  const iframeSrc = `https://${STREAM_CUSTOMER}.cloudflarestream.com/${clip.id}/iframe?autoplay=true&muted=true&loop=true&preload=auto&letterboxColor=%23050505&primaryColor=%23f4f4f5`;
-
-  return (
-    <div className="relative aspect-video overflow-hidden rounded-xl bg-black">
-      {hls ? (
-        <video
-          ref={videoRef}
-          className="h-full w-full bg-black object-cover"
-          muted
-          loop
-          playsInline
-          autoPlay={shouldPlay}
-          preload={shouldPlay ? "auto" : "none"}
-          poster={clip.poster}
-          controls
-        >
-          <source src={hlsSrc} type="application/vnd.apple.mpegURL" />
-        </video>
-      ) : shouldPlay ? (
-        <>
-          <iframe
-            className="absolute inset-0 h-full w-full bg-black"
-            src={iframeSrc}
-            title={clip.title}
-            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-            allowFullScreen
-            onLoad={() => setIframeReady(true)}
-            style={{ background: "#050505" }}
-          />
-          {!iframeReady ? (
-            <Image
-              src={clip.poster}
-              alt=""
-              fill
-              sizes="(min-width: 1024px) 640px, 100vw"
-              className="object-cover"
-            />
-          ) : null}
-        </>
-      ) : (
-        <Image
-          src={clip.poster}
-          alt=""
-          fill
-          sizes="(min-width: 1024px) 640px, 100vw"
-          className="object-cover"
-        />
-      )}
-    </div>
-  );
-}
+import { SilentClip } from "@/components/silent-clip";
+import { clipDateLabel, type PhotoClip } from "@/lib/photos";
 
 export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
@@ -137,7 +52,13 @@ export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
             </div>
           </div>
           <div>
-            <AutoplayClip clip={clip} active={Boolean(visible[clip.id])} />
+            <SilentClip
+              id={clip.id}
+              poster={clip.poster}
+              title={clip.title}
+              active={Boolean(visible[clip.id])}
+              className="aspect-video rounded-xl"
+            />
             <p className="mt-3 text-sm text-muted">{clip.title}</p>
           </div>
         </li>

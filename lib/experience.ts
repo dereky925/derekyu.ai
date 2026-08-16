@@ -11,12 +11,14 @@ export type Role = {
 export type Employer = {
   company: string;
   period: string;
+  headline: string;
   roles: Role[];
 };
 
 export const employers: Employer[] = [
   {
     company: "Anduril Industries",
+    headline: "Modeling, Simulation & Analysis",
     period: "2025 — Present",
     roles: [
       {
@@ -31,6 +33,7 @@ export const employers: Employer[] = [
   },
   {
     company: "Northrop Grumman",
+    headline: "Pathways — GNC, RF, sensors",
     period: "2022 — 2025",
     roles: [
       {
@@ -60,6 +63,7 @@ export const employers: Employer[] = [
   },
   {
     company: "Moog Aircraft",
+    headline: "Systems engineering intern",
     period: "2021 — 2022",
     roles: [
       {
@@ -73,6 +77,7 @@ export const employers: Employer[] = [
   },
   {
     company: "UB Drone Lab",
+    headline: "Drone Hunter",
     period: "2020 — 2022",
     roles: [
       {
