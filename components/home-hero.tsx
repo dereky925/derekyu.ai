@@ -2,12 +2,9 @@
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { HeroField } from "@/components/hero-field";
 import { SocialLinks } from "@/components/social-icons";
-import { SilentClip } from "@/components/silent-clip";
-import { photoClips } from "@/lib/photos";
 import { site } from "@/lib/site";
-
-const heroClip = photoClips.find((clip) => clip.title === "Crystal Cove")!;
 
 export function HomeHero() {
   const rootRef = useRef<HTMLElement>(null);
@@ -16,7 +13,6 @@ export function HomeHero() {
     target: rootRef,
     offset: ["start start", "end start"],
   });
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, 80]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
@@ -25,19 +21,8 @@ export function HomeHero() {
       ref={rootRef}
       className="relative left-1/2 min-h-[100svh] w-screen -translate-x-1/2 overflow-hidden -mt-14"
     >
-      <motion.div
-        className="absolute inset-0"
-        style={reduce ? undefined : { scale }}
-      >
-        <SilentClip
-          id={heroClip.id}
-          poster={heroClip.poster}
-          title={heroClip.title}
-          active
-          className="h-full w-full"
-        />
-      </motion.div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/35 to-black/25" />
+      <HeroField />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
       <motion.div
         className="absolute inset-0 mx-auto flex max-w-6xl flex-col justify-end px-6 pb-16 pt-28 sm:pb-24"
         style={reduce ? undefined : { y: textY, opacity: textOpacity }}
