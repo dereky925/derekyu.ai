@@ -49,8 +49,9 @@ export function HomeHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
         >
-          Modeling and simulation at Anduril. I fly the camera, I point at
-          the part, and I care whether the loop actually closes.
+          Modeling & Simulation Engineer at Anduril.
+          <br />
+          Aerospace by trade — closeted artist, tech bro, vibe coder.
         </motion.p>
         <motion.div
           className="pointer-events-auto"
