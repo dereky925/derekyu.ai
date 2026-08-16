@@ -144,7 +144,6 @@ function Row({
 const canyon = photoClips[0]!;
 const sedona = photoClips[1]!;
 const cove = photoClips.find((clip) => clip.title === "Crystal Cove")!;
-const laguna = photoClips.find((clip) => clip.title === "Laguna Beach")!;
 const la = photoClips.find((clip) => clip.title === "Los Angeles")!;
 const fireworks = photoClips.find((clip) => clip.title === "LA fireworks")!;
 
@@ -203,13 +202,6 @@ export function HighlightRows() {
 
       <Row kicker="Photography" title="From the air." href="/photography">
         <div className="space-y-3">
-          <StreamTile
-            href="/photography"
-            label={laguna.title}
-            detail={clipPlaceDetail(laguna)}
-            clipId={laguna.id}
-            poster={laguna.poster}
-          />
           <div className="grid gap-3 sm:grid-cols-3">
             <StreamTile
               href="/photography"
