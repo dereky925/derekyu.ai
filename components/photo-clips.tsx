@@ -39,7 +39,7 @@ export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
         <li
           key={clip.id}
           data-clip-id={clip.id}
-          className="relative grid gap-4 pl-7 sm:grid-cols-[9.5rem_1fr] sm:gap-10 sm:pl-0"
+          className="relative grid gap-4 pl-7 sm:grid-cols-[13rem_1fr] sm:gap-10 sm:pl-0"
         >
           <div>
             <span
@@ -47,8 +47,10 @@ export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
               aria-hidden
             />
             <div className="sm:pl-7">
-              <p className="text-sm text-foreground">{clipDateLabel(clip)}</p>
-              <p className="mt-1 text-sm text-muted">{clip.location}</p>
+              <p className="text-lg tracking-tight text-foreground">
+                {clip.location}
+              </p>
+              <p className="mt-1 text-sm text-muted">{clipDateLabel(clip)}</p>
             </div>
           </div>
           <div>

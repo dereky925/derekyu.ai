@@ -349,7 +349,7 @@ export function PhotoJournal({ albums }: { albums: PhotoAlbum[] }) {
           return (
             <section
               key={`${album.year}-${album.month}-${album.location}-${start}`}
-              className="relative grid gap-6 pl-7 sm:grid-cols-[9.5rem_1fr] sm:gap-10 sm:pl-0"
+              className="relative grid gap-6 pl-7 sm:grid-cols-[13rem_1fr] sm:gap-10 sm:pl-0"
             >
               <div>
                 <span
@@ -357,20 +357,14 @@ export function PhotoJournal({ albums }: { albums: PhotoAlbum[] }) {
                   aria-hidden
                 />
                 <div className="sm:pl-7">
+                  <p className="text-lg tracking-tight text-foreground">
+                    {album.location}
+                  </p>
                   {album.year ? (
-                    <p className="text-sm text-foreground">
+                    <p className="mt-1 text-sm text-muted">
                       {clipDateLabel(album)}
                     </p>
                   ) : null}
-                  <p
-                    className={
-                      album.year
-                        ? "mt-1 text-sm text-muted"
-                        : "text-sm text-foreground"
-                    }
-                  >
-                    {album.location}
-                  </p>
                 </div>
               </div>
               <div className="min-w-0">
