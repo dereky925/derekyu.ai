@@ -21,8 +21,23 @@ type SilentClipProps = {
   active: boolean;
   /** Source width/height. Default 16:9. */
   mediaAspect?: number;
+  /** Tile width/height. About cards are 16:9; Work cards are 16:10. */
+  frameAspect?: number;
   className?: string;
 };
+
+function coverBox(mediaAspect: number, frameAspect: number) {
+  if (mediaAspect >= frameAspect) {
+    return {
+      width: `${(mediaAspect / frameAspect) * 100}%`,
+      height: "100%",
+    };
+  }
+  return {
+    width: "100%",
+    height: `${(frameAspect / mediaAspect) * 100}%`,
+  };
+}
 
 export function SilentClip({
   id,
@@ -30,6 +45,7 @@ export function SilentClip({
   title,
   active,
   mediaAspect = STREAM_CANVAS,
+  frameAspect = STREAM_CANVAS,
   className = "",
 }: SilentClipProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -84,27 +100,33 @@ export function SilentClip({
   const showVideo =
     shouldPlay && (hls === true || (hls === false && useNativeVideo));
   const showIframe = shouldPlay && hls === false && !useNativeVideo;
+  const box = useNativeVideo ? coverBox(mediaAspect, frameAspect) : undefined;
 
   return (
     <div className={`silent-clip relative overflow-hidden bg-black ${className}`}>
       {showVideo ? (
-        <video
-          ref={videoRef}
-          className="h-full w-full"
-          muted
-          loop
-          playsInline
-          autoPlay
-          preload="auto"
-          poster={poster}
-          disablePictureInPicture
-          controlsList="nodownload nofullscreen noremoteplayback"
-          onPlaying={() => setReady(true)}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={box ?? { width: "100%", height: "100%" }}
         >
-          {hls === true ? (
-            <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
-          ) : null}
-        </video>
+          <video
+            ref={videoRef}
+            className="h-full w-full"
+            muted
+            loop
+            playsInline
+            autoPlay
+            preload="auto"
+            poster={poster}
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
+            onPlaying={() => setReady(true)}
+          >
+            {hls === true ? (
+              <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
+            ) : null}
+          </video>
+        </div>
       ) : null}
 
       {showIframe ? (

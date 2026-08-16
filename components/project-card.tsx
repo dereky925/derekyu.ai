@@ -12,21 +12,18 @@ export function ProjectCard({ project }: { project: ProjectListing }) {
   const poster = project.poster;
   const streamId = project.streamId;
 
-  const mediaAspect = streamId ? streamClipAspect[streamId] : undefined;
-  const frameAspect = mediaAspect ?? 16 / 10;
-
   const media = streamId ? (
     <div
       ref={ref}
-      className="relative overflow-hidden rounded-xl bg-black"
-      style={{ aspectRatio: frameAspect }}
+      className="relative aspect-[16/10] overflow-hidden rounded-xl bg-black"
     >
       <SilentClip
         id={streamId}
         poster={poster || streamPoster(streamId)}
         title={project.title}
         active={active}
-        mediaAspect={frameAspect}
+        mediaAspect={streamClipAspect[streamId]}
+        frameAspect={16 / 10}
         className="absolute inset-0"
       />
     </div>
