@@ -46,12 +46,10 @@ export function WorkHistory() {
                           .filter(Boolean)
                           .join(" · ")}
                       </p>
-                      {role.highlights?.length ? (
-                        <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted">
-                          {role.highlights.map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
+                      {role.summary ? (
+                        <p className="mt-3 text-sm leading-relaxed text-muted">
+                          {role.summary}
+                        </p>
                       ) : null}
                       {role.href ? (
                         <a
