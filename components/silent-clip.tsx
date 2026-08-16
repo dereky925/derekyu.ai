@@ -21,6 +21,11 @@ type SilentClipProps = {
   className?: string;
 };
 
+/** Cover without object-fit — Safari HLS treats object-cover as letterbox or a black frame. */
+const coverClass =
+  "absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-1/2";
+const coverStyle = { minWidth: "100%", minHeight: "100%", width: "auto", height: "auto" } as const;
+
 export function SilentClip({
   id,
   poster,
@@ -30,10 +35,15 @@ export function SilentClip({
   className = "",
 }: SilentClipProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [native, setNative] = useState<boolean | null>(null);
   const [iframe, setIframe] = useState(false);
   const [ready, setReady] = useState(false);
   const reduce = useReducedMotion();
-  const shouldPlay = active && !reduce;
+  const shouldPlay = active && !reduce && native !== null;
+
+  useEffect(() => {
+    setNative(nativeHls());
+  }, []);
 
   useEffect(() => {
     setReady(false);
@@ -42,24 +52,20 @@ export function SilentClip({
 
   useEffect(() => {
     const node = videoRef.current;
-    if (!shouldPlay || iframe || !node) return;
-
-    const src = streamHlsSrc(id);
-    let cancelled = false;
-    let player: { destroy: () => void } | undefined;
+    if (!shouldPlay || iframe || !node || native === null) return;
 
     const play = () => {
+      node.muted = true;
       node.play().catch(() => {});
     };
 
-    if (nativeHls()) {
-      node.src = src;
+    if (native) {
       play();
-      return () => {
-        node.removeAttribute("src");
-        node.load();
-      };
+      return;
     }
+
+    let cancelled = false;
+    let player: { destroy: () => void } | undefined;
 
     import("hls.js").then(({ default: Hls }) => {
       if (cancelled) return;
@@ -76,7 +82,7 @@ export function SilentClip({
         instance.destroy();
         return;
       }
-      instance.loadSource(src);
+      instance.loadSource(streamHlsSrc(id));
       instance.attachMedia(node);
       instance.on(Hls.Events.MANIFEST_PARSED, play);
       player = instance;
@@ -85,29 +91,30 @@ export function SilentClip({
     return () => {
       cancelled = true;
       player?.destroy();
-      node.removeAttribute("src");
-      node.load();
     };
-  }, [id, iframe, shouldPlay]);
-
-  const fit = cover ? "object-cover" : "object-contain";
+  }, [id, iframe, native, shouldPlay]);
 
   return (
     <div className={`silent-clip relative overflow-hidden bg-black ${className}`}>
       {shouldPlay && !iframe ? (
         <video
           ref={videoRef}
-          className={`absolute inset-0 h-full w-full bg-black ${fit}`}
+          className={cover ? coverClass : "absolute inset-0 h-full w-full object-contain"}
+          style={cover ? coverStyle : undefined}
           muted
           loop
           playsInline
           autoPlay
           preload="auto"
-          poster={poster}
           disablePictureInPicture
           controlsList="nodownload nofullscreen noremoteplayback"
           onPlaying={() => setReady(true)}
-        />
+          onLoadedData={() => setReady(true)}
+        >
+          {native ? (
+            <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
+          ) : null}
+        </video>
       ) : null}
       {shouldPlay && iframe ? (
         <iframe
@@ -129,11 +136,11 @@ export function SilentClip({
           alt=""
           fill
           sizes="100vw"
-          className="object-cover"
+          className="z-[1] object-cover"
         />
       ) : null}
       {shouldPlay && !ready ? (
-        <MediaLoader className="absolute inset-0 z-[1]" />
+        <MediaLoader className="absolute inset-0 z-[2]" />
       ) : null}
     </div>
   );
