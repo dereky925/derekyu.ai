@@ -63,18 +63,6 @@ body {
   animation: media-spin 2.55s linear infinite;
 }
 
-.still-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.still-strip::after {
-  content: "";
-  flex-grow: 9999;
-  height: 0;
-}
-
 @keyframes media-spin {
   to {
     transform: rotate(360deg);

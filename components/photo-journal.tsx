@@ -159,42 +159,152 @@ function Lightbox({
   );
 }
 
+const GAP = 12;
+const TARGET_HEIGHT = 280;
+
+function aspectOf(photo: Photo) {
+  return photo.width / photo.height || 1.5;
+}
+
+function packJustified(photos: Photo[], containerWidth: number) {
+  if (containerWidth <= 0) return [];
+
+  type Row = { photos: Photo[]; height: number; widths: number[] };
+  const rows: Row[] = [];
+  let row: Photo[] = [];
+  let aspects: number[] = [];
+
+  const rowWidthAt = (asps: number[], height: number) =>
+    asps.reduce((sum, aspect) => sum + aspect * height, 0) +
+    GAP * Math.max(0, asps.length - 1);
+
+  const flush = (justify: boolean) => {
+    if (!row.length) return;
+    const gaps = GAP * (row.length - 1);
+    const sum = aspects.reduce((total, aspect) => total + aspect, 0);
+    let height = justify ? (containerWidth - gaps) / sum : TARGET_HEIGHT;
+    if (!justify && row.length === 1) {
+      const width = Math.min(containerWidth, aspects[0]! * TARGET_HEIGHT);
+      height = width / aspects[0]!;
+      rows.push({ photos: row, height, widths: [width] });
+      row = [];
+      aspects = [];
+      return;
+    }
+    const widths = aspects.map((aspect) => aspect * height);
+    const used =
+      widths.reduce((total, width) => total + width, 0) + gaps;
+    widths[widths.length - 1]! += containerWidth - used;
+    rows.push({ photos: row, height, widths });
+    row = [];
+    aspects = [];
+  };
+
+  for (const photo of photos) {
+    const aspect = aspectOf(photo);
+    if (row.length && rowWidthAt([...aspects, aspect], TARGET_HEIGHT) > containerWidth) {
+      flush(true);
+    }
+    row.push(photo);
+    aspects.push(aspect);
+  }
+
+  if (row.length) {
+    const gaps = GAP * (row.length - 1);
+    const sum = aspects.reduce((total, aspect) => total + aspect, 0);
+    const justifiedHeight = (containerWidth - gaps) / sum;
+    flush(row.length > 1 && justifiedHeight <= TARGET_HEIGHT * 1.4);
+  }
+
+  return rows;
+}
+
 function StillThumb({
   photo,
+  width,
+  height,
   onOpen,
 }: {
   photo: Photo;
+  width: number;
+  height: number;
   onOpen: () => void;
 }) {
   const [loaded, setLoaded] = useState(false);
-  const aspect = photo.width / photo.height || 1.5;
 
   return (
     <button
       type="button"
       onClick={onOpen}
-      style={{
-        flexGrow: aspect,
-        flexBasis: `calc(${aspect} * 17rem)`,
-      }}
-      className="relative min-w-0 max-w-full overflow-hidden rounded-xl bg-surface text-left"
+      style={{ width, height }}
+      className="relative shrink-0 overflow-hidden rounded-xl bg-surface"
     >
-      {!loaded ? (
-        <MediaLoader className="absolute inset-0 min-h-28" />
-      ) : null}
+      {!loaded ? <MediaLoader className="absolute inset-0" /> : null}
       <Image
         src={photo.src}
         alt={photo.location}
-        width={photo.width}
-        height={photo.height}
+        fill
         sizes="(min-width: 1024px) 40vw, 100vw"
-        className={`h-auto w-full max-w-full min-w-0 transition-opacity duration-300 ${
+        className={`object-cover transition-opacity duration-300 ${
           loaded ? "opacity-100" : "opacity-0"
         }`}
         unoptimized
         onLoad={() => setLoaded(true)}
       />
     </button>
+  );
+}
+
+function AlbumStrip({
+  photos,
+  start,
+  onOpen,
+}: {
+  photos: Photo[];
+  start: number;
+  onOpen: (index: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setWidth(Math.floor(entry.contentRect.width));
+    });
+    observer.observe(node);
+    setWidth(Math.floor(node.getBoundingClientRect().width));
+    return () => observer.disconnect();
+  }, []);
+
+  const rows = useMemo(() => packJustified(photos, width), [photos, width]);
+
+  let offset = 0;
+
+  return (
+    <div ref={ref} className="space-y-3">
+      {rows.map((row) => {
+        const rowStart = offset;
+        offset += row.photos.length;
+        return (
+          <div
+            key={row.photos.map((photo) => photo.id).join("-")}
+            className="flex items-stretch gap-3"
+          >
+            {row.photos.map((photo, i) => (
+              <StillThumb
+                key={photo.id}
+                photo={photo}
+                width={row.widths[i]!}
+                height={row.height}
+                onOpen={() => onOpen(start + rowStart + i)}
+              />
+            ))}
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -264,15 +374,11 @@ export function PhotoJournal({ albums }: { albums: PhotoAlbum[] }) {
                 </div>
               </div>
               <div className="min-w-0">
-                <div className="still-strip">
-                  {album.photos.map((photo, i) => (
-                    <StillThumb
-                      key={photo.id}
-                      photo={photo}
-                      onOpen={() => setActive(start + i)}
-                    />
-                  ))}
-                </div>
+                <AlbumStrip
+                  photos={album.photos}
+                  start={start}
+                  onOpen={setActive}
+                />
               </div>
             </section>
           );
