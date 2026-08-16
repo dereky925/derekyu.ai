@@ -40,7 +40,7 @@ export function HomeClipCard({
             poster={clip.poster}
             title={title}
             active={active}
-            className="aspect-[16/10] rounded-2xl"
+            className="relative aspect-[16/10] rounded-2xl"
           />
           <h2 className="mt-4 text-lg tracking-tight">{title}</h2>
           <p className="mt-1 text-sm text-muted">{detail}</p>
@@ -89,7 +89,7 @@ export function HomeClipStrip({ clips }: { clips: PhotoClip[] }) {
             poster={clip.poster}
             title={clip.title}
             active={Boolean(visible[clip.id])}
-            className="aspect-video"
+            className="relative aspect-video"
           />
         </Link>
       ))}

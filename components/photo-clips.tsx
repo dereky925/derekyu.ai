@@ -63,7 +63,7 @@ export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
               poster={clip.poster}
               title={clip.title}
               active={Boolean(visible[clip.id])}
-              className="aspect-video rounded-xl"
+              className="relative aspect-video rounded-xl"
             />
           </div>
         </li>

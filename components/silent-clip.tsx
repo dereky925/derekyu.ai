@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { MediaLoader } from "@/components/media-loader";
@@ -44,6 +45,7 @@ export function SilentClip({
   const reduce = useReducedMotion();
   const shouldPlay = active && !reduce;
   const scale = iframeCoverScale(mediaAspect, frameAspect);
+  const fillsParent = className.includes("absolute");
 
   useEffect(() => {
     setHls(supportsHls());
@@ -69,7 +71,11 @@ export function SilentClip({
   }, [shouldPlay, warm, hls]);
 
   return (
-    <div className={`silent-clip relative overflow-hidden bg-black ${className}`}>
+    <div
+      className={`silent-clip overflow-hidden bg-black ${
+        fillsParent ? "" : "relative"
+      } ${className}`}
+    >
       {hls === true && warm ? (
         <video
           ref={videoRef}
@@ -114,10 +120,12 @@ export function SilentClip({
         />
       ) : null}
 
-      <img
+      <Image
         src={poster}
         alt=""
-        className={`absolute inset-0 z-[2] h-full w-full object-cover transition-opacity duration-500 ${
+        fill
+        sizes="100vw"
+        className={`z-[2] object-cover transition-opacity duration-500 ${
           ready ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
       />
