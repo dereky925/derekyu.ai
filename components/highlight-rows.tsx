@@ -18,15 +18,20 @@ function TileFrame({
   label,
   role,
   detail,
+  frameAspect = 16 / 9,
   children,
 }: {
   label: string;
   role?: string;
   detail: string;
+  frameAspect?: number;
   children: ReactNode;
 }) {
   return (
-    <div className="relative aspect-video overflow-hidden rounded-2xl bg-black">
+    <div
+      className="relative overflow-hidden rounded-2xl bg-black"
+      style={{ aspectRatio: frameAspect }}
+    >
       {children}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-16">
         <p className="text-sm text-foreground">{label}</p>
@@ -42,6 +47,7 @@ function Tile({
   label,
   role,
   detail,
+  frameAspect,
   children,
   external,
 }: {
@@ -49,12 +55,18 @@ function Tile({
   label: string;
   role?: string;
   detail: string;
+  frameAspect?: number;
   children: ReactNode;
   external?: boolean;
 }) {
   const className = "group block min-w-0";
   const frame = (
-    <TileFrame label={label} role={role} detail={detail}>
+    <TileFrame
+      label={label}
+      role={role}
+      detail={detail}
+      frameAspect={frameAspect}
+    >
       {children}
     </TileFrame>
   );
@@ -92,15 +104,23 @@ function StreamTile({
   mediaAspect?: number;
 }) {
   const { ref, active } = useInViewPlay();
+  const frameAspect = mediaAspect ?? 16 / 9;
   return (
     <div ref={ref}>
-      <Tile href={href} label={label} role={role} detail={detail} external={external}>
+      <Tile
+        href={href}
+        label={label}
+        role={role}
+        detail={detail}
+        external={external}
+        frameAspect={frameAspect}
+      >
         <SilentClip
           id={clipId}
           poster={poster}
           title={label}
           active={active}
-          mediaAspect={mediaAspect}
+          mediaAspect={frameAspect}
           className="absolute inset-0"
         />
       </Tile>
@@ -173,7 +193,7 @@ export function HighlightRows() {
       </Row>
 
       <Row kicker="Projects" title="The public set." href="/work">
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid items-start gap-3 md:grid-cols-3">
           <StreamTile
             href={grokeyeYouTube}
             external

@@ -19,48 +19,17 @@ type SilentClipProps = {
   poster: string;
   title: string;
   active: boolean;
-  cover?: boolean;
-  /** Source width/height. Stream iframes are 16:9 and letterbox anything else. */
+  /** Source width/height. Default 16:9. */
   mediaAspect?: number;
-  /** Tile width/height. About cards are 16:9; Work cards are 16:10. */
-  frameAspect?: number;
   className?: string;
 };
-
-function coverSize(mediaAspect: number, frameAspect: number) {
-  if (mediaAspect >= frameAspect) {
-    return {
-      width: `${(mediaAspect / frameAspect) * 100}%`,
-      height: "100%",
-    };
-  }
-  return {
-    width: "100%",
-    height: `${(frameAspect / mediaAspect) * 100}%`,
-  };
-}
-
-function iframeCoverScale(mediaAspect: number, frameAspect: number) {
-  const visible = {
-    width:
-      mediaAspect >= STREAM_CANVAS ? 1 : mediaAspect / STREAM_CANVAS,
-    height:
-      mediaAspect >= STREAM_CANVAS ? STREAM_CANVAS / mediaAspect : 1,
-  };
-  return (
-    Math.max(1 / visible.width, frameAspect / STREAM_CANVAS / visible.height) *
-    1.02
-  );
-}
 
 export function SilentClip({
   id,
   poster,
   title,
   active,
-  cover = true,
   mediaAspect = STREAM_CANVAS,
-  frameAspect = STREAM_CANVAS,
   className = "",
 }: SilentClipProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -69,8 +38,7 @@ export function SilentClip({
   const reduce = useReducedMotion();
   const shouldPlay = active && !reduce;
   const showPoster = !shouldPlay || !ready;
-  const box = coverSize(mediaAspect, frameAspect);
-  const iframeScale = iframeCoverScale(mediaAspect, frameAspect);
+  const useNativeVideo = Math.abs(mediaAspect - STREAM_CANVAS) > 0.05;
 
   useEffect(() => {
     setHls(supportsHls());
@@ -86,54 +54,68 @@ export function SilentClip({
 
   useEffect(() => {
     const node = videoRef.current;
-    if (!node) return;
-    if (shouldPlay) {
+    if (!node || !shouldPlay) return;
+    if (hls === true || useNativeVideo) {
       node.play().catch(() => {});
-    } else {
-      node.pause();
     }
-  }, [shouldPlay, hls]);
+  }, [shouldPlay, hls, useNativeVideo]);
+
+  useEffect(() => {
+    const node = videoRef.current;
+    if (!node || hls !== false || !shouldPlay || !useNativeVideo) return;
+
+    let cancelled = false;
+    let player: { destroy: () => void } | undefined;
+
+    import("hls.js").then(({ default: Hls }) => {
+      if (cancelled || !Hls.isSupported()) return;
+      const instance = new Hls();
+      instance.loadSource(streamHlsSrc(id));
+      instance.attachMedia(node);
+      player = instance;
+    });
+
+    return () => {
+      cancelled = true;
+      player?.destroy();
+    };
+  }, [hls, shouldPlay, id, useNativeVideo]);
+
+  const showVideo =
+    shouldPlay && (hls === true || (hls === false && useNativeVideo));
+  const showIframe = shouldPlay && hls === false && !useNativeVideo;
 
   return (
     <div className={`silent-clip relative overflow-hidden bg-black ${className}`}>
-      {hls === true && shouldPlay ? (
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden"
-          style={box}
+      {showVideo ? (
+        <video
+          ref={videoRef}
+          className="h-full w-full"
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="auto"
+          poster={poster}
+          disablePictureInPicture
+          controlsList="nodownload nofullscreen noremoteplayback"
+          onPlaying={() => setReady(true)}
         >
-          <video
-            ref={videoRef}
-            className="h-full w-full"
-            muted
-            loop
-            playsInline
-            autoPlay
-            preload="auto"
-            poster={poster}
-            disablePictureInPicture
-            controlsList="nodownload nofullscreen noremoteplayback"
-            onPlaying={() => setReady(true)}
-          >
+          {hls === true ? (
             <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
-          </video>
-        </div>
+          ) : null}
+        </video>
       ) : null}
 
-      {hls === false && shouldPlay ? (
+      {showIframe ? (
         <iframe
-          className="pointer-events-none absolute left-1/2 top-1/2 z-0 border-0"
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full border-0"
           src={streamIframeSrc(id)}
           title={title}
           allow="autoplay; encrypted-media"
           tabIndex={-1}
           onLoad={() => setReady(true)}
-          style={{
-            background: "#050505",
-            width: cover ? `${iframeScale * 100}%` : "100%",
-            height: cover ? `${iframeScale * 100}%` : "100%",
-            transform: "translate(-50%, -50%)",
-            maxWidth: "none",
-          }}
+          style={{ background: "#050505" }}
         />
       ) : null}
 
