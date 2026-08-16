@@ -2,21 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { navLinks } from "@/lib/nav";
 import { site } from "@/lib/site";
-
-const links = [
-  { href: "/", label: "About", match: (path: string) => path === "/" },
-  {
-    href: "/work",
-    label: "Work",
-    match: (path: string) => path === "/work" || path.startsWith("/projects"),
-  },
-  {
-    href: "/photography",
-    label: "Photography",
-    match: (path: string) => path === "/photography" || path.startsWith("/photography/"),
-  },
-];
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -31,7 +18,7 @@ export function SiteHeader() {
           {site.name}
         </Link>
         <nav className="flex flex-wrap items-center justify-end gap-x-6 gap-y-1 text-sm">
-          {links.map((link) => {
+          {navLinks.map((link) => {
             const active = link.match(pathname);
             return (
               <Link
