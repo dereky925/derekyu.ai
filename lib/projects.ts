@@ -1,4 +1,4 @@
-import { streamClips, streamPoster } from "@/lib/stream";
+import { hunterYouTube, streamClips, streamPoster } from "@/lib/stream";
 
 export type ProjectLink = {
   label: string;
@@ -163,6 +163,7 @@ export type ProjectListing = {
   summary: string;
   poster?: string;
   streamId?: string;
+  coverScale?: number;
   href?: string;
   external?: boolean;
 };
@@ -174,6 +175,7 @@ export const projectListings: ProjectListing[] = [
     role: "xAI Hackathon",
     summary: "Hands-free Grok AR. Top 5 of 200+.",
     poster: "/media/projects/grokeye/poster.jpg",
+    streamId: streamClips.grokeye,
     href: "/projects/grokeye",
   },
   {
@@ -189,9 +191,9 @@ export const projectListings: ProjectListing[] = [
     year: "2022",
     role: "UB Drone Lab",
     summary: "Net-shooting quadcopter built to catch other drones.",
-    poster:
-      "https://customer-ujeel072i6bo0c62.cloudflarestream.com/f84d2847c975d5cf2e589a73190375b3/thumbnails/thumbnail.jpg",
-    href: "https://www.youtube.com/watch?v=nB1vAQlGqa4",
+    poster: streamPoster(streamClips.hunter),
+    streamId: streamClips.hunter,
+    href: hunterYouTube,
     external: true,
   },
   {
@@ -201,6 +203,7 @@ export const projectListings: ProjectListing[] = [
     summary: "An 8-bit Starship run from Starbase to Voyager 1.",
     poster: streamPoster(streamClips.mars),
     streamId: streamClips.mars,
+    coverScale: 1.12,
     href: "/projects/to-mars-and-beyond",
   },
   {
