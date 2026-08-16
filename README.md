@@ -8,6 +8,8 @@ This folder  →  GitHub  →  Vercel CDN  →  derekyu.ai
                      R2 / Mux videos
 ```
 
+Vercel production is live at [https://derekyu-ai.vercel.app](https://derekyu-ai.vercel.app). GitHub repo: [dereky925/derekyu.ai](https://github.com/dereky925/derekyu.ai). Push to `main` deploys automatically.
+
 ## Local
 
 ```bash
@@ -31,31 +33,21 @@ This repo is the source of truth. Push to `main`. Vercel deploys from that branc
 
 ### 3. Vercel
 
-1. Sign in at [vercel.com](https://vercel.com) with GitHub.
-2. **Add New Project** → import this repository.
-3. Framework preset: Next.js. Root directory: `.`
-4. Environment variables (Production):
-   - `NEXT_PUBLIC_SITE_URL` = `https://derekyu.ai`
-   - `NEXT_PUBLIC_MEDIA_BASE_URL` = your R2 public origin, once it exists
-   - `NEXT_PUBLIC_EMAIL` = optional
-5. Deploy. Confirm the `*.vercel.app` URL loads.
+Done. Project: `anduril1/derekyu-ai`. Production: [https://derekyu-ai.vercel.app](https://derekyu-ai.vercel.app). `NEXT_PUBLIC_SITE_URL` is set to `https://derekyu.ai`.
 
 ### 4. Point DNS at Vercel
 
-In the Vercel project: **Settings → Domains → Add** `derekyu.ai` and `www.derekyu.ai`.
-
-Vercel will show records. At your registrar:
+`derekyu.ai` and `www.derekyu.ai` are attached to the Vercel project. The domain currently uses **Squarespace** nameservers (`nse*.squarespacedns.com`). In Squarespace: **Domains → derekyu.ai → DNS**. Remove the parking A records and the `www` CNAME to `ext-sq.squarespace.com`, then add:
 
 | Type | Name | Value |
 | --- | --- | --- |
-| A | `@` | `10.0.1.2` (confirm in the Vercel UI; this is Vercel’s usual apex) |
-| CNAME | `www` | `cname.vercel-dns.com` |
+| A | `@` | `216.198.79.1` |
+| A | `@` | `64.29.17.1` |
+| CNAME | `www` | `814f716af2930029.vercel-dns-017.com.` |
 
-If the domain lives on Cloudflare, keep the proxy **DNS only** (grey cloud) until the SSL certificate issues, then you can proxy if you want.
+Wait for DNS to propagate. Vercel issues HTTPS automatically. Then https://derekyu.ai should load.
 
-Redirect `www` → apex (or the reverse) using Vercel’s domain UI so there is one canonical host.
-
-Wait for HTTPS to show **Valid**. Then visit https://derekyu.ai.
+Alternative: change nameservers at Squarespace to `ns1.vercel-dns.com` and `ns2.vercel-dns.com` instead of editing individual records.
 
 ### 5. Videos (Cloudflare R2 or Mux)
 
