@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { FadeIn } from "@/components/fade-in";
-import { site } from "@/lib/site";
+import { site, socials } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -77,14 +77,17 @@ export default function AboutPage() {
 
       <FadeIn delay={0.12}>
         <div className="mt-14 flex flex-wrap gap-6 text-sm">
-          <a
-            href={site.github}
-            target="_blank"
-            rel="noreferrer"
-            className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
-          >
-            GitHub
-          </a>
+          {socials.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+              className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+            >
+              {link.label}
+            </a>
+          ))}
           {site.email ? (
             <a
               href={`mailto:${site.email}`}

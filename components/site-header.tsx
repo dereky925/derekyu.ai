@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { site } from "@/lib/site";
+import { site, socials } from "@/lib/site";
 
 const links = [
   { href: "/#work", label: "Work" },
@@ -17,7 +17,7 @@ export function SiteHeader() {
         >
           {site.name}
         </Link>
-        <nav className="flex items-center gap-6 text-sm text-muted">
+        <nav className="flex flex-wrap items-center justify-end gap-x-5 gap-y-1 text-sm text-muted">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -27,14 +27,17 @@ export function SiteHeader() {
               {link.label}
             </Link>
           ))}
-          <a
-            href={site.github}
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors hover:text-foreground"
-          >
-            GitHub
-          </a>
+          {socials.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              {link.label}
+            </a>
+          ))}
         </nav>
       </div>
     </header>

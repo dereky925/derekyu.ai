@@ -9,7 +9,7 @@ export function personJsonLd() {
     url: site.url,
     jobTitle: "Aerospace Engineer",
     description: site.description,
-    sameAs: [site.github],
+    sameAs: [site.github, site.x, site.linkedin],
     ...(site.email ? { email: site.email } : {}),
   };
 }
