@@ -59,7 +59,7 @@ export function useInViewPlay(threshold = 0.3) {
     if (!node) return;
     const observer = new IntersectionObserver(
       ([entry]) => setActive(entry.isIntersecting),
-      { rootMargin: "80px", threshold },
+      { rootMargin: "200px", threshold },
     );
     observer.observe(node);
     return () => observer.disconnect();

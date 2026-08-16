@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { MediaLoader } from "@/components/media-loader";
-import { streamHlsSrc, streamIframeSrc } from "@/lib/stream";
+import { streamHlsSrc } from "@/lib/stream";
 
 function supportsHls() {
   if (typeof document === "undefined") return false;
@@ -19,9 +19,7 @@ type SilentClipProps = {
   poster: string;
   title: string;
   active: boolean;
-  /** Source width/height. Default 16:9. */
   mediaAspect?: number;
-  /** Tile width/height. About cards are 16:9; Work cards are 16:10. */
   frameAspect?: number;
   className?: string;
 };
@@ -51,10 +49,10 @@ export function SilentClip({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hls, setHls] = useState<boolean | null>(null);
   const [ready, setReady] = useState(false);
+  const [warm, setWarm] = useState(false);
   const reduce = useReducedMotion();
   const shouldPlay = active && !reduce;
-  const showPoster = !shouldPlay || !ready;
-  const useNativeVideo = Math.abs(mediaAspect - STREAM_CANVAS) > 0.05;
+  const box = coverBox(mediaAspect, frameAspect);
 
   useEffect(() => {
     setHls(supportsHls());
@@ -62,30 +60,34 @@ export function SilentClip({
 
   useEffect(() => {
     setReady(false);
+    setWarm(false);
   }, [id]);
 
   useEffect(() => {
-    if (!shouldPlay) setReady(false);
+    if (shouldPlay) setWarm(true);
   }, [shouldPlay]);
 
   useEffect(() => {
     const node = videoRef.current;
-    if (!node || !shouldPlay) return;
-    if (hls === true || useNativeVideo) {
+    if (!node) return;
+    if (shouldPlay) {
       node.play().catch(() => {});
+    } else {
+      node.pause();
     }
-  }, [shouldPlay, hls, useNativeVideo]);
+  }, [shouldPlay, warm, hls]);
 
   useEffect(() => {
+    if (hls !== false || !warm) return;
     const node = videoRef.current;
-    if (!node || hls !== false || !shouldPlay || !useNativeVideo) return;
+    if (!node) return;
 
     let cancelled = false;
     let player: { destroy: () => void } | undefined;
 
     import("hls.js").then(({ default: Hls }) => {
       if (cancelled || !Hls.isSupported()) return;
-      const instance = new Hls();
+      const instance = new Hls({ maxBufferLength: 30 });
       instance.loadSource(streamHlsSrc(id));
       instance.attachMedia(node);
       player = instance;
@@ -95,29 +97,23 @@ export function SilentClip({
       cancelled = true;
       player?.destroy();
     };
-  }, [hls, shouldPlay, id, useNativeVideo]);
-
-  const showVideo =
-    shouldPlay && (hls === true || (hls === false && useNativeVideo));
-  const showIframe = shouldPlay && hls === false && !useNativeVideo;
-  const box = useNativeVideo ? coverBox(mediaAspect, frameAspect) : undefined;
+  }, [hls, warm, id]);
 
   return (
     <div className={`silent-clip relative overflow-hidden bg-black ${className}`}>
-      {showVideo ? (
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={box ?? { width: "100%", height: "100%" }}
-        >
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden"
+        style={box}
+      >
+        {warm && hls !== null ? (
           <video
             ref={videoRef}
             className="h-full w-full"
             muted
             loop
             playsInline
-            autoPlay
             preload="auto"
-            poster={poster}
+            aria-label={title}
             disablePictureInPicture
             controlsList="nodownload nofullscreen noremoteplayback"
             onPlaying={() => setReady(true)}
@@ -126,30 +122,18 @@ export function SilentClip({
               <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
             ) : null}
           </video>
-        </div>
-      ) : null}
+        ) : null}
 
-      {showIframe ? (
-        <iframe
-          className="pointer-events-none absolute inset-0 z-0 h-full w-full border-0"
-          src={streamIframeSrc(id)}
-          title={title}
-          allow="autoplay; encrypted-media"
-          tabIndex={-1}
-          onLoad={() => setReady(true)}
-          style={{ background: "#050505" }}
-        />
-      ) : null}
-
-      {showPoster ? (
         <Image
           src={poster}
           alt=""
           fill
           sizes="100vw"
-          className="z-[2] object-cover"
+          className={`z-[1] object-cover transition-opacity duration-500 ${
+            ready ? "pointer-events-none opacity-0" : "opacity-100"
+          }`}
         />
-      ) : null}
+      </div>
 
       {shouldPlay && !ready ? (
         <MediaLoader className="absolute inset-0 z-[3]" />
