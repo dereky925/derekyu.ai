@@ -180,3 +180,7 @@ export function clipDateLabel(clip: PhotoClip) {
 }
 
 export const featuredPhotos = [photos[0]!, photos[9]!, photos[15]!] as const;
+
+export const aboutHero = photos[2]!;
+
+export const aboutStrip = [photos[0]!, photos[14]!, photos[20]!] as const;
