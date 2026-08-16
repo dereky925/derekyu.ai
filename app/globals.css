@@ -41,6 +41,46 @@ body {
   display: none !important;
 }
 
+.media-loader {
+  overflow: visible;
+}
+
+.media-loader-spin,
+.media-loader-spin-rev,
+.media-loader-spin-slow {
+  transform-box: fill-box;
+}
+
+.media-loader-spin {
+  animation: media-spin 1.15s linear infinite;
+}
+
+.media-loader-spin-rev {
+  animation: media-spin 1.85s linear infinite reverse;
+}
+
+.media-loader-spin-slow {
+  animation: media-spin 2.55s linear infinite;
+}
+
+.still-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.still-strip::after {
+  content: "";
+  flex-grow: 9999;
+  height: 0;
+}
+
+@keyframes media-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .hero-grain {
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { MediaLoader } from "@/components/media-loader";
 import { SilentClip } from "@/components/silent-clip";
 import { useInViewPlay } from "@/components/silent-youtube";
 import { mediaUrl, muxMp4 } from "@/lib/media";
@@ -16,6 +17,7 @@ type VideoPlayerProps = {
 
 export function VideoPlayer({ poster, title, video }: VideoPlayerProps) {
   const [playing, setPlaying] = useState(false);
+  const [mediaReady, setMediaReady] = useState(false);
   const [inView, setInView] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const streamView = useInViewPlay(0.25);
@@ -34,6 +36,10 @@ export function VideoPlayer({ poster, title, video }: VideoPlayerProps) {
     ? `https://www.youtube.com/watch?v=${youtubeId}`
     : undefined;
   const canPlay = Boolean(hostedSrc || youtubeId || streamId);
+
+  useEffect(() => {
+    setMediaReady(false);
+  }, [playing, hostedSrc, youtubeId, streamId]);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -111,25 +117,39 @@ export function VideoPlayer({ poster, title, video }: VideoPlayerProps) {
             ) : null}
           </>
         ) : hostedSrc && inView ? (
-          <video
-            className="h-full w-full object-cover"
-            controls
-            autoPlay
-            playsInline
-            preload="metadata"
-            poster={poster}
-            onError={() => setFailed(true)}
-          >
-            <source src={hostedSrc} type="video/mp4" />
-          </video>
+          <>
+            <video
+              className="h-full w-full object-cover"
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              poster={poster}
+              onError={() => setFailed(true)}
+              onPlaying={() => setMediaReady(true)}
+              onCanPlay={() => setMediaReady(true)}
+              onWaiting={() => setMediaReady(false)}
+            >
+              <source src={hostedSrc} type="video/mp4" />
+            </video>
+            {!mediaReady ? (
+              <MediaLoader className="absolute inset-0 z-[1] bg-black/25" />
+            ) : null}
+          </>
         ) : youtubeId && inView ? (
-          <iframe
-            className="h-full w-full"
-            src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0`}
-            title={`${title} video`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+          <>
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0`}
+              title={`${title} video`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              onLoad={() => setMediaReady(true)}
+            />
+            {!mediaReady ? (
+              <MediaLoader className="absolute inset-0 z-[1] bg-black/25" />
+            ) : null}
+          </>
         ) : (
           <Image
             src={poster}

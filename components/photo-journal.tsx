@@ -1,9 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { MediaLoader } from "@/components/media-loader";
 import { clipDateLabel } from "@/lib/photos";
 import type { Photo, PhotoAlbum } from "@/lib/stills";
+
+function Chevron({ dir }: { dir: "prev" | "next" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      aria-hidden
+    >
+      {dir === "prev" ? (
+        <path d="M14.5 5 8 12l6.5 7" strokeLinecap="round" strokeLinejoin="round" />
+      ) : (
+        <path d="M9.5 5 16 12l-6.5 7" strokeLinecap="round" strokeLinejoin="round" />
+      )}
+    </svg>
+  );
+}
+
+const navBtn =
+  "absolute top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/55 text-white backdrop-blur-md transition-colors hover:bg-white/10";
 
 function Lightbox({
   photos,
@@ -17,57 +40,161 @@ function Lightbox({
   onMove: (index: number) => void;
 }) {
   const photo = photos[index];
+  const fullRef = useRef<HTMLImageElement>(null);
+  const [fullReady, setFullReady] = useState(false);
+
+  useEffect(() => {
+    setFullReady(false);
+    const node = fullRef.current;
+    if (node?.complete && node.naturalWidth > 0) {
+      setFullReady(true);
+    }
+  }, [photo?.id]);
+
+  useEffect(() => {
+    if (photos.length < 2) return;
+    const neighbors = [
+      photos[(index + 1) % photos.length],
+      photos[(index - 1 + photos.length) % photos.length],
+    ];
+    for (const next of neighbors) {
+      if (!next) continue;
+      const probe = document.createElement("img");
+      probe.src = next.fullSrc;
+    }
+  }, [index, photos]);
+
   if (!photo) return null;
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/92 p-4 sm:p-10"
-      onClick={onClose}
+      className="fixed inset-0 z-[80] flex flex-col bg-black"
       role="dialog"
       aria-modal="true"
       aria-label="Photograph viewer"
     >
-      <img
-        src={photo.fullSrc}
-        alt={photo.location}
-        className="max-h-full max-w-full object-contain"
-        onClick={(event) => event.stopPropagation()}
-      />
-      <p className="pointer-events-none absolute bottom-5 left-5 text-sm text-white/70">
+      <div className="relative z-20 flex h-16 shrink-0 items-center justify-end px-6 sm:px-10">
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white"
+          aria-label="Close"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            aria-hidden
+          >
+            <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="relative min-h-0 flex-1">
+        <button
+          type="button"
+          className="absolute inset-0"
+          aria-label="Close photograph"
+          onClick={onClose}
+        />
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-20 sm:px-28">
+          <div className="pointer-events-auto relative flex h-full max-h-full w-full items-center justify-center">
+            {!fullReady ? (
+              <>
+                <img
+                  src={photo.src}
+                  alt=""
+                  className="max-h-full max-w-full object-contain opacity-40"
+                />
+                <MediaLoader className="absolute inset-0" size="lg" />
+              </>
+            ) : null}
+            <img
+              ref={fullRef}
+              src={photo.fullSrc}
+              alt={photo.location}
+              onLoad={() => setFullReady(true)}
+              className={`max-h-full max-w-full object-contain ${
+                fullReady ? "relative opacity-100" : "absolute opacity-0"
+              }`}
+            />
+          </div>
+        </div>
+
+        {photos.length > 1 ? (
+          <>
+            <button
+              type="button"
+              className={`${navBtn} left-6 sm:left-10`}
+              aria-label="Previous photograph"
+              onClick={(event) => {
+                event.stopPropagation();
+                onMove((index - 1 + photos.length) % photos.length);
+              }}
+            >
+              <Chevron dir="prev" />
+            </button>
+            <button
+              type="button"
+              className={`${navBtn} right-6 sm:right-10`}
+              aria-label="Next photograph"
+              onClick={(event) => {
+                event.stopPropagation();
+                onMove((index + 1) % photos.length);
+              }}
+            >
+              <Chevron dir="next" />
+            </button>
+          </>
+        ) : null}
+      </div>
+
+      <p className="relative z-20 flex h-16 shrink-0 items-center justify-center px-6 text-sm text-white/70">
         {[clipDateLabel(photo), photo.location].filter(Boolean).join(" · ")}
       </p>
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute right-5 top-5 text-sm text-white/70 hover:text-white"
-      >
-        Close
-      </button>
-      {photos.length > 1 ? (
-        <>
-          <button
-            type="button"
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-white/70 hover:text-white"
-            onClick={(event) => {
-              event.stopPropagation();
-              onMove((index - 1 + photos.length) % photos.length);
-            }}
-          >
-            Prev
-          </button>
-          <button
-            type="button"
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-white/70 hover:text-white"
-            onClick={(event) => {
-              event.stopPropagation();
-              onMove((index + 1) % photos.length);
-            }}
-          >
-            Next
-          </button>
-        </>
-      ) : null}
     </div>
+  );
+}
+
+function StillThumb({
+  photo,
+  onOpen,
+}: {
+  photo: Photo;
+  onOpen: () => void;
+}) {
+  const [loaded, setLoaded] = useState(false);
+  const aspect = photo.width / photo.height || 1.5;
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      style={{
+        flexGrow: aspect,
+        flexBasis: `calc(${aspect} * 17rem)`,
+      }}
+      className="relative min-w-0 max-w-full overflow-hidden rounded-xl bg-surface text-left"
+    >
+      {!loaded ? (
+        <MediaLoader className="absolute inset-0 min-h-28" />
+      ) : null}
+      <Image
+        src={photo.src}
+        alt={photo.location}
+        width={photo.width}
+        height={photo.height}
+        sizes="(min-width: 1024px) 40vw, 100vw"
+        className={`h-auto w-full max-w-full min-w-0 transition-opacity duration-300 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+        unoptimized
+        onLoad={() => setLoaded(true)}
+      />
+    </button>
   );
 }
 
@@ -136,25 +263,16 @@ export function PhotoJournal({ albums }: { albums: PhotoAlbum[] }) {
                   </p>
                 </div>
               </div>
-              <div className="columns-1 gap-3 sm:columns-2">
-                {album.photos.map((photo, i) => (
-                  <button
-                    key={photo.id}
-                    type="button"
-                    onClick={() => setActive(start + i)}
-                    className="mb-3 block w-full overflow-hidden rounded-xl bg-surface text-left"
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={photo.location}
-                      width={photo.width}
-                      height={photo.height}
-                      sizes="(min-width: 1024px) 40vw, 100vw"
-                      className="h-auto w-full"
-                      unoptimized
+              <div className="min-w-0">
+                <div className="still-strip">
+                  {album.photos.map((photo, i) => (
+                    <StillThumb
+                      key={photo.id}
+                      photo={photo}
+                      onOpen={() => setActive(start + i)}
                     />
-                  </button>
-                ))}
+                  ))}
+                </div>
               </div>
             </section>
           );

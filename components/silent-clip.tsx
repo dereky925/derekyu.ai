@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { MediaLoader } from "@/components/media-loader";
 import { streamHlsSrc, streamIframeSrc } from "@/lib/stream";
 
 function supportsHls() {
@@ -29,13 +30,37 @@ export function SilentClip({
   className = "",
 }: SilentClipProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const waitTimer = useRef<number | null>(null);
   const [hls, setHls] = useState(false);
   const [iframeReady, setIframeReady] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const reduce = useReducedMotion();
   const shouldPlay = active && !reduce;
+  const waiting = shouldPlay && !(hls ? playing : iframeReady);
+
+  const markPlaying = () => {
+    if (waitTimer.current) window.clearTimeout(waitTimer.current);
+    setPlaying(true);
+  };
+
+  const markWaiting = () => {
+    if (waitTimer.current) window.clearTimeout(waitTimer.current);
+    waitTimer.current = window.setTimeout(() => setPlaying(false), 280);
+  };
 
   useEffect(() => {
     setHls(supportsHls());
+  }, []);
+
+  useEffect(() => {
+    setIframeReady(false);
+    setPlaying(false);
+  }, [id, shouldPlay]);
+
+  useEffect(() => {
+    return () => {
+      if (waitTimer.current) window.clearTimeout(waitTimer.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -62,6 +87,10 @@ export function SilentClip({
           poster={poster}
           disablePictureInPicture
           controlsList="nodownload nofullscreen noremoteplayback"
+          onPlaying={markPlaying}
+          onCanPlay={markPlaying}
+          onWaiting={markWaiting}
+          onStalled={markWaiting}
         >
           <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
         </video>
@@ -109,6 +138,7 @@ export function SilentClip({
           className="object-cover"
         />
       )}
+      {waiting ? <MediaLoader className="absolute inset-0 z-[1] bg-black/25" /> : null}
     </div>
   );
 }
