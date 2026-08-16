@@ -2,113 +2,84 @@
 
 import { useEffect, useRef } from "react";
 
-const HILLS = [
-  { x: 0.16, y: 0.28, a: 1.15, s: 22, p: 0.4 },
-  { x: 0.58, y: 0.2, a: 1.05, s: 18, p: 1.3 },
-  { x: 0.82, y: 0.42, a: 1.2, s: 20, p: 2.1 },
-  { x: 0.34, y: 0.52, a: 0.9, s: 16, p: 0.8 },
-  { x: 0.7, y: 0.68, a: 0.95, s: 19, p: 2.7 },
-  { x: 0.12, y: 0.74, a: 0.85, s: 17, p: 1.9 },
-  { x: 0.48, y: 0.84, a: 0.75, s: 21, p: 3.2 },
-  { x: 0.9, y: 0.78, a: 0.8, s: 15, p: 0.2 },
-];
+const VERT = `#version 300 es
+void main() {
+  vec2 pos = vec2(gl_VertexID == 1 ? 3.0 : -1.0, gl_VertexID == 2 ? 3.0 : -1.0);
+  gl_Position = vec4(pos, 0.0, 1.0);
+}
+`;
 
-const ISO_START = -0.35;
-const ISO_END = 2.15;
-const ISO_STEP = 0.46;
+const FRAG = `#version 300 es
+precision highp float;
+out vec4 fragColor;
 
-type Pt = [number, number];
-type Seg = [Pt, Pt];
+uniform vec2 uRes;
+uniform float uTime;
+uniform float uAspect;
 
-function interp(iso: number, a: number, b: number, va: number, vb: number) {
-  const t = (iso - va) / (vb - va || 1);
-  return a + (b - a) * Math.min(1, Math.max(0, t));
+float bump(vec2 p, float x, float y, float a, float s, float ph, float t) {
+  float hx = (x + sin(t * 0.13 + ph) * 0.035) * uAspect;
+  float hy = y + cos(t * 0.1 + ph * 1.3) * 0.03;
+  vec2 d = p - vec2(hx, hy);
+  return a * exp(-dot(d, d) * s);
 }
 
-function pointKey(p: Pt) {
-  return `${Math.round(p[0] * 2)},${Math.round(p[1] * 2)}`;
+float field(vec2 uv, float t) {
+  float x = uv.x * uAspect;
+  float y = uv.y;
+  float wx = sin(y * 3.1 + t * 0.18) * 0.07 + sin(x * 1.6 - t * 0.11) * 0.05;
+  float wy = cos(x * 2.4 - t * 0.14) * 0.06 + sin(y * 1.9 + t * 0.09) * 0.04;
+  vec2 p = vec2(x + wx, y + wy);
+
+  float n =
+    sin(p.x * 3.6 + t * 0.12) * 0.42 +
+    sin(p.y * 2.9 - t * 0.09) * 0.36 +
+    sin((p.x * 0.85 + p.y * 1.25) * 2.4 + t * 0.07) * 0.28;
+
+  n += bump(p, 0.16, 0.28, 1.15, 22.0, 0.4, t);
+  n += bump(p, 0.58, 0.20, 1.05, 18.0, 1.3, t);
+  n += bump(p, 0.82, 0.42, 1.20, 20.0, 2.1, t);
+  n += bump(p, 0.34, 0.52, 0.90, 16.0, 0.8, t);
+  n += bump(p, 0.70, 0.68, 0.95, 19.0, 2.7, t);
+  n += bump(p, 0.12, 0.74, 0.85, 17.0, 1.9, t);
+  n += bump(p, 0.48, 0.84, 0.75, 21.0, 3.2, t);
+  n += bump(p, 0.90, 0.78, 0.80, 15.0, 0.2, t);
+  return n;
 }
 
-function stitch(segs: Seg[]) {
-  const used = new Uint8Array(segs.length);
-  const byKey = new Map<string, number[]>();
-
-  const add = (p: Pt, i: number) => {
-    const key = pointKey(p);
-    const list = byKey.get(key);
-    if (list) list.push(i);
-    else byKey.set(key, [i]);
-  };
-
-  for (let i = 0; i < segs.length; i++) {
-    add(segs[i]![0], i);
-    add(segs[i]![1], i);
-  }
-
-  const other = (seg: Seg, p: Pt): Pt =>
-    pointKey(seg[0]) === pointKey(p) ? seg[1] : seg[0];
-
-  const extend = (from: Pt, into: Pt[]) => {
-    let cur = from;
-    while (true) {
-      const cand = byKey.get(pointKey(cur));
-      if (!cand) break;
-      let next = -1;
-      for (let i = 0; i < cand.length; i++) {
-        const idx = cand[i]!;
-        if (!used[idx]) {
-          next = idx;
-          break;
-        }
-      }
-      if (next < 0) break;
-      used[next] = 1;
-      const nxt = other(segs[next]!, cur);
-      into.push(nxt);
-      cur = nxt;
-    }
-  };
-
-  const chains: Pt[][] = [];
-  for (let i = 0; i < segs.length; i++) {
-    if (used[i]) continue;
-    used[i] = 1;
-    const start = segs[i]!;
-    const forward: Pt[] = [start[0], start[1]];
-    extend(start[1], forward);
-    const back: Pt[] = [];
-    extend(start[0], back);
-    chains.push(back.length ? [...back.reverse(), ...forward] : forward);
-  }
-  return chains;
+void main() {
+  vec2 uv = gl_FragCoord.xy / uRes;
+  uv.y = 1.0 - uv.y;
+  float n = field(uv, uTime);
+  float scaled = (n + 0.35) / 0.46;
+  float dist = abs(scaled - floor(scaled + 0.5));
+  float fw = max(fwidth(scaled), 1e-5);
+  float line = 1.0 - smoothstep(1.05, 2.35, dist / fw);
+  vec3 bg = vec3(0.0196);
+  vec3 fg = vec3(0.604, 0.604, 0.635);
+  fragColor = vec4(mix(bg, fg, line * 0.88), 1.0);
 }
+`;
 
-function strokeChain(c: CanvasRenderingContext2D, pts: Pt[]) {
-  if (pts.length < 2) return;
-  const first = pts[0]!;
-  c.moveTo(first[0], first[1]);
-  if (pts.length === 2) {
-    c.lineTo(pts[1]![0], pts[1]![1]);
-    return;
+function compile(
+  gl: WebGL2RenderingContext,
+  type: number,
+  source: string,
+) {
+  const shader = gl.createShader(type);
+  if (!shader) return null;
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    gl.deleteShader(shader);
+    return null;
   }
-  for (let i = 1; i < pts.length - 1; i++) {
-    const cur = pts[i]!;
-    const next = pts[i + 1]!;
-    c.quadraticCurveTo(
-      cur[0],
-      cur[1],
-      (cur[0] + next[0]) * 0.5,
-      (cur[1] + next[1]) * 0.5,
-    );
-  }
-  const last = pts[pts.length - 1]!;
-  c.lineTo(last[0], last[1]);
+  return shader;
 }
 
 /**
- * Flowing topographic contours as stroked paths.
- * A coarse scalar field is marched into polylines, then drawn at display
- * resolution so the lines stay sharp without a full-screen pixel shader.
+ * GPU topographic field — same gray isolines, without Safari's
+ * Canvas2D path/GC stutter.
  */
 export function HeroField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -117,219 +88,109 @@ export function HeroField() {
     const surface = canvasRef.current;
     if (!surface) return;
     const node: HTMLCanvasElement = surface;
-    const ctx = node.getContext("2d", { alpha: false });
-    if (!ctx) return;
+    const context = node.getContext("webgl2", {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      stencil: false,
+      powerPreference: "low-power",
+    });
+    if (!context) return;
+    const gl: WebGL2RenderingContext = context;
+
+    const vs = compile(gl, gl.VERTEX_SHADER, VERT);
+    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) return;
+    const program = gl.createProgram();
+    if (!program) return;
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+    gl.useProgram(program);
+
+    const uRes = gl.getUniformLocation(program, "uRes");
+    const uTime = gl.getUniformLocation(program, "uTime");
+    const uAspect = gl.getUniformLocation(program, "uAspect");
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     let width = 0;
     let height = 0;
-    let aspect = 1;
-    let gx = 0;
-    let gy = 0;
-    let field = new Float32Array(0);
     let frame = 0;
+    let running = false;
     let inView = true;
     let pageVisible = document.visibilityState === "visible";
-
-    const hills = HILLS.map((h) => ({ x: 0, y: 0, a: h.a, s: h.s }));
 
     function resize() {
       const rect = node.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
-      aspect = width / Math.max(1, height);
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      node.width = Math.max(1, Math.floor(width * dpr));
-      node.height = Math.max(1, Math.floor(height * dpr));
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      gx = Math.max(96, Math.round(width / 6));
-      gy = Math.max(60, Math.round(height / 6));
-      field = new Float32Array((gx + 1) * (gy + 1));
-    }
-
-    function sample(nx: number, ny: number, t: number) {
-      const x = nx * aspect;
-      const y = ny;
-      const wx =
-        Math.sin(y * 3.1 + t * 0.18) * 0.07 + Math.sin(x * 1.6 - t * 0.11) * 0.05;
-      const wy =
-        Math.cos(x * 2.4 - t * 0.14) * 0.06 + Math.sin(y * 1.9 + t * 0.09) * 0.04;
-      const u = x + wx;
-      const v = y + wy;
-
-      let n =
-        Math.sin(u * 3.6 + t * 0.12) * 0.42 +
-        Math.sin(v * 2.9 - t * 0.09) * 0.36 +
-        Math.sin((u * 0.85 + v * 1.25) * 2.4 + t * 0.07) * 0.28;
-
-      for (let i = 0; i < hills.length; i++) {
-        const h = hills[i]!;
-        const dx = u - h.x;
-        const dy = v - h.y;
-        n += h.a * Math.exp(-(dx * dx + dy * dy) * h.s);
+      const bw = Math.max(1, Math.floor(width * dpr));
+      const bh = Math.max(1, Math.floor(height * dpr));
+      if (node.width !== bw || node.height !== bh) {
+        node.width = bw;
+        node.height = bh;
       }
-      return n;
-    }
-
-    function fillField(t: number) {
-      for (let i = 0; i < HILLS.length; i++) {
-        const src = HILLS[i]!;
-        const dst = hills[i]!;
-        dst.x = (src.x + Math.sin(t * 0.13 + src.p) * 0.035) * aspect;
-        dst.y = src.y + Math.cos(t * 0.1 + src.p * 1.3) * 0.03;
-      }
-      const nx = gx;
-      const ny = gy;
-      for (let j = 0; j <= ny; j++) {
-        const y = j / ny;
-        for (let i = 0; i <= nx; i++) {
-          field[j * (nx + 1) + i] = sample(i / nx, y, t);
-        }
-      }
-    }
-
-    function edge(
-      which: number,
-      x0: number,
-      y0: number,
-      x1: number,
-      y1: number,
-      v0: number,
-      v1: number,
-      v2: number,
-      v3: number,
-      iso: number,
-    ): [number, number] {
-      if (which === 0) return [interp(iso, x0, x1, v0, v1), y0];
-      if (which === 1) return [x1, interp(iso, y0, y1, v1, v2)];
-      if (which === 2) return [interp(iso, x0, x1, v3, v2), y1];
-      return [x0, interp(iso, y0, y1, v0, v3)];
-    }
-
-    function march(c: CanvasRenderingContext2D) {
-      const nx = gx;
-      const ny = gy;
-      const cw = width / nx;
-      const ch = height / ny;
-      const stride = nx + 1;
-      const segs: Seg[] = [];
-
-      c.beginPath();
-      for (let iso = ISO_START; iso <= ISO_END; iso += ISO_STEP) {
-        segs.length = 0;
-        for (let j = 0; j < ny; j++) {
-          const y0 = j * ch;
-          const y1 = y0 + ch;
-          const row = j * stride;
-          const next = row + stride;
-          for (let i = 0; i < nx; i++) {
-            const v0 = field[row + i]!;
-            const v1 = field[row + i + 1]!;
-            const v2 = field[next + i + 1]!;
-            const v3 = field[next + i]!;
-            const idx =
-              (v0 >= iso ? 1 : 0) |
-              (v1 >= iso ? 2 : 0) |
-              (v2 >= iso ? 4 : 0) |
-              (v3 >= iso ? 8 : 0);
-            if (idx === 0 || idx === 15) continue;
-
-            const x0 = i * cw;
-            const x1 = x0 + cw;
-            const pt = (which: number) =>
-              edge(which, x0, y0, x1, y1, v0, v1, v2, v3, iso);
-
-            const seg = (a: number, b: number) => {
-              segs.push([pt(a), pt(b)]);
-            };
-
-            switch (idx) {
-              case 1:
-              case 14:
-                seg(3, 0);
-                break;
-              case 2:
-              case 13:
-                seg(0, 1);
-                break;
-              case 3:
-              case 12:
-                seg(3, 1);
-                break;
-              case 4:
-              case 11:
-                seg(1, 2);
-                break;
-              case 6:
-              case 9:
-                seg(0, 2);
-                break;
-              case 7:
-              case 8:
-                seg(3, 2);
-                break;
-              case 5:
-                seg(3, 0);
-                seg(1, 2);
-                break;
-              case 10:
-                seg(3, 2);
-                seg(0, 1);
-                break;
-            }
-          }
-        }
-
-        const chains = stitch(segs);
-        for (let i = 0; i < chains.length; i++) {
-          strokeChain(c, chains[i]!);
-        }
-      }
-      c.stroke();
+      gl.viewport(0, 0, bw, bh);
+      gl.uniform2f(uRes, bw, bh);
+      gl.uniform1f(uAspect, width / Math.max(1, height));
     }
 
     function draw(now: number) {
-      const t = reduce ? 0 : now / 1000;
-      const c = ctx!;
-      c.fillStyle = "#050505";
-      c.fillRect(0, 0, width, height);
-      fillField(t);
-      c.strokeStyle = "rgba(154,154,162,0.88)";
-      c.lineWidth = 2.25;
-      c.lineJoin = "round";
-      c.lineCap = "round";
-      march(c);
+      gl.uniform1f(uTime, reduce ? 0 : now / 1000);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
     function loop(now: number) {
-      if (inView && pageVisible && !reduce) draw(now);
+      if (!running) return;
+      draw(now);
+      if (inView && pageVisible && !reduce) {
+        frame = requestAnimationFrame(loop);
+      } else {
+        running = false;
+        frame = 0;
+      }
+    }
+
+    function start() {
+      if (reduce || running || !inView || !pageVisible) return;
+      running = true;
       frame = requestAnimationFrame(loop);
     }
 
     resize();
     draw(reduce ? 0 : performance.now());
-    if (!reduce) frame = requestAnimationFrame(loop);
+    start();
 
-    const ro = new ResizeObserver(resize);
+    const ro = new ResizeObserver(() => {
+      resize();
+      if (!running) draw(reduce ? 0 : performance.now());
+    });
     ro.observe(node);
     const io = new IntersectionObserver(
       ([entry]) => {
         inView = entry.isIntersecting;
+        if (inView) start();
       },
       { threshold: 0.05 },
     );
     io.observe(node);
     const onVis = () => {
       pageVisible = document.visibilityState === "visible";
+      if (pageVisible) start();
     };
     document.addEventListener("visibilitychange", onVis);
 
     return () => {
+      running = false;
       cancelAnimationFrame(frame);
       ro.disconnect();
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
+      gl.deleteProgram(program);
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
     };
   }, []);
 
