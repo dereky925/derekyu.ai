@@ -21,6 +21,7 @@ const clipPosters: Record<string, string> = {
   "ecf971ff2f2f65257304299bac24bb2e": "/media/photo/clips/08.jpg",
   "6e8d94b5959866ed3e32640ce44a1e63": "/media/photo/clips/09.jpg",
   "cdc34dc66c3973aa93101b052f724a81": "/media/photo/clips/10.jpg",
+  "d0af8a457c049866882929f13e65716f": "/media/photo/clips/11.jpg",
 };
 
 export const photoClips: PhotoClip[] = [
@@ -95,6 +96,14 @@ export const photoClips: PhotoClip[] = [
     location: "Crystal Cove, California",
     year: 2025,
     month: null,
+  },
+  {
+    id: "d0af8a457c049866882929f13e65716f",
+    poster: clipPosters["d0af8a457c049866882929f13e65716f"]!,
+    title: "Laguna Beach",
+    location: "Laguna Beach, California",
+    year: 2025,
+    month: 8,
   },
   {
     id: "cdc34dc66c3973aa93101b052f724a81",
