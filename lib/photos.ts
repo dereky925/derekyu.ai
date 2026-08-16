@@ -131,3 +131,14 @@ export function clipDateLabel(item: {
   }
   return String(item.year);
 }
+
+/** State / rest of the location, without repeating the title. */
+export function clipPlaceDetail(clip: Pick<PhotoClip, "title" | "location">) {
+  const title = clip.title.trim();
+  const location = clip.location.trim();
+  if (!location || location.toLowerCase() === title.toLowerCase()) return "";
+  if (title && location.toLowerCase().startsWith(`${title.toLowerCase()},`)) {
+    return location.slice(title.length).replace(/^,\s*/, "");
+  }
+  return location;
+}

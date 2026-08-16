@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { FadeIn } from "@/components/fade-in";
 import { SilentClip } from "@/components/silent-clip";
 import { useInViewPlay } from "@/components/silent-youtube";
-import { photoClips } from "@/lib/photos";
+import { clipPlaceDetail, photoClips } from "@/lib/photos";
 import {
   grokeyeYouTube,
   hunterYouTube,
@@ -30,7 +30,7 @@ function TileFrame({
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-16">
         <p className="text-sm text-foreground">{label}</p>
         {role ? <p className="mt-0.5 text-xs text-muted">{role}</p> : null}
-        <p className="mt-0.5 text-xs text-muted">{detail}</p>
+        {detail ? <p className="mt-0.5 text-xs text-muted">{detail}</p> : null}
       </div>
     </div>
   );
@@ -195,21 +195,21 @@ export function HighlightRows() {
             <StreamTile
               href="/photography"
               label={cove.title}
-              detail={cove.location}
+              detail={clipPlaceDetail(cove)}
               clipId={cove.id}
               poster={cove.poster}
             />
             <StreamTile
               href="/photography"
               label={canyon.title}
-              detail={canyon.location}
+              detail={clipPlaceDetail(canyon)}
               clipId={canyon.id}
               poster={canyon.poster}
             />
             <StreamTile
               href="/photography"
               label={sedona.title}
-              detail={sedona.location}
+              detail={clipPlaceDetail(sedona)}
               clipId={sedona.id}
               poster={sedona.poster}
             />
@@ -218,14 +218,14 @@ export function HighlightRows() {
             <StreamTile
               href="/photography"
               label={la.title}
-              detail={la.location}
+              detail={clipPlaceDetail(la)}
               clipId={la.id}
               poster={la.poster}
             />
             <StreamTile
               href="/photography"
               label={fireworks.title}
-              detail={fireworks.location}
+              detail={clipPlaceDetail(fireworks)}
               clipId={fireworks.id}
               poster={fireworks.poster}
             />
