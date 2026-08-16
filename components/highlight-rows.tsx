@@ -15,18 +15,21 @@ import {
 
 function TileFrame({
   label,
+  role,
   detail,
   children,
 }: {
   label: string;
+  role?: string;
   detail: string;
   children: ReactNode;
 }) {
   return (
     <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-black">
       {children}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-10">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-14">
         <p className="text-sm text-foreground">{label}</p>
+        {role ? <p className="mt-0.5 text-xs text-muted">{role}</p> : null}
         <p className="mt-0.5 text-xs text-muted">{detail}</p>
       </div>
     </div>
@@ -36,19 +39,21 @@ function TileFrame({
 function Tile({
   href,
   label,
+  role,
   detail,
   children,
   external,
 }: {
   href: string;
   label: string;
+  role?: string;
   detail: string;
   children: ReactNode;
   external?: boolean;
 }) {
   const className = "group block min-w-0";
   const frame = (
-    <TileFrame label={label} detail={detail}>
+    <TileFrame label={label} role={role} detail={detail}>
       {children}
     </TileFrame>
   );
@@ -69,6 +74,7 @@ function Tile({
 function StreamTile({
   href,
   label,
+  role,
   detail,
   clipId,
   poster,
@@ -76,6 +82,7 @@ function StreamTile({
 }: {
   href: string;
   label: string;
+  role?: string;
   detail: string;
   clipId: string;
   poster: string;
@@ -84,7 +91,7 @@ function StreamTile({
   const { ref, active } = useInViewPlay();
   return (
     <div ref={ref}>
-      <Tile href={href} label={label} detail={detail} external={external}>
+      <Tile href={href} label={label} role={role} detail={detail} external={external}>
         <SilentClip
           id={clipId}
           poster={poster}
@@ -143,6 +150,7 @@ export function HighlightRows() {
           <StreamTile
             href="/work"
             label="Anduril Industries"
+            role="Modeling & Simulation Engineer"
             detail="2025 – Present"
             clipId={streamClips.anduril}
             poster={streamPoster(streamClips.anduril)}
@@ -150,6 +158,7 @@ export function HighlightRows() {
           <StreamTile
             href="/work"
             label="Northrop Grumman"
+            role="Guidance Navigation & Control Engineer"
             detail="2022–2025"
             clipId={streamClips.northrop}
             poster={streamPoster(streamClips.northrop)}
