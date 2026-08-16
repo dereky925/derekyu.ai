@@ -208,6 +208,7 @@ export const projectListings: ProjectListing[] = [
     year: "2025",
     role: "xAI Hackathon",
     summary: "Grok recruiting agent that sources, screens, and learns from replies.",
+    poster: "/media/projects/talentgrok/poster.jpg",
     href: "https://talent-grok.vercel.app",
     external: true,
   },
