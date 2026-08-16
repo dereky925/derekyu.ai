@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { FadeIn } from "@/components/fade-in";
 import { ProjectCard } from "@/components/project-card";
 import { WorkHistory } from "@/components/work-history";
-import { projects } from "@/lib/projects";
+import { projectListings } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -12,8 +12,6 @@ export const metadata: Metadata = {
 };
 
 export default function WorkPage() {
-  const [featured, ...rest] = projects;
-
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-24">
       <FadeIn>
@@ -29,19 +27,13 @@ export default function WorkPage() {
         <WorkHistory />
       </section>
 
-      <section id="work" className="space-y-16">
+      <section id="work" className="space-y-8">
         <FadeIn>
           <h2 className="text-sm text-muted">Projects</h2>
         </FadeIn>
-        {featured ? (
-          <FadeIn>
-            <ProjectCard project={featured} featured priority />
-          </FadeIn>
-        ) : null}
-
-        <div className="grid gap-12 md:grid-cols-2 md:gap-x-8 md:gap-y-14">
-          {rest.map((project, index) => (
-            <FadeIn key={project.slug} delay={Math.min(index * 0.06, 0.18)}>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-10">
+          {projectListings.map((project, index) => (
+            <FadeIn key={project.title} delay={Math.min(index * 0.04, 0.16)}>
               <ProjectCard project={project} />
             </FadeIn>
           ))}

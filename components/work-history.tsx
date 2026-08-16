@@ -23,12 +23,30 @@ export function WorkHistory() {
         {employers.map((employer) => (
           <li
             key={employer.company}
-            className="grid grid-cols-[6.5rem_1fr] gap-6 py-5 sm:grid-cols-[8.5rem_1fr]"
+            className="grid grid-cols-[6.5rem_1fr] gap-6 py-6 sm:grid-cols-[8.5rem_1fr]"
           >
             <p className="text-sm text-muted">{employer.period}</p>
             <div>
               <p>{employer.company}</p>
               <p className="mt-1 text-sm text-muted">{employer.headline}</p>
+              {employer.body ? (
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">
+                  {employer.body}
+                  {employer.href ? (
+                    <>
+                      {" "}
+                      <a
+                        href={employer.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-foreground/80 underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                      >
+                        {employer.linkLabel ?? "Watch"}
+                      </a>
+                    </>
+                  ) : null}
+                </p>
+              ) : null}
             </div>
           </li>
         ))}

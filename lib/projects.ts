@@ -149,3 +149,79 @@ export function getProject(slug: string) {
 export function getProjectSlugs() {
   return projects.map((project) => project.slug);
 }
+
+export type ProjectListing = {
+  title: string;
+  year: string;
+  role: string;
+  summary: string;
+  poster?: string;
+  href?: string;
+  external?: boolean;
+};
+
+export const projectListings: ProjectListing[] = [
+  {
+    title: "GrokEye",
+    year: "2026",
+    role: "xAI Hackathon",
+    summary: "Hands-free Grok AR. Top 5 of 200+.",
+    poster: "/media/projects/grokeye/poster.jpg",
+    href: "/projects/grokeye",
+  },
+  {
+    title: "Claude Coin",
+    year: "2026",
+    role: "Trading",
+    summary: "Momentum bot on Alpaca with a Gemini news check on each order.",
+    poster: "/media/projects/claudecode/poster.jpg",
+    href: "/projects/claudecode",
+  },
+  {
+    title: "Hunter Drone",
+    year: "2022",
+    role: "UB Drone Lab",
+    summary: "Net-shooting quadcopter built to catch other drones.",
+    poster:
+      "https://customer-ujeel072i6bo0c62.cloudflarestream.com/f84d2847c975d5cf2e589a73190375b3/thumbnails/thumbnail.jpg",
+    href: "https://www.youtube.com/watch?v=nB1vAQlGqa4",
+    external: true,
+  },
+  {
+    title: "To Mars and Beyond",
+    year: "2025",
+    role: "Game",
+    summary: "An 8-bit Starship run from Starbase to Voyager 1.",
+    poster: "/media/projects/mars/poster.jpg",
+    href: "/projects/to-mars-and-beyond",
+  },
+  {
+    title: "Flappy Fury",
+    year: "2025",
+    role: "Game",
+    summary: "A one-file Fury Flappy Bird with synthesized audio.",
+    poster: "/media/projects/flappy-fury/poster.jpg",
+    href: "/projects/flappy-fury",
+  },
+  {
+    title: "TalentGrok",
+    year: "2025",
+    role: "xAI Hackathon",
+    summary: "Grok recruiting agent that sources, screens, and learns from replies.",
+    href: "https://talent-grok.vercel.app",
+    external: true,
+  },
+  {
+    title: "NG Space Sweep",
+    year: "2023",
+    role: "Northrop hackathon",
+    summary:
+      "Solo radar-satellite pitch for debris under 1 cm². Top 3 of 16 teams.",
+  },
+  {
+    title: "Design, Build, Race",
+    year: "2018",
+    role: "UB boat race",
+    summary: "First of 300+ engineering students.",
+  },
+];

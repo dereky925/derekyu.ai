@@ -12,6 +12,9 @@ export type Employer = {
   company: string;
   period: string;
   headline: string;
+  body?: string;
+  href?: string;
+  linkLabel?: string;
   roles: Role[];
 };
 
@@ -20,6 +23,7 @@ export const employers: Employer[] = [
     company: "Anduril Industries",
     headline: "Modeling, Simulation & Analysis",
     period: "2025 — Present",
+    body: "Simulation Engineer for Hypersonic and Barracuda programs. Physics modeling, simulation optimizations, 3D visualizations, flight algorithms, Monte Carlo analysis.",
     roles: [
       {
         period: "May 2025 — Present",
@@ -33,8 +37,9 @@ export const employers: Employer[] = [
   },
   {
     company: "Northrop Grumman",
-    headline: "Pathways — GNC, RF, sensors",
+    headline: "Pathways Engineer — GNC, RF, Simulation",
     period: "2022 — 2025",
+    body: "3-Year Rotational Program doing Guidance Navigation & Control on hypersonic interceptors and strike vehicles, RF/Test on synthetic aperture radar satellites, and Modeling & Simulation of EO/IR gimbals.",
     roles: [
       {
         period: "Aug 2023 — Apr 2025",
@@ -63,8 +68,9 @@ export const employers: Employer[] = [
   },
   {
     company: "Moog Aircraft",
-    headline: "Systems engineering intern",
+    headline: "Systems Engineering Intern",
     period: "2021 — 2022",
+    body: "2× intern working on test automation, simulation, integration & test on electric flight control actuators for military aircraft.",
     roles: [
       {
         period: "Summers 2021, 2022",
@@ -79,6 +85,9 @@ export const employers: Employer[] = [
     company: "UB Drone Lab",
     headline: "Drone Hunter",
     period: "2020 — 2022",
+    body: "Built a net-shooting drone for capturing other drones.",
+    href: "https://www.youtube.com/watch?v=nB1vAQlGqa4",
+    linkLabel: "Watch it fly",
     roles: [
       {
         period: "Apr 2020 — Jun 2022",
@@ -88,7 +97,7 @@ export const employers: Employer[] = [
         summary:
           "Solo anti-drone quadcopter: Pixhawk and Jetson Nano, pneumatic net over 8 ft.",
         href: "https://www.youtube.com/watch?v=nB1vAQlGqa4",
-        linkLabel: "Flight demo",
+        linkLabel: "Watch it fly",
       },
     ],
   },
