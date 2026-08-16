@@ -142,15 +142,15 @@ export function HighlightRows() {
         <div className="grid gap-3 md:grid-cols-2">
           <StreamTile
             href="/work"
-            label="Anduril"
-            detail="Modeling, simulation & analysis"
+            label="Anduril Industries"
+            detail="2025 – Present"
             clipId={streamClips.anduril}
             poster={streamPoster(streamClips.anduril)}
           />
           <StreamTile
             href="/work"
             label="Northrop Grumman"
-            detail="GNC, RF, sensors"
+            detail="2022–2025"
             clipId={streamClips.northrop}
             poster={streamPoster(streamClips.northrop)}
           />
