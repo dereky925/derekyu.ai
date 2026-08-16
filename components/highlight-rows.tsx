@@ -27,11 +27,7 @@ function TileFrame({
   return (
     <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-black">
       {children}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[46%] bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent"
-      />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 px-4 pb-3">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent px-4 pb-3 pt-16">
         <p className="text-sm text-foreground">{label}</p>
         {role ? <p className="mt-0.5 text-xs text-muted">{role}</p> : null}
         <p className="mt-0.5 text-xs text-muted">{detail}</p>
