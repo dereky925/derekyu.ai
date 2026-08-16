@@ -163,7 +163,7 @@ export function HighlightRows() {
             href={grokeyeYouTube}
             external
             label="GrokEye"
-            detail="xAI Hackathon 2026 · Top 5"
+            detail="xAI Hackathon 2026 · Top 5 Finalist"
             clipId={streamClips.grokeye}
             poster={streamPoster(streamClips.grokeye)}
           />
