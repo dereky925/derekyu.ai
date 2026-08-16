@@ -58,7 +58,7 @@ export function SilentClip({
       {hls ? (
         <video
           ref={videoRef}
-          className={`h-full w-full bg-black ${cover ? "origin-center scale-[1.12] object-cover" : "object-contain"}`}
+          className={`h-full w-full bg-black ${cover ? "object-cover" : "object-contain"}`}
           muted
           loop
           playsInline
@@ -76,7 +76,7 @@ export function SilentClip({
           <iframe
             className={
               cover
-                ? "pointer-events-none absolute left-1/2 top-1/2 h-full w-[111.12%] max-w-none -translate-x-1/2 -translate-y-1/2 border-0"
+                ? "pointer-events-none absolute inset-0 h-full w-full border-0"
                 : "pointer-events-none absolute inset-0 h-full w-full border-0 bg-black"
             }
             src={streamIframeSrc(id)}
