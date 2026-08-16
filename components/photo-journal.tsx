@@ -340,7 +340,7 @@ export function PhotoJournal({ albums }: { albums: PhotoAlbum[] }) {
     <>
       <div className="relative space-y-16">
         <span
-          className="absolute bottom-4 left-[0.3rem] top-4 hidden w-px bg-border sm:block"
+          className="absolute bottom-4 left-[0.3rem] top-4 w-px bg-border"
           aria-hidden
         />
         {albums.map((album) => {
@@ -349,11 +349,11 @@ export function PhotoJournal({ albums }: { albums: PhotoAlbum[] }) {
           return (
             <section
               key={`${album.year}-${album.month}-${album.location}-${start}`}
-              className="relative grid gap-6 sm:grid-cols-[9.5rem_1fr] sm:gap-10"
+              className="relative grid gap-6 pl-7 sm:grid-cols-[9.5rem_1fr] sm:gap-10 sm:pl-0"
             >
-              <div className="sm:block">
+              <div>
                 <span
-                  className="mt-1.5 hidden h-2.5 w-2.5 shrink-0 rounded-full bg-foreground sm:absolute sm:left-0 sm:mt-1 sm:block"
+                  className="absolute left-0 top-1.5 h-2.5 w-2.5 rounded-full bg-foreground"
                   aria-hidden
                 />
                 <div className="sm:pl-7">

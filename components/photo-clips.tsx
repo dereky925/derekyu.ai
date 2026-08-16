@@ -32,18 +32,18 @@ export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
   return (
     <ol ref={rootRef} className="relative space-y-12">
       <span
-        className="absolute bottom-4 left-[0.3rem] top-4 hidden w-px bg-border sm:block"
+        className="absolute bottom-4 left-[0.3rem] top-4 w-px bg-border"
         aria-hidden
       />
       {clips.map((clip) => (
         <li
           key={clip.id}
           data-clip-id={clip.id}
-          className="relative grid gap-4 sm:grid-cols-[9.5rem_1fr] sm:gap-10"
+          className="relative grid gap-4 pl-7 sm:grid-cols-[9.5rem_1fr] sm:gap-10 sm:pl-0"
         >
-          <div className="flex gap-3 sm:block">
+          <div>
             <span
-              className="mt-1.5 hidden h-2.5 w-2.5 shrink-0 rounded-full bg-foreground sm:absolute sm:left-0 sm:mt-1 sm:block"
+              className="absolute left-0 top-1.5 h-2.5 w-2.5 rounded-full bg-foreground"
               aria-hidden
             />
             <div className="sm:pl-7">
