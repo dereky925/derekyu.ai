@@ -25,7 +25,7 @@ export default function PhotographyPage() {
       </FadeIn>
 
       <FadeIn delay={0.06} className="mt-16">
-        <h2 className="mb-6 text-sm text-muted">Clips</h2>
+        <h2 className="mb-8 text-sm text-muted">Clips</h2>
         <PhotoClips clips={photoClips} />
       </FadeIn>
 
