@@ -53,17 +53,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/favicon.ico", sizes: "48x48" },
       { url: "/icon.png", type: "image/png", sizes: "32x32" },
       { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
     ],
-    apple: { url: "/apple-icon.png", sizes: "180x180" },
-    other: [
-      {
-        rel: "mask-icon",
-        url: "/safari-pinned-tab.svg",
-        color: "#050505",
-      },
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-touch-icon-v2.png", sizes: "180x180" },
     ],
   },
 };
