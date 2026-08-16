@@ -19,7 +19,7 @@ export function SiteFooter() {
             href="/photography"
             className="transition-colors hover:text-foreground"
           >
-            Photo
+            Photography
           </Link>
         </div>
       </div>

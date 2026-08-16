@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 const links = [
   { href: "/", label: "About" },
   { href: "/work", label: "Work" },
-  { href: "/photography", label: "Photo" },
+  { href: "/photography", label: "Photography" },
 ];
 
 export function SiteHeader() {
@@ -17,7 +17,7 @@ export function SiteHeader() {
         >
           {site.name}
         </Link>
-        <nav className="flex items-center gap-6 text-sm text-muted">
+        <nav className="flex flex-wrap items-center justify-end gap-x-6 gap-y-1 text-sm text-muted">
           {links.map((link) => (
             <Link
               key={link.href}

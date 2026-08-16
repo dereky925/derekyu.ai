@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FadeIn } from "@/components/fade-in";
-import { site, socials } from "@/lib/site";
+import { SocialLinks } from "@/components/social-icons";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: {
@@ -49,7 +50,8 @@ export default function Home() {
         <h1 className="mt-3 text-4xl font-medium tracking-tight sm:text-5xl">
           {site.name}
         </h1>
-        <div className="mt-8 space-y-5 text-lg leading-relaxed text-muted">
+        <SocialLinks />
+        <div className="mt-10 space-y-5 text-lg leading-relaxed text-muted">
           <p>
             Aerospace engineer. I like systems that have to work in the
             real world: a camera pointed at a bench, a strategy that only
@@ -87,29 +89,6 @@ export default function Home() {
             </li>
           ))}
         </ul>
-      </FadeIn>
-
-      <FadeIn delay={0.12}>
-        <h2 className="mt-16 text-sm text-muted">Contact</h2>
-        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm">
-          <a
-            href={`mailto:${site.email}`}
-            className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
-          >
-            {site.email}
-          </a>
-          {socials.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
       </FadeIn>
     </main>
   );
