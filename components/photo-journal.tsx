@@ -162,58 +162,58 @@ function Lightbox({
 const GAP = 12;
 const TARGET_HEIGHT = 280;
 
+type Row = { photos: Photo[]; height: number; widths: number[] };
+
 function aspectOf(photo: Photo) {
   return photo.width / photo.height || 1.5;
+}
+
+function makeRow(photos: Photo[], containerWidth: number): Row {
+  const aspects = photos.map(aspectOf);
+  const gaps = GAP * Math.max(0, photos.length - 1);
+  const sum = aspects.reduce((total, aspect) => total + aspect, 0);
+  const height = (containerWidth - gaps) / sum;
+  const widths = aspects.map((aspect) => aspect * height);
+  if (photos.length > 1) {
+    const used = widths.reduce((total, width) => total + width, 0) + gaps;
+    widths[widths.length - 1]! += containerWidth - used;
+  }
+  return { photos, height, widths };
 }
 
 function packJustified(photos: Photo[], containerWidth: number) {
   if (containerWidth <= 0) return [];
 
-  type Row = { photos: Photo[]; height: number; widths: number[] };
   const rows: Row[] = [];
-  let row: Photo[] = [];
-  let aspects: number[] = [];
+  let current: Photo[] = [];
 
-  const rowWidthAt = (asps: number[], height: number) =>
-    asps.reduce((sum, aspect) => sum + aspect * height, 0) +
-    GAP * Math.max(0, asps.length - 1);
-
-  const flush = (justify: boolean) => {
-    if (!row.length) return;
-    const gaps = GAP * (row.length - 1);
-    const sum = aspects.reduce((total, aspect) => total + aspect, 0);
-    let height = justify ? (containerWidth - gaps) / sum : TARGET_HEIGHT;
-    if (!justify && row.length === 1) {
-      const width = Math.min(containerWidth, aspects[0]! * TARGET_HEIGHT);
-      height = width / aspects[0]!;
-      rows.push({ photos: row, height, widths: [width] });
-      row = [];
-      aspects = [];
-      return;
-    }
-    const widths = aspects.map((aspect) => aspect * height);
-    const used =
-      widths.reduce((total, width) => total + width, 0) + gaps;
-    widths[widths.length - 1]! += containerWidth - used;
-    rows.push({ photos: row, height, widths });
-    row = [];
-    aspects = [];
+  const fits = (next: Photo[]) => {
+    const aspects = next.map(aspectOf);
+    const width =
+      aspects.reduce((sum, aspect) => sum + aspect * TARGET_HEIGHT, 0) +
+      GAP * Math.max(0, next.length - 1);
+    return width <= containerWidth;
   };
 
   for (const photo of photos) {
-    const aspect = aspectOf(photo);
-    if (row.length && rowWidthAt([...aspects, aspect], TARGET_HEIGHT) > containerWidth) {
-      flush(true);
+    if (current.length && !fits([...current, photo])) {
+      rows.push(makeRow(current, containerWidth));
+      current = [];
     }
-    row.push(photo);
-    aspects.push(aspect);
+    current.push(photo);
+  }
+  if (current.length) {
+    rows.push(makeRow(current, containerWidth));
   }
 
-  if (row.length) {
-    const gaps = GAP * (row.length - 1);
-    const sum = aspects.reduce((total, aspect) => total + aspect, 0);
-    const justifiedHeight = (containerWidth - gaps) / sum;
-    flush(row.length > 1 && justifiedHeight <= TARGET_HEIGHT * 1.4);
+  const last = rows[rows.length - 1];
+  const prev = rows[rows.length - 2];
+  if (last && prev && last.photos.length === 1) {
+    rows.splice(
+      rows.length - 2,
+      2,
+      makeRow([...prev.photos, ...last.photos], containerWidth),
+    );
   }
 
   return rows;
