@@ -26,11 +26,7 @@ type SilentClipProps = {
 
 function iframeCoverScale(mediaAspect: number, frameAspect: number) {
   if (Math.abs(mediaAspect - STREAM_CANVAS) < 0.05) return 1;
-  const visibleW =
-    mediaAspect >= STREAM_CANVAS ? 1 : mediaAspect / STREAM_CANVAS;
-  const visibleH =
-    mediaAspect >= STREAM_CANVAS ? STREAM_CANVAS / mediaAspect : 1;
-  return Math.max(1 / visibleW, frameAspect / STREAM_CANVAS / visibleH) * 1.02;
+  return Math.max(mediaAspect / frameAspect, frameAspect / mediaAspect) * 1.08;
 }
 
 export function SilentClip({
@@ -49,7 +45,6 @@ export function SilentClip({
   const reduce = useReducedMotion();
   const shouldPlay = active && !reduce;
   const scale = iframeCoverScale(mediaAspect, frameAspect);
-  const pinTop = mediaAspect + 0.05 < frameAspect;
 
   useEffect(() => {
     setHls(supportsHls());
@@ -79,7 +74,7 @@ export function SilentClip({
       {hls === true && warm ? (
         <video
           ref={videoRef}
-          className={`h-full w-full object-cover ${pinTop ? "object-top" : ""}`}
+          className="h-full w-full object-cover"
           muted
           loop
           playsInline
@@ -99,7 +94,7 @@ export function SilentClip({
           className={
             scale === 1
               ? "pointer-events-none absolute inset-0 z-0 h-full w-full border-0"
-              : "pointer-events-none absolute left-1/2 top-0 z-0 border-0"
+              : "pointer-events-none absolute left-1/2 top-1/2 z-0 border-0"
           }
           src={streamIframeSrc(id)}
           title={title}
@@ -113,7 +108,7 @@ export function SilentClip({
                   background: "#050505",
                   width: `${scale * 100}%`,
                   height: `${scale * 100}%`,
-                  transform: "translateX(-50%)",
+                  transform: "translate(-50%, -50%)",
                   maxWidth: "none",
                 }
           }
@@ -126,8 +121,8 @@ export function SilentClip({
         fill
         sizes="100vw"
         className={`z-[2] object-cover transition-opacity duration-500 ${
-          pinTop ? "object-top" : ""
-        } ${ready ? "pointer-events-none opacity-0" : "opacity-100"}`}
+          ready ? "pointer-events-none opacity-0" : "opacity-100"
+        }`}
       />
 
       {shouldPlay && !ready ? (

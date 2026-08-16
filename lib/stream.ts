@@ -18,10 +18,8 @@ export const hunterYouTube = "https://www.youtube.com/watch?v=nB1vAQlGqa4";
 
 export function streamPoster(id: string) {
   const src = `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/thumbnails/thumbnail.jpg`;
-  const aspect = streamClipAspect[id];
-  if (!aspect) return src;
-  const height = 1080;
-  return `${src}?width=${Math.round(height * aspect)}&height=${height}`;
+  if (!streamClipAspect[id]) return src;
+  return `${src}?width=1920&height=1080&fit=crop`;
 }
 
 export function streamHlsSrc(id: string) {
