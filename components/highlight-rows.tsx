@@ -3,10 +3,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FadeIn } from "@/components/fade-in";
-import { LoopSim } from "@/components/loop-sim";
 import { SilentClip } from "@/components/silent-clip";
 import { SilentYouTube, useInViewPlay } from "@/components/silent-youtube";
 import { photoClips } from "@/lib/photos";
+import { grokeyeYouTube, streamClips, streamPoster } from "@/lib/stream";
 
 function TileFrame({
   label,
@@ -33,17 +33,30 @@ function Tile({
   label,
   detail,
   children,
+  external,
 }: {
   href: string;
   label: string;
   detail: string;
   children: ReactNode;
+  external?: boolean;
 }) {
+  const className = "group block min-w-0";
+  const frame = (
+    <TileFrame label={label} detail={detail}>
+      {children}
+    </TileFrame>
+  );
+  if (external) {
+    return (
+      <a href={href} className={className} target="_blank" rel="noreferrer">
+        {frame}
+      </a>
+    );
+  }
   return (
-    <Link href={href} className="group block min-w-0">
-      <TileFrame label={label} detail={detail}>
-        {children}
-      </TileFrame>
+    <Link href={href} className={className}>
+      {frame}
     </Link>
   );
 }
@@ -54,17 +67,19 @@ function StreamTile({
   detail,
   clipId,
   poster,
+  external,
 }: {
   href: string;
   label: string;
   detail: string;
   clipId: string;
   poster: string;
+  external?: boolean;
 }) {
   const { ref, active } = useInViewPlay();
   return (
     <div ref={ref}>
-      <Tile href={href} label={label} detail={detail}>
+      <Tile href={href} label={label} detail={detail} external={external}>
         <SilentClip
           id={clipId}
           poster={poster}
@@ -147,30 +162,32 @@ export function HighlightRows() {
     <>
       <Row kicker="Work" title="Where the days go." href="/work">
         <div className="grid gap-3 md:grid-cols-2">
-          <Tile
+          <StreamTile
             href="/work"
             label="Anduril"
             detail="Modeling, simulation & analysis"
-          >
-            <LoopSim theme="anduril" className="absolute inset-0 h-full w-full" />
-          </Tile>
-          <Tile
+            clipId={streamClips.anduril}
+            poster={streamPoster(streamClips.anduril)}
+          />
+          <StreamTile
             href="/work"
             label="Northrop Grumman"
             detail="GNC, RF, sensors"
-          >
-            <LoopSim theme="northrop" className="absolute inset-0 h-full w-full" />
-          </Tile>
+            clipId={streamClips.northrop}
+            poster={streamPoster(streamClips.northrop)}
+          />
         </div>
       </Row>
 
       <Row kicker="Projects" title="The public set." href="/work">
         <div className="grid gap-3 md:grid-cols-2">
-          <YouTubeTile
-            href="/projects/grokeye"
+          <StreamTile
+            href={grokeyeYouTube}
+            external
             label="GrokEye"
             detail="xAI Hackathon 2026 · Top 5"
-            youtubeId="lC4oP8kb9KE"
+            clipId={streamClips.grokeye}
+            poster={streamPoster(streamClips.grokeye)}
           />
           <YouTubeTile
             href="/work"

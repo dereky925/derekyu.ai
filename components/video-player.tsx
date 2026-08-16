@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { SilentClip } from "@/components/silent-clip";
+import { useInViewPlay } from "@/components/silent-youtube";
 import { mediaUrl, muxMp4 } from "@/lib/media";
 import type { ProjectVideo } from "@/lib/projects";
+import { streamPoster } from "@/lib/stream";
 
 type VideoPlayerProps = {
   poster: string;
@@ -15,6 +18,7 @@ export function VideoPlayer({ poster, title, video }: VideoPlayerProps) {
   const [playing, setPlaying] = useState(false);
   const [inView, setInView] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const streamView = useInViewPlay(0.25);
 
   const [failed, setFailed] = useState(false);
   const muxSrc = video?.muxPlaybackId ? muxMp4(video.muxPlaybackId) : undefined;
@@ -25,7 +29,11 @@ export function VideoPlayer({ poster, title, video }: VideoPlayerProps) {
   const hostedSrc =
     !failed && (muxSrc || (hasHostedFile ? fileSrc : undefined));
   const youtubeId = video?.youtubeId;
-  const canPlay = Boolean(hostedSrc || youtubeId);
+  const streamId = video?.streamId;
+  const youtubeHref = youtubeId
+    ? `https://www.youtube.com/watch?v=${youtubeId}`
+    : undefined;
+  const canPlay = Boolean(hostedSrc || youtubeId || streamId);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -44,7 +52,34 @@ export function VideoPlayer({ poster, title, video }: VideoPlayerProps) {
   return (
     <figure ref={rootRef} className="space-y-3">
       <div className="relative aspect-video overflow-hidden rounded-2xl bg-surface">
-        {!playing || !canPlay ? (
+        {streamId && youtubeHref ? (
+          <div ref={streamView.ref} className="absolute inset-0">
+            <SilentClip
+              id={streamId}
+              poster={poster || streamPoster(streamId)}
+              title={title}
+              active={streamView.active}
+              className="absolute inset-0"
+            />
+            <a
+              href={youtubeHref}
+              target="_blank"
+              rel="noreferrer"
+              className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors hover:bg-black/35"
+              aria-label={`Watch ${title} on YouTube`}
+            >
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 text-black shadow-lg">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="ml-0.5 h-6 w-6 fill-current"
+                  aria-hidden
+                >
+                  <path d="M8 5.14v13.72L19 12 8 5.14z" />
+                </svg>
+              </span>
+            </a>
+          </div>
+        ) : !playing || !canPlay ? (
           <>
             <Image
               src={poster}

@@ -7,6 +7,7 @@ export type ProjectVideo = {
   /** Relative R2 key (joined with NEXT_PUBLIC_MEDIA_BASE_URL) or absolute mp4 URL */
   src?: string;
   muxPlaybackId?: string;
+  streamId?: string;
   youtubeId?: string;
   caption?: string;
 };
@@ -44,7 +45,7 @@ export const projects: Project[] = [
     ],
     video: {
       youtubeId: "lC4oP8kb9KE",
-      src: "projects/grokeye/demo.mp4",
+      streamId: "644b9bc822bc50f3d8c70801f5f4f938",
       caption: "Walkthrough from Grokathon 2026",
     },
     links: [
