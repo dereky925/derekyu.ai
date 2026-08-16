@@ -4,9 +4,14 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { FadeIn } from "@/components/fade-in";
 import { SilentClip } from "@/components/silent-clip";
-import { SilentYouTube, useInViewPlay } from "@/components/silent-youtube";
+import { useInViewPlay } from "@/components/silent-youtube";
 import { photoClips } from "@/lib/photos";
-import { grokeyeYouTube, streamClips, streamPoster } from "@/lib/stream";
+import {
+  grokeyeYouTube,
+  hunterYouTube,
+  streamClips,
+  streamPoster,
+} from "@/lib/stream";
 
 function TileFrame({
   label,
@@ -92,33 +97,6 @@ function StreamTile({
   );
 }
 
-function YouTubeTile({
-  href,
-  label,
-  detail,
-  youtubeId,
-}: {
-  href: string;
-  label: string;
-  detail: string;
-  youtubeId: string;
-}) {
-  const { ref, active } = useInViewPlay();
-  return (
-    <div ref={ref}>
-      <Tile href={href} label={label} detail={detail}>
-        <SilentYouTube
-          id={youtubeId}
-          title={label}
-          poster={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
-          active={active}
-          className="absolute inset-0"
-        />
-      </Tile>
-    </div>
-  );
-}
-
 function Row({
   kicker,
   title,
@@ -189,11 +167,13 @@ export function HighlightRows() {
             clipId={streamClips.grokeye}
             poster={streamPoster(streamClips.grokeye)}
           />
-          <YouTubeTile
-            href="/work"
+          <StreamTile
+            href={hunterYouTube}
+            external
             label="Hunter Drone"
             detail="UB · net-capture quadcopter"
-            youtubeId="nB1vAQlGqa4"
+            clipId={streamClips.hunter}
+            poster={streamPoster(streamClips.hunter)}
           />
         </div>
       </Row>
