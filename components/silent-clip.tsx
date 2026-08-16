@@ -3,7 +3,7 @@
 import { useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { MediaLoader } from "@/components/media-loader";
-import { streamHlsSrc } from "@/lib/stream";
+import { streamHlsSrc, streamIframeSrc } from "@/lib/stream";
 
 function supportsHls() {
   if (typeof document === "undefined") return false;
@@ -23,24 +23,9 @@ type SilentClipProps = {
   className?: string;
 };
 
-/** Size a media box to cover the tile. No transforms — Safari HLS goes black in those. */
-function coverPlacement(mediaAspect: number, frameAspect: number) {
-  if (mediaAspect >= frameAspect) {
-    const width = (mediaAspect / frameAspect) * 100;
-    return {
-      width: `${width}%`,
-      height: "100%",
-      left: `${(100 - width) / 2}%`,
-      top: "0%",
-    };
-  }
-  const height = (frameAspect / mediaAspect) * 100;
-  return {
-    width: "100%",
-    height: `${height}%`,
-    left: "0%",
-    top: `${(100 - height) / 2}%`,
-  };
+function iframeCoverScale(mediaAspect: number, frameAspect: number) {
+  const ratio = Math.max(mediaAspect / frameAspect, frameAspect / mediaAspect);
+  return ratio < 1.02 ? 1 : ratio;
 }
 
 export function SilentClip({
@@ -58,7 +43,7 @@ export function SilentClip({
   const [warm, setWarm] = useState(false);
   const reduce = useReducedMotion();
   const shouldPlay = active && !reduce;
-  const box = coverPlacement(mediaAspect, frameAspect);
+  const scale = iframeCoverScale(mediaAspect, frameAspect);
 
   useEffect(() => {
     setHls(supportsHls());
@@ -83,59 +68,59 @@ export function SilentClip({
     }
   }, [shouldPlay, warm, hls]);
 
-  useEffect(() => {
-    if (hls !== false || !warm) return;
-    const node = videoRef.current;
-    if (!node) return;
-
-    let cancelled = false;
-    let player: { destroy: () => void } | undefined;
-
-    import("hls.js").then(({ default: Hls }) => {
-      if (cancelled || !Hls.isSupported()) return;
-      const instance = new Hls({ maxBufferLength: 30 });
-      instance.loadSource(streamHlsSrc(id));
-      instance.attachMedia(node);
-      player = instance;
-    });
-
-    return () => {
-      cancelled = true;
-      player?.destroy();
-    };
-  }, [hls, warm, id]);
-
   return (
     <div className={`silent-clip relative overflow-hidden bg-black ${className}`}>
-      <div className="absolute overflow-hidden" style={box}>
-        {warm && hls !== null ? (
-          <video
-            ref={videoRef}
-            className="h-full w-full"
-            muted
-            loop
-            playsInline
-            autoPlay={shouldPlay}
-            preload="auto"
-            aria-label={title}
-            disablePictureInPicture
-            controlsList="nodownload nofullscreen noremoteplayback"
-            onPlaying={() => setReady(true)}
-          >
-            {hls === true ? (
-              <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
-            ) : null}
-          </video>
-        ) : null}
+      {hls === true && warm ? (
+        <video
+          ref={videoRef}
+          className="h-full w-full object-cover"
+          muted
+          loop
+          playsInline
+          autoPlay={shouldPlay}
+          preload="auto"
+          poster={poster}
+          disablePictureInPicture
+          controlsList="nodownload nofullscreen noremoteplayback"
+          onPlaying={() => setReady(true)}
+        >
+          <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
+        </video>
+      ) : null}
 
-        <img
-          src={poster}
-          alt=""
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-            ready ? "pointer-events-none opacity-0" : "opacity-100"
-          }`}
+      {hls === false && warm ? (
+        <iframe
+          className={
+            scale === 1
+              ? "pointer-events-none absolute inset-0 z-0 h-full w-full border-0"
+              : "pointer-events-none absolute left-1/2 top-1/2 z-0 border-0"
+          }
+          src={streamIframeSrc(id)}
+          title={title}
+          allow="autoplay; encrypted-media"
+          tabIndex={-1}
+          onLoad={() => setReady(true)}
+          style={
+            scale === 1
+              ? { background: "#050505" }
+              : {
+                  background: "#050505",
+                  width: `${scale * 100}%`,
+                  height: `${scale * 100}%`,
+                  transform: "translate(-50%, -50%)",
+                  maxWidth: "none",
+                }
+          }
         />
-      </div>
+      ) : null}
+
+      <img
+        src={poster}
+        alt=""
+        className={`absolute inset-0 z-[2] h-full w-full object-cover transition-opacity duration-500 ${
+          ready ? "pointer-events-none opacity-0" : "opacity-100"
+        }`}
+      />
 
       {shouldPlay && !ready ? (
         <MediaLoader className="absolute inset-0 z-[3]" />
