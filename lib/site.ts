@@ -1,10 +1,10 @@
 export const site = {
   name: "Derek Yu",
-  title: "Derek Yu — Projects",
+  title: "Derek Yu",
   description:
     "Aerospace engineer building augmented-reality tools, trading systems, and games — plus drone photography. Selected work by Derek Yu.",
   url: process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://derekyu.ai",
-  email: process.env.NEXT_PUBLIC_EMAIL ?? "",
+  email: process.env.NEXT_PUBLIC_EMAIL || "dereky925@gmail.com",
   github: "https://github.com/dereky925",
   x: "https://x.com/dyu925",
   linkedin: "https://www.linkedin.com/in/dereky925/",

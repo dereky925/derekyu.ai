@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { site, socials } from "@/lib/site";
+import { site } from "@/lib/site";
 
 export function SiteFooter() {
   return (
@@ -9,23 +9,18 @@ export function SiteFooter() {
           © {new Date().getFullYear()} {site.name}
         </p>
         <div className="flex flex-wrap gap-5">
-          <Link href="/photography" className="transition-colors hover:text-foreground">
-            Photo
-          </Link>
-          <Link href="/about" className="transition-colors hover:text-foreground">
+          <Link href="/" className="transition-colors hover:text-foreground">
             About
           </Link>
-          {socials.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
+          <Link href="/work" className="transition-colors hover:text-foreground">
+            Work
+          </Link>
+          <Link
+            href="/photography"
+            className="transition-colors hover:text-foreground"
+          >
+            Photo
+          </Link>
         </div>
       </div>
     </footer>

@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { site, socials } from "@/lib/site";
+import { site } from "@/lib/site";
 
 const links = [
-  { href: "/#work", label: "Work" },
+  { href: "/", label: "About" },
+  { href: "/work", label: "Work" },
   { href: "/photography", label: "Photo" },
-  { href: "/about", label: "About" },
 ];
 
 export function SiteHeader() {
@@ -17,7 +17,7 @@ export function SiteHeader() {
         >
           {site.name}
         </Link>
-        <nav className="flex flex-wrap items-center justify-end gap-x-5 gap-y-1 text-sm text-muted">
+        <nav className="flex items-center gap-6 text-sm text-muted">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -26,17 +26,6 @@ export function SiteHeader() {
             >
               {link.label}
             </Link>
-          ))}
-          {socials.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </a>
           ))}
         </nav>
       </div>
