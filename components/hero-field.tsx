@@ -13,8 +13,19 @@ const HILLS = [
   { x: 0.9, y: 0.78, a: 0.8, s: 15, p: 0.2 },
 ];
 
+const ISO_START = -0.35;
+const ISO_END = 2.15;
+const ISO_STEP = 0.46;
+
+function interp(iso: number, a: number, b: number, va: number, vb: number) {
+  const t = (iso - va) / (vb - va || 1);
+  return a + (b - a) * Math.min(1, Math.max(0, t));
+}
+
 /**
- * Flowing topographic contours — thick white isolines on black.
+ * Flowing topographic contours as stroked paths.
+ * A coarse scalar field is marched into polylines, then drawn at display
+ * resolution so the lines stay sharp without a full-screen pixel shader.
  */
 export function HeroField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,30 +39,35 @@ export function HeroField() {
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    let cols = 0;
-    let rows = 0;
+    let width = 0;
+    let height = 0;
     let aspect = 1;
-    let image: ImageData | null = null;
+    let gx = 0;
+    let gy = 0;
+    let field = new Float32Array(0);
     let frame = 0;
     let inView = true;
     let pageVisible = document.visibilityState === "visible";
 
+    const hills = HILLS.map((h) => ({ x: 0, y: 0, a: h.a, s: h.s }));
+
     function resize() {
       const rect = node.getBoundingClientRect();
-      const area = Math.max(1, rect.width * rect.height);
-      const sim = Math.min(0.38, Math.sqrt(140000 / area));
-      cols = Math.max(140, Math.floor(rect.width * sim));
-      rows = Math.max(90, Math.floor(rect.height * sim));
-      aspect = cols / rows;
-      node.width = cols;
-      node.height = rows;
-      image = ctx!.createImageData(cols, rows);
+      width = rect.width;
+      height = rect.height;
+      aspect = width / Math.max(1, height);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      node.width = Math.max(1, Math.floor(width * dpr));
+      node.height = Math.max(1, Math.floor(height * dpr));
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      gx = Math.max(72, Math.round(width / 9));
+      gy = Math.max(46, Math.round(height / 9));
+      field = new Float32Array((gx + 1) * (gy + 1));
     }
 
-    function field(nx: number, ny: number, t: number) {
+    function sample(nx: number, ny: number, t: number) {
       const x = nx * aspect;
       const y = ny;
-
       const wx =
         Math.sin(y * 3.1 + t * 0.18) * 0.07 + Math.sin(x * 1.6 - t * 0.11) * 0.05;
       const wy =
@@ -59,46 +75,144 @@ export function HeroField() {
       const u = x + wx;
       const v = y + wy;
 
-      let n = 0;
-      n += Math.sin(u * 3.6 + t * 0.12) * 0.42;
-      n += Math.sin(v * 2.9 - t * 0.09) * 0.36;
-      n += Math.sin((u * 0.85 + v * 1.25) * 2.4 + t * 0.07) * 0.28;
+      let n =
+        Math.sin(u * 3.6 + t * 0.12) * 0.42 +
+        Math.sin(v * 2.9 - t * 0.09) * 0.36 +
+        Math.sin((u * 0.85 + v * 1.25) * 2.4 + t * 0.07) * 0.28;
 
-      for (let i = 0; i < HILLS.length; i++) {
-        const h = HILLS[i]!;
-        const hx = (h.x + Math.sin(t * 0.13 + h.p) * 0.035) * aspect;
-        const hy = h.y + Math.cos(t * 0.1 + h.p * 1.3) * 0.03;
-        const dx = u - hx;
-        const dy = v - hy;
+      for (let i = 0; i < hills.length; i++) {
+        const h = hills[i]!;
+        const dx = u - h.x;
+        const dy = v - h.y;
         n += h.a * Math.exp(-(dx * dx + dy * dy) * h.s);
       }
-
       return n;
+    }
+
+    function fillField(t: number) {
+      for (let i = 0; i < HILLS.length; i++) {
+        const src = HILLS[i]!;
+        const dst = hills[i]!;
+        dst.x = (src.x + Math.sin(t * 0.13 + src.p) * 0.035) * aspect;
+        dst.y = src.y + Math.cos(t * 0.1 + src.p * 1.3) * 0.03;
+      }
+      const nx = gx;
+      const ny = gy;
+      for (let j = 0; j <= ny; j++) {
+        const y = j / ny;
+        for (let i = 0; i <= nx; i++) {
+          field[j * (nx + 1) + i] = sample(i / nx, y, t);
+        }
+      }
+    }
+
+    function edge(
+      which: number,
+      x0: number,
+      y0: number,
+      x1: number,
+      y1: number,
+      v0: number,
+      v1: number,
+      v2: number,
+      v3: number,
+      iso: number,
+    ): [number, number] {
+      if (which === 0) return [interp(iso, x0, x1, v0, v1), y0];
+      if (which === 1) return [x1, interp(iso, y0, y1, v1, v2)];
+      if (which === 2) return [interp(iso, x0, x1, v3, v2), y1];
+      return [x0, interp(iso, y0, y1, v0, v3)];
+    }
+
+    function march(c: CanvasRenderingContext2D) {
+      const nx = gx;
+      const ny = gy;
+      const cw = width / nx;
+      const ch = height / ny;
+      const stride = nx + 1;
+
+      c.beginPath();
+      for (let iso = ISO_START; iso <= ISO_END; iso += ISO_STEP) {
+        for (let j = 0; j < ny; j++) {
+          const y0 = j * ch;
+          const y1 = y0 + ch;
+          const row = j * stride;
+          const next = row + stride;
+          for (let i = 0; i < nx; i++) {
+            const v0 = field[row + i]!;
+            const v1 = field[row + i + 1]!;
+            const v2 = field[next + i + 1]!;
+            const v3 = field[next + i]!;
+            const idx =
+              (v0 >= iso ? 1 : 0) |
+              (v1 >= iso ? 2 : 0) |
+              (v2 >= iso ? 4 : 0) |
+              (v3 >= iso ? 8 : 0);
+            if (idx === 0 || idx === 15) continue;
+
+            const x0 = i * cw;
+            const x1 = x0 + cw;
+            const pt = (which: number) =>
+              edge(which, x0, y0, x1, y1, v0, v1, v2, v3, iso);
+
+            const seg = (a: number, b: number) => {
+              const p = pt(a);
+              const q = pt(b);
+              c.moveTo(p[0], p[1]);
+              c.lineTo(q[0], q[1]);
+            };
+
+            switch (idx) {
+              case 1:
+              case 14:
+                seg(3, 0);
+                break;
+              case 2:
+              case 13:
+                seg(0, 1);
+                break;
+              case 3:
+              case 12:
+                seg(3, 1);
+                break;
+              case 4:
+              case 11:
+                seg(1, 2);
+                break;
+              case 6:
+              case 9:
+                seg(0, 2);
+                break;
+              case 7:
+              case 8:
+                seg(3, 2);
+                break;
+              case 5:
+                seg(3, 0);
+                seg(1, 2);
+                break;
+              case 10:
+                seg(3, 2);
+                seg(0, 1);
+                break;
+            }
+          }
+        }
+      }
+      c.stroke();
     }
 
     function draw(now: number) {
       const t = reduce ? 0 : now / 1000;
-      if (!image) return;
-      const data = image.data;
-
-      for (let y = 0; y < rows; y++) {
-        const ny = (y + 0.5) / rows;
-        for (let x = 0; x < cols; x++) {
-          const nx = (x + 0.5) / cols;
-          const n = field(nx, ny, t);
-          const levels = n * 1.85;
-          const dist = Math.abs(levels - Math.round(levels));
-          const line = dist < 0.36 ? 1 : dist < 0.4 ? 1 - (dist - 0.36) / 0.04 : 0;
-          const i = (y * cols + x) * 4;
-          const c = 8 + line * 236;
-          data[i] = c;
-          data[i + 1] = c;
-          data[i + 2] = c;
-          data[i + 3] = 255;
-        }
-      }
-
-      ctx!.putImageData(image, 0, 0);
+      const c = ctx!;
+      c.fillStyle = "#050505";
+      c.fillRect(0, 0, width, height);
+      fillField(t);
+      c.strokeStyle = "rgba(244,244,245,0.92)";
+      c.lineWidth = 2.35;
+      c.lineJoin = "round";
+      c.lineCap = "round";
+      march(c);
     }
 
     function loop(now: number) {
