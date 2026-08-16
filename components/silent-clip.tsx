@@ -33,10 +33,11 @@ export function SilentClip({
   className = "",
 }: SilentClipProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [hls, setHls] = useState(false);
+  const [hls, setHls] = useState<boolean | null>(null);
   const [ready, setReady] = useState(false);
   const reduce = useReducedMotion();
   const shouldPlay = active && !reduce;
+  const showPoster = !shouldPlay || !ready;
 
   useEffect(() => {
     setHls(supportsHls());
@@ -47,6 +48,10 @@ export function SilentClip({
   }, [id]);
 
   useEffect(() => {
+    if (!shouldPlay) setReady(false);
+  }, [shouldPlay]);
+
+  useEffect(() => {
     const node = videoRef.current;
     if (!node) return;
     if (shouldPlay) {
@@ -54,19 +59,19 @@ export function SilentClip({
     } else {
       node.pause();
     }
-  }, [shouldPlay]);
+  }, [shouldPlay, hls]);
 
   return (
     <div className={`silent-clip relative overflow-hidden bg-black ${className}`}>
-      {hls ? (
+      {hls === true && shouldPlay ? (
         <video
           ref={videoRef}
-          className={`absolute inset-0 h-full w-full bg-black ${cover ? "object-cover" : "object-contain"}`}
+          className={`h-full w-full ${cover ? "object-cover" : "object-contain"}`}
           muted
           loop
           playsInline
-          autoPlay={shouldPlay}
-          preload={shouldPlay ? "auto" : "metadata"}
+          autoPlay
+          preload="auto"
           poster={poster}
           disablePictureInPicture
           controlsList="nodownload nofullscreen noremoteplayback"
@@ -74,52 +79,37 @@ export function SilentClip({
         >
           <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
         </video>
-      ) : shouldPlay ? (
-        <>
-          <iframe
-            className={
-              cover
-                ? "pointer-events-none absolute left-1/2 top-1/2 border-0"
-                : "pointer-events-none absolute inset-0 h-full w-full border-0 bg-black"
-            }
-            src={streamIframeSrc(id)}
-            title={title}
-            allow="autoplay; encrypted-media"
-            tabIndex={-1}
-            onLoad={() => setReady(true)}
-            style={
-              cover
-                ? {
-                    background: "#050505",
-                    height: `${coverScale * 100}%`,
-                    width: `${coverScale * 100}%`,
-                    transform: "translate(-50%, -50%)",
-                    maxWidth: "none",
-                  }
-                : { background: "#050505" }
-            }
-          />
-          {!ready ? (
-            <Image
-              src={poster}
-              alt=""
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-          ) : null}
-        </>
-      ) : (
+      ) : null}
+
+      {hls === false && shouldPlay ? (
+        <iframe
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full border-0"
+          src={streamIframeSrc(id)}
+          title={title}
+          allow="autoplay; encrypted-media"
+          tabIndex={-1}
+          onLoad={() => setReady(true)}
+          style={{
+            background: "#050505",
+            transform:
+              cover && coverScale !== 1 ? `scale(${coverScale})` : undefined,
+            transformOrigin: "center center",
+          }}
+        />
+      ) : null}
+
+      {showPoster ? (
         <Image
           src={poster}
           alt=""
           fill
           sizes="100vw"
-          className="object-cover"
+          className="z-[2] object-cover"
         />
-      )}
+      ) : null}
+
       {shouldPlay && !ready ? (
-        <MediaLoader className="absolute inset-0 z-[1]" />
+        <MediaLoader className="absolute inset-0 z-[3]" />
       ) : null}
     </div>
   );
