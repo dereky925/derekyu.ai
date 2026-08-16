@@ -1,9 +1,3 @@
-export type Photo = {
-  src: string;
-  width: number;
-  height: number;
-};
-
 export type PhotoClip = {
   id: string;
   poster: string;
@@ -15,51 +9,6 @@ export type PhotoClip = {
 
 export const STREAM_CUSTOMER =
   "customer-ujeel072i6bo0c62";
-
-export const photos: Photo[] = [
-  { src: "/media/photo/01.jpg", width: 1436, height: 757 },
-  { src: "/media/photo/02.jpg", width: 1011, height: 757 },
-  { src: "/media/photo/03.jpg", width: 1436, height: 757 },
-  { src: "/media/photo/04.jpg", width: 1436, height: 757 },
-  { src: "/media/photo/05.jpg", width: 1011, height: 757 },
-  { src: "/media/photo/06.jpg", width: 1436, height: 757 },
-  { src: "/media/photo/07.jpg", width: 1436, height: 757 },
-  { src: "/media/photo/08.jpg", width: 1012, height: 757 },
-  { src: "/media/photo/09.jpg", width: 1436, height: 757 },
-  { src: "/media/photo/10.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/11.jpg", width: 1290, height: 967 },
-  { src: "/media/photo/12.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/13.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/14.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/15.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/16.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/17.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/18.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/19.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/20.jpg", width: 1291, height: 967 },
-  { src: "/media/photo/21.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/22.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/23.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/24.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/25.jpg", width: 1291, height: 967 },
-  { src: "/media/photo/26.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/27.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/28.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/29.jpg", width: 1290, height: 967 },
-  { src: "/media/photo/30.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/31.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/32.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/33.jpg", width: 1294, height: 967 },
-  { src: "/media/photo/34.jpg", width: 1291, height: 967 },
-  { src: "/media/photo/35.jpg", width: 1291, height: 967 },
-  { src: "/media/photo/36.jpg", width: 1291, height: 967 },
-  { src: "/media/photo/37.jpg", width: 1291, height: 967 },
-  { src: "/media/photo/38.jpg", width: 1291, height: 967 },
-  { src: "/media/photo/39.jpg", width: 1291, height: 967 },
-  { src: "/media/photo/40.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/41.jpg", width: 1292, height: 967 },
-  { src: "/media/photo/42.jpg", width: 1292, height: 967 },
-];
 
 const clipPosters: Record<string, string> = {
   "27a9a8b4e0325d17f764a5e80bb853dd": "/media/photo/clips/01.jpg",
@@ -172,15 +121,13 @@ const monthNames = [
   "December",
 ];
 
-export function clipDateLabel(clip: PhotoClip) {
-  if (clip.month) {
-    return `${monthNames[clip.month - 1]} ${clip.year}`;
+export function clipDateLabel(item: {
+  year: number | null;
+  month: number | null;
+}) {
+  if (!item.year) return "";
+  if (item.month) {
+    return `${monthNames[item.month - 1]} ${item.year}`;
   }
-  return String(clip.year);
+  return String(item.year);
 }
-
-export const featuredPhotos = [photos[0]!, photos[9]!, photos[15]!] as const;
-
-export const aboutHero = photos[2]!;
-
-export const aboutStrip = [photos[0]!, photos[14]!, photos[20]!] as const;

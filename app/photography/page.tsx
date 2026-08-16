@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { FadeIn } from "@/components/fade-in";
 import { PhotoClips } from "@/components/photo-clips";
-import { PhotoGrid } from "@/components/photo-grid";
-import { photoClips, photos } from "@/lib/photos";
+import { PhotoJournal } from "@/components/photo-journal";
+import { photoClips } from "@/lib/photos";
+import { photoAlbums } from "@/lib/stills";
 
 export const metadata: Metadata = {
   title: "Photography",
@@ -31,7 +32,7 @@ export default function PhotographyPage() {
 
       <FadeIn delay={0.1} className="mt-20">
         <h2 className="mb-6 text-sm text-muted">Stills</h2>
-        <PhotoGrid photos={photos} />
+        <PhotoJournal albums={photoAlbums} />
       </FadeIn>
     </main>
   );

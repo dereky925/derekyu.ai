@@ -31,4 +31,5 @@ export const remoteImageHosts = [
   "img.youtube.com",
   "i.ytimg.com",
   "media.derekyu.ai",
+  "imagedelivery.net",
 ] as const;
