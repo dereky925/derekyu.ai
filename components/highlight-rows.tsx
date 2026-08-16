@@ -18,20 +18,14 @@ function TileFrame({
   role,
   detail,
   children,
-  compact,
 }: {
   label: string;
   role?: string;
   detail: string;
   children: ReactNode;
-  compact?: boolean;
 }) {
   return (
-    <div
-      className={`relative overflow-hidden rounded-2xl bg-black ${
-        compact ? "aspect-[16/9]" : "aspect-[16/10]"
-      }`}
-    >
+    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-black">
       {children}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-14">
         <p className="text-sm text-foreground">{label}</p>
@@ -49,7 +43,6 @@ function Tile({
   detail,
   children,
   external,
-  compact,
 }: {
   href: string;
   label: string;
@@ -57,11 +50,10 @@ function Tile({
   detail: string;
   children: ReactNode;
   external?: boolean;
-  compact?: boolean;
 }) {
   const className = "group block min-w-0";
   const frame = (
-    <TileFrame label={label} role={role} detail={detail} compact={compact}>
+    <TileFrame label={label} role={role} detail={detail}>
       {children}
     </TileFrame>
   );
@@ -87,7 +79,6 @@ function StreamTile({
   clipId,
   poster,
   external,
-  compact,
 }: {
   href: string;
   label: string;
@@ -96,19 +87,11 @@ function StreamTile({
   clipId: string;
   poster: string;
   external?: boolean;
-  compact?: boolean;
 }) {
   const { ref, active } = useInViewPlay();
   return (
     <div ref={ref}>
-      <Tile
-        href={href}
-        label={label}
-        role={role}
-        detail={detail}
-        external={external}
-        compact={compact}
-      >
+      <Tile href={href} label={label} role={role} detail={detail} external={external}>
         <SilentClip
           id={clipId}
           poster={poster}
@@ -184,11 +167,10 @@ export function HighlightRows() {
       </Row>
 
       <Row kicker="Projects" title="The public set." href="/work">
-        <div className="grid max-w-3xl gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-2">
           <StreamTile
             href={grokeyeYouTube}
             external
-            compact
             label="GrokEye"
             detail="xAI Hackathon 2026 · Top 5 Finalist"
             clipId={streamClips.grokeye}
@@ -197,7 +179,6 @@ export function HighlightRows() {
           <StreamTile
             href={hunterYouTube}
             external
-            compact
             label="Hunter Drone"
             detail="UB · net-capture quadcopter"
             clipId={streamClips.hunter}
