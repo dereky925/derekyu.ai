@@ -98,7 +98,7 @@ export const projects: Project[] = [
     role: "Game",
     summary:
       "An 8-bit Starship run from Starbase to Voyager 1—dodge asteroids and UFOs, grab coins, hit planetary milestones.",
-    poster: streamPoster(streamClips.mars),
+    poster: "/media/projects/mars/poster.jpg",
     gallery: [
       "/media/projects/mars/gallery-1.jpg",
       "/media/projects/mars/gallery-2.jpg",
@@ -200,7 +200,7 @@ export const projectListings: ProjectListing[] = [
     year: "2025",
     role: "Game",
     summary: "An 8-bit Starship run from Starbase to Voyager 1.",
-    poster: streamPoster(streamClips.mars),
+    poster: "/media/projects/mars/poster.jpg",
     streamId: streamClips.mars,
     href: "/projects/to-mars-and-beyond",
   },

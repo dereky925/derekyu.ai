@@ -187,7 +187,7 @@ export function HighlightRows() {
             label="To Mars and Beyond"
             detail="8-bit Starship run · Starbase to Voyager 1"
             clipId={streamClips.mars}
-            poster={streamPoster(streamClips.mars)}
+            poster="/media/projects/mars/poster.jpg"
             mediaAspect={streamClipAspect[streamClips.mars]}
           />
           <StreamTile

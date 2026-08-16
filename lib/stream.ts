@@ -17,9 +17,7 @@ export const grokeyeYouTube = "https://www.youtube.com/watch?v=lC4oP8kb9KE";
 export const hunterYouTube = "https://www.youtube.com/watch?v=nB1vAQlGqa4";
 
 export function streamPoster(id: string) {
-  const src = `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/thumbnails/thumbnail.jpg`;
-  if (!streamClipAspect[id]) return src;
-  return `${src}?width=1920&height=1080&fit=crop`;
+  return `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/thumbnails/thumbnail.jpg`;
 }
 
 export function streamHlsSrc(id: string) {
