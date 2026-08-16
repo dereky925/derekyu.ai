@@ -141,8 +141,8 @@ function Row({
   );
 }
 
-const canyon = photoClips[0]!;
-const sedona = photoClips[1]!;
+const canyon = photoClips.find((clip) => clip.title === "Grand Canyon")!;
+const sedona = photoClips.find((clip) => clip.title === "Sedona")!;
 const cove = photoClips.find((clip) => clip.title === "Crystal Cove")!;
 const la = photoClips.find((clip) => clip.title === "Los Angeles")!;
 const fireworks = photoClips.find((clip) => clip.title === "LA fireworks")!;

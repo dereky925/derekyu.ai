@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SilentClip } from "@/components/silent-clip";
-import { clipDateLabel, type PhotoClip } from "@/lib/photos";
+import { clipDateLabel, clipPlaceDetail, type PhotoClip } from "@/lib/photos";
 
 export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
@@ -48,9 +48,13 @@ export function PhotoClips({ clips }: { clips: PhotoClip[] }) {
             />
             <div className="sm:pl-7">
               <p className="text-lg tracking-tight text-foreground">
-                {clip.location}
+                {clip.title}
               </p>
-              <p className="mt-1 text-sm text-muted">{clipDateLabel(clip)}</p>
+              <p className="mt-1 text-sm text-muted">
+                {[clipPlaceDetail(clip) || clip.location, clipDateLabel(clip)]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
             </div>
           </div>
           <div>
