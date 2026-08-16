@@ -7,7 +7,15 @@ export function personJsonLd() {
     "@type": "Person",
     name: site.name,
     url: site.url,
-    jobTitle: "Aerospace Engineer",
+    jobTitle: "Modeling & Simulation Engineer",
+    worksFor: {
+      "@type": "Organization",
+      name: "Anduril Industries",
+    },
+    alumniOf: [
+      { "@type": "CollegeOrUniversity", name: "Purdue University" },
+      { "@type": "CollegeOrUniversity", name: "University at Buffalo" },
+    ],
     description: site.description,
     sameAs: [site.github, site.x, site.linkedin],
     ...(site.email ? { email: site.email } : {}),

@@ -3,13 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { FadeIn } from "@/components/fade-in";
 import { ProjectCard } from "@/components/project-card";
+import { WorkHistory } from "@/components/work-history";
 import { featuredPhotos } from "@/lib/photos";
 import { projects } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "Work",
   description:
-    "Selected projects by Derek Yu — AR, trading systems, games, and more.",
+    "Aerospace engineering at Anduril and Northrop Grumman, plus selected AR, trading, and game projects by Derek Yu.",
   alternates: { canonical: "/work" },
 };
 
@@ -22,16 +23,26 @@ export default function WorkPage() {
         <section className="flex flex-col gap-6 pb-16 pt-20 sm:pt-28">
           <p className="text-sm text-muted">Work</p>
           <h1 className="max-w-3xl text-4xl font-medium tracking-tight text-foreground sm:text-6xl">
-            Projects in AR, systems, and games.
+            Aerospace work, plus things you can see, trade, or play.
           </h1>
           <p className="max-w-xl text-lg leading-relaxed text-muted">
-            Things you can see, trade, or play—selected work from
-            Grokathon, live trading, and browser games.
+            Modeling and simulation at Anduril, earlier rotations at
+            Northrop Grumman, and selected personal projects.
           </p>
         </section>
       </FadeIn>
 
+      <section id="experience" className="pb-28">
+        <WorkHistory />
+      </section>
+
       <section id="work" className="space-y-16">
+        <FadeIn>
+          <p className="text-sm text-muted">Projects</p>
+          <h2 className="mt-2 text-2xl tracking-tight sm:text-3xl">
+            Selected work
+          </h2>
+        </FadeIn>
         {featured ? (
           <FadeIn>
             <ProjectCard project={featured} featured priority />
