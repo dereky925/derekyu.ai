@@ -25,7 +25,7 @@ export function streamIframeSrc(id: string) {
     loop: "true",
     controls: "false",
     preload: "auto",
-    letterboxColor: "transparent",
+    letterboxColor: "#050505",
   });
   return `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/iframe?${params.toString()}`;
 }

@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { MediaLoader } from "@/components/media-loader";
 import { streamHlsSrc, streamIframeSrc } from "@/lib/stream";
 
-function nativeHls() {
+function supportsHls() {
   if (typeof document === "undefined") return false;
   const video = document.createElement("video");
   return video.canPlayType("application/vnd.apple.mpegURL") !== "";
@@ -20,10 +21,6 @@ type SilentClipProps = {
   className?: string;
 };
 
-/** 16:9 frame that covers a 16:10 tile (and slightly crops 16:9 tiles). */
-const coverFrame =
-  "absolute left-1/2 top-1/2 h-full w-[111.12%] max-w-none -translate-x-1/2 -translate-y-1/2";
-
 export function SilentClip({
   id,
   poster,
@@ -33,72 +30,93 @@ export function SilentClip({
   className = "",
 }: SilentClipProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [native, setNative] = useState<boolean | null>(null);
-  const [iframeReady, setIframeReady] = useState(false);
+  const [hls, setHls] = useState(false);
+  const [ready, setReady] = useState(false);
   const reduce = useReducedMotion();
-  const shouldPlay = active && !reduce && native !== null;
+  const shouldPlay = active && !reduce;
 
   useEffect(() => {
-    setNative(nativeHls());
+    setHls(supportsHls());
   }, []);
 
   useEffect(() => {
-    setIframeReady(false);
+    setReady(false);
   }, [id]);
 
   useEffect(() => {
     const node = videoRef.current;
-    if (!node || !shouldPlay || !native) return;
-    node.muted = true;
-    node.playsInline = true;
-    node.play().catch(() => {});
-  }, [id, native, shouldPlay]);
-
-  const frame = cover ? coverFrame : "absolute inset-0";
+    if (!node) return;
+    if (shouldPlay) {
+      node.play().catch(() => {});
+    } else {
+      node.pause();
+    }
+  }, [shouldPlay]);
 
   return (
     <div className={`silent-clip relative overflow-hidden bg-black ${className}`}>
-      {shouldPlay && native ? (
-        <div className={frame}>
-          <video
-            ref={videoRef}
-            className="h-full w-full"
-            muted
-            loop
-            playsInline
-            autoPlay
-            preload="auto"
-            poster={poster}
-            disablePictureInPicture
-            controlsList="nodownload nofullscreen noremoteplayback"
-          >
-            <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
-          </video>
-        </div>
-      ) : null}
-      {shouldPlay && native === false ? (
+      {hls ? (
+        <video
+          ref={videoRef}
+          className={`h-full w-full bg-black ${cover ? "object-cover" : "object-contain"}`}
+          muted
+          loop
+          playsInline
+          autoPlay={shouldPlay}
+          preload={shouldPlay ? "auto" : "metadata"}
+          poster={poster}
+          disablePictureInPicture
+          controlsList="nodownload nofullscreen noremoteplayback"
+          onPlaying={() => setReady(true)}
+        >
+          <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
+        </video>
+      ) : shouldPlay ? (
         <>
           <iframe
-            className={`pointer-events-none border-0 ${frame}`}
+            className={
+              cover
+                ? "pointer-events-none absolute left-1/2 top-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
+                : "pointer-events-none absolute inset-0 h-full w-full border-0 bg-black"
+            }
             src={streamIframeSrc(id)}
             title={title}
             allow="autoplay; encrypted-media"
             tabIndex={-1}
-            onLoad={() => setIframeReady(true)}
+            onLoad={() => setReady(true)}
+            style={
+              cover
+                ? {
+                    width: "100vw",
+                    height: "56.25vw",
+                    minHeight: "100%",
+                    minWidth: "177.78vh",
+                    background: "#050505",
+                  }
+                : { background: "#050505" }
+            }
           />
-          {!iframeReady ? (
+          {!ready ? (
             <Image
               src={poster}
               alt=""
               fill
               sizes="100vw"
-              className="z-[1] object-cover"
+              className="object-cover"
             />
           ) : null}
         </>
-      ) : null}
-      {!shouldPlay ? (
-        <Image src={poster} alt="" fill sizes="100vw" className="object-cover" />
+      ) : (
+        <Image
+          src={poster}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+      )}
+      {shouldPlay && !ready ? (
+        <MediaLoader className="absolute inset-0 z-[1]" />
       ) : null}
     </div>
   );
