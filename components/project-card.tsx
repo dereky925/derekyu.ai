@@ -22,6 +22,7 @@ export function ProjectCard({ project }: { project: ProjectListing }) {
         poster={poster || streamPoster(streamId)}
         title={project.title}
         active={active}
+        coverScale={1.12}
         className="absolute inset-0"
       />
     </div>

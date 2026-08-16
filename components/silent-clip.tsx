@@ -18,6 +18,8 @@ type SilentClipProps = {
   title: string;
   active: boolean;
   cover?: boolean;
+  /** Extra zoom so non-16:9 footage fills a 16:9 tile (Stream iframes letterbox). */
+  coverScale?: number;
   className?: string;
 };
 
@@ -27,6 +29,7 @@ export function SilentClip({
   title,
   active,
   cover = true,
+  coverScale = 1,
   className = "",
 }: SilentClipProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -58,7 +61,7 @@ export function SilentClip({
       {hls ? (
         <video
           ref={videoRef}
-          className={`h-full w-full bg-black ${cover ? "object-cover" : "object-contain"}`}
+          className={`absolute inset-0 h-full w-full bg-black ${cover ? "object-cover" : "object-contain"}`}
           muted
           loop
           playsInline
@@ -76,7 +79,7 @@ export function SilentClip({
           <iframe
             className={
               cover
-                ? "pointer-events-none absolute inset-0 h-full w-full border-0"
+                ? "pointer-events-none absolute left-1/2 top-1/2 border-0"
                 : "pointer-events-none absolute inset-0 h-full w-full border-0 bg-black"
             }
             src={streamIframeSrc(id)}
@@ -84,7 +87,17 @@ export function SilentClip({
             allow="autoplay; encrypted-media"
             tabIndex={-1}
             onLoad={() => setReady(true)}
-            style={{ background: "#050505" }}
+            style={
+              cover
+                ? {
+                    background: "#050505",
+                    height: `${coverScale * 100}%`,
+                    width: `${coverScale * 100}%`,
+                    transform: "translate(-50%, -50%)",
+                    maxWidth: "none",
+                  }
+                : { background: "#050505" }
+            }
           />
           {!ready ? (
             <Image
