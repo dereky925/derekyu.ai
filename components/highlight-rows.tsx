@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FadeIn } from "@/components/fade-in";
-import { DamascusField } from "@/components/damascus-field";
+import { LoopSim } from "@/components/loop-sim";
 import { SilentClip } from "@/components/silent-clip";
 import { SilentYouTube, useInViewPlay } from "@/components/silent-youtube";
 import { photoClips } from "@/lib/photos";
@@ -24,24 +24,6 @@ function TileFrame({
         <p className="text-sm text-foreground">{label}</p>
         <p className="mt-0.5 text-xs text-muted">{detail}</p>
       </div>
-    </div>
-  );
-}
-
-function PlayTile({
-  label,
-  detail,
-  children,
-}: {
-  label: string;
-  detail: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="min-w-0">
-      <TileFrame label={label} detail={detail}>
-        {children}
-      </TileFrame>
     </div>
   );
 }
@@ -165,18 +147,20 @@ export function HighlightRows() {
     <>
       <Row kicker="Work" title="Where the days go." href="/work">
         <div className="grid gap-3 md:grid-cols-2">
-          <PlayTile label="Anduril" detail="Modeling, simulation & analysis">
-            <DamascusField
-              theme="anduril"
-              className="absolute inset-0 h-full w-full"
-            />
-          </PlayTile>
-          <PlayTile label="Northrop Grumman" detail="GNC, RF, sensors">
-            <DamascusField
-              theme="northrop"
-              className="absolute inset-0 h-full w-full"
-            />
-          </PlayTile>
+          <Tile
+            href="/work"
+            label="Anduril"
+            detail="Modeling, simulation & analysis"
+          >
+            <LoopSim theme="anduril" className="absolute inset-0 h-full w-full" />
+          </Tile>
+          <Tile
+            href="/work"
+            label="Northrop Grumman"
+            detail="GNC, RF, sensors"
+          >
+            <LoopSim theme="northrop" className="absolute inset-0 h-full w-full" />
+          </Tile>
         </div>
       </Row>
 

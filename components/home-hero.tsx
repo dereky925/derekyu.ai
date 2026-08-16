@@ -22,7 +22,7 @@ export function HomeHero() {
       className="relative left-1/2 min-h-[100svh] w-screen -translate-x-1/2 overflow-hidden -mt-14"
     >
       <HeroField />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/35 to-transparent" />
       <motion.div
         className="absolute inset-0 mx-auto flex max-w-6xl flex-col justify-end px-6 pb-16 pt-28 sm:pb-24"
         style={reduce ? undefined : { y: textY, opacity: textOpacity }}

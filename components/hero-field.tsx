@@ -2,249 +2,243 @@
 
 import { useEffect, useRef } from "react";
 
+type Ripple = { x: number; y: number; born: number };
+
+const HILLS = [
+  { x: 0.16, y: 0.28, a: 1.15, s: 22, p: 0.4 },
+  { x: 0.58, y: 0.2, a: 1.05, s: 18, p: 1.3 },
+  { x: 0.82, y: 0.42, a: 1.2, s: 20, p: 2.1 },
+  { x: 0.34, y: 0.52, a: 0.9, s: 16, p: 0.8 },
+  { x: 0.7, y: 0.68, a: 0.95, s: 19, p: 2.7 },
+  { x: 0.12, y: 0.74, a: 0.85, s: 17, p: 1.9 },
+  { x: 0.48, y: 0.84, a: 0.75, s: 21, p: 3.2 },
+  { x: 0.9, y: 0.78, a: 0.8, s: 15, p: 0.2 },
+];
+
 /**
- * Looping HUD field: grid, orbits, and a tracking pip.
- * Canvas 2D only — paused off-screen and when the user prefers reduced motion.
+ * Flowing topographic contours — white isolines on black.
+ * Warps toward the pointer and rings out on tap.
  */
 export function HeroField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const surface = canvasRef.current;
+    if (!surface) return;
+    const node: HTMLCanvasElement = surface;
+    const ctx = node.getContext("2d", { alpha: false });
     if (!ctx) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let width = 0;
-    let height = 0;
-    let dpr = 1;
+
+    let cols = 0;
+    let rows = 0;
+    let aspect = 1;
+    let image: ImageData | null = null;
     let frame = 0;
     let inView = true;
     let pageVisible = document.visibilityState === "visible";
-    let last = performance.now();
+    let hovering = false;
+    let pointerId: number | null = null;
 
-    const stars = Array.from({ length: 90 }, () => ({
-      x: Math.random(),
-      y: Math.random() * 0.7,
-      r: Math.random() * 1.2 + 0.2,
-      s: 0.15 + Math.random() * 0.55,
-      p: Math.random() * Math.PI * 2,
-    }));
+    let px = 0.55;
+    let py = 0.4;
+    let tx = 0.55;
+    let ty = 0.4;
+    let pull = 0;
+    let targetPull = 0;
+
+    const ripples: Ripple[] = [];
 
     function resize() {
-      const node = canvas!;
       const rect = node.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = rect.width;
-      height = rect.height;
-      node.width = Math.max(1, Math.floor(width * dpr));
-      node.height = Math.max(1, Math.floor(height * dpr));
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const area = Math.max(1, rect.width * rect.height);
+      const sim = Math.min(0.4, Math.sqrt(150000 / area));
+      cols = Math.max(140, Math.floor(rect.width * sim));
+      rows = Math.max(90, Math.floor(rect.height * sim));
+      aspect = cols / rows;
+      node.width = cols;
+      node.height = rows;
+      image = ctx!.createImageData(cols, rows);
     }
 
-    function ring(
-      cx: number,
-      cy: number,
-      rx: number,
-      ry: number,
-      tilt: number,
-      spin: number,
-      alpha: number,
-    ) {
-      const c = ctx!;
-      c.beginPath();
-      for (let i = 0; i <= 140; i++) {
-        const th = (i / 140) * Math.PI * 2;
-        const x = rx * Math.cos(th);
-        const y = ry * Math.sin(th);
-        const xr = x * Math.cos(spin) - y * Math.sin(spin);
-        const yr = x * Math.sin(spin) + y * Math.cos(spin);
-        const y2 = yr * Math.cos(tilt);
-        const z = yr * Math.sin(tilt);
-        const s = 1 / (1 + z * 0.0018);
-        const px = cx + xr * s;
-        const py = cy + y2 * s;
-        if (i === 0) c.moveTo(px, py);
-        else c.lineTo(px, py);
+    function field(nx: number, ny: number, t: number, clock: number) {
+      const x = nx * aspect;
+      const y = ny;
+
+      const wx = Math.sin(y * 3.1 + t * 0.18) * 0.07 + Math.sin(x * 1.6 - t * 0.11) * 0.05;
+      const wy = Math.cos(x * 2.4 - t * 0.14) * 0.06 + Math.sin(y * 1.9 + t * 0.09) * 0.04;
+      const u = x + wx;
+      const v = y + wy;
+
+      let n = 0;
+      n += Math.sin(u * 3.6 + t * 0.12) * 0.42;
+      n += Math.sin(v * 2.9 - t * 0.09) * 0.36;
+      n += Math.sin((u * 0.85 + v * 1.25) * 2.4 + t * 0.07) * 0.28;
+
+      for (let i = 0; i < HILLS.length; i++) {
+        const h = HILLS[i]!;
+        const hx = (h.x + Math.sin(t * 0.13 + h.p) * 0.035) * aspect;
+        const hy = h.y + Math.cos(t * 0.1 + h.p * 1.3) * 0.03;
+        const dx = u - hx;
+        const dy = v - hy;
+        n += h.a * Math.exp(-(dx * dx + dy * dy) * h.s);
       }
-      c.closePath();
-      c.strokeStyle = `rgba(244,244,245,${alpha})`;
-      c.lineWidth = 1;
-      c.stroke();
-    }
 
-    function pip(
-      cx: number,
-      cy: number,
-      rx: number,
-      ry: number,
-      tilt: number,
-      spin: number,
-      th: number,
-    ) {
-      const x = rx * Math.cos(th);
-      const y = ry * Math.sin(th);
-      const xr = x * Math.cos(spin) - y * Math.sin(spin);
-      const yr = x * Math.sin(spin) + y * Math.cos(spin);
-      const y2 = yr * Math.cos(tilt);
-      const z = yr * Math.sin(tilt);
-      const s = 1 / (1 + z * 0.0018);
-      const px = cx + xr * s;
-      const py = cy + y2 * s;
-      const c = ctx!;
-      const g = c.createRadialGradient(px, py, 0, px, py, 18);
-      g.addColorStop(0, "rgba(244,244,245,0.9)");
-      g.addColorStop(0.25, "rgba(244,244,245,0.22)");
-      g.addColorStop(1, "rgba(244,244,245,0)");
-      c.fillStyle = g;
-      c.beginPath();
-      c.arc(px, py, 18, 0, Math.PI * 2);
-      c.fill();
-      c.fillStyle = "#f4f4f5";
-      c.beginPath();
-      c.arc(px, py, 2.2, 0, Math.PI * 2);
-      c.fill();
-      return { px, py };
+      if (pull > 0.01) {
+        const dx = x - px * aspect;
+        const dy = y - py;
+        n += pull * 1.35 * Math.exp(-(dx * dx + dy * dy) * 14);
+      }
+
+      for (let i = 0; i < ripples.length; i++) {
+        const r = ripples[i]!;
+        const age = clock - r.born;
+        if (age < 0 || age > 2.8) continue;
+        const dx = x - r.x * aspect;
+        const dy = y - r.y;
+        const rd = Math.hypot(dx, dy);
+        const ring = rd - age * 0.38;
+        n += Math.exp(-ring * ring * 55) * (1 - age / 2.8) * 1.4;
+      }
+
+      return n;
     }
 
     function draw(now: number) {
-      const t = now / 1000;
-      const c = ctx!;
-      c.clearRect(0, 0, width, height);
-      c.fillStyle = "#050505";
-      c.fillRect(0, 0, width, height);
+      const clock = now / 1000;
+      const t = reduce ? 0 : clock;
 
-      for (const star of stars) {
-        const tw = 0.25 + 0.75 * (0.5 + 0.5 * Math.sin(t * star.s * 3 + star.p));
-        const x = ((star.x + t * 0.006 * star.s) % 1) * width;
-        const y = star.y * height;
-        c.fillStyle = `rgba(244,244,245,${0.18 * tw})`;
-        c.beginPath();
-        c.arc(x, y, star.r, 0, Math.PI * 2);
-        c.fill();
+      if (!hovering) {
+        tx = reduce ? 0.55 : 0.55 + Math.sin(clock * 0.17) * 0.12;
+        ty = reduce ? 0.4 : 0.4 + Math.cos(clock * 0.13) * 0.08;
+        targetPull = 0;
       }
 
-      const horizon = height * 0.46;
-      const vpX = width * 0.5;
-      const cycle = (t * 0.08) % 1;
+      px += (tx - px) * 0.08;
+      py += (ty - py) * 0.08;
+      pull += (targetPull - pull) * 0.1;
 
-      c.strokeStyle = "rgba(244,244,245,0.07)";
-      c.lineWidth = 1;
-      for (let i = 0; i < 18; i++) {
-        const z = (i / 18 + cycle) % 1;
-        const y = horizon + Math.pow(z, 1.55) * (height - horizon);
-        c.globalAlpha = Math.min(0.35, z * 0.45);
-        c.beginPath();
-        c.moveTo(0, y);
-        c.lineTo(width, y);
-        c.stroke();
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        if (clock - ripples[i]!.born > 2.8) ripples.splice(i, 1);
       }
 
-      const lanes = 14;
-      for (let i = -lanes; i <= lanes; i++) {
-        const edge = i / lanes;
-        c.globalAlpha = 0.06;
-        c.beginPath();
-        c.moveTo(vpX, horizon);
-        c.lineTo(vpX + edge * width * 1.35, height + 20);
-        c.stroke();
+      if (!image) return;
+      const data = image.data;
+
+      for (let y = 0; y < rows; y++) {
+        const ny = (y + 0.5) / rows;
+        for (let x = 0; x < cols; x++) {
+          const nx = (x + 0.5) / cols;
+          const n = field(nx, ny, t, clock);
+          const levels = n * 3.4;
+          const dist = Math.abs(levels - Math.round(levels));
+          const line = Math.max(0, 1 - dist / 0.2);
+          const a = Math.pow(line, 1.15);
+          const i = (y * cols + x) * 4;
+          const c = 8 + a * 236;
+          data[i] = c;
+          data[i + 1] = c;
+          data[i + 2] = c;
+          data[i + 3] = 255;
+        }
       }
-      c.globalAlpha = 1;
 
-      c.strokeStyle = "rgba(244,244,245,0.12)";
-      c.beginPath();
-      c.moveTo(0, horizon);
-      c.lineTo(width, horizon);
-      c.stroke();
-
-      const cx = width * 0.5;
-      const cy = height * 0.38;
-      const scale = Math.min(width, height);
-
-      ring(cx, cy, scale * 0.22, scale * 0.22, 1.12, t * 0.12, 0.14);
-      ring(cx, cy, scale * 0.34, scale * 0.2, 0.82, -t * 0.08, 0.2);
-      ring(cx, cy, scale * 0.46, scale * 0.16, 0.55, t * 0.05, 0.28);
-
-      const th = t * 0.55;
-      const track = pip(cx, cy, scale * 0.46, scale * 0.16, 0.55, t * 0.05, th);
-      pip(cx, cy, scale * 0.34, scale * 0.2, 0.82, -t * 0.08, -th * 0.7 + 1.2);
-
-      c.strokeStyle = "rgba(244,244,245,0.08)";
-      c.beginPath();
-      c.moveTo(track.px - 14, track.py);
-      c.lineTo(track.px + 14, track.py);
-      c.moveTo(track.px, track.py - 14);
-      c.lineTo(track.px, track.py + 14);
-      c.stroke();
-
-      const sweep = (t * 0.22) % 1;
-      const sy = sweep * height;
-      const sg = c.createLinearGradient(0, sy - 40, 0, sy + 40);
-      sg.addColorStop(0, "rgba(244,244,245,0)");
-      sg.addColorStop(0.5, "rgba(244,244,245,0.05)");
-      sg.addColorStop(1, "rgba(244,244,245,0)");
-      c.fillStyle = sg;
-      c.fillRect(0, sy - 40, width, 80);
-
-      const vg = c.createRadialGradient(cx, cy, scale * 0.1, cx, cy, scale * 0.85);
-      vg.addColorStop(0, "rgba(5,5,5,0)");
-      vg.addColorStop(1, "rgba(5,5,5,0.55)");
-      c.fillStyle = vg;
-      c.fillRect(0, 0, width, height);
+      ctx!.putImageData(image, 0, 0);
     }
 
     function loop(now: number) {
-      if (!(inView && pageVisible)) {
-        last = now;
-        frame = requestAnimationFrame(loop);
-        return;
-      }
-      if (!reduce) {
-        draw(now);
-      } else if (now - last > 0) {
-        draw(0);
-        last = now + 1e9;
-        return;
-      }
+      if (inView && pageVisible) draw(now);
       frame = requestAnimationFrame(loop);
+    }
+
+    function local(e: PointerEvent) {
+      const rect = node.getBoundingClientRect();
+      tx = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      ty = Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height));
+    }
+
+    function onEnter(e: PointerEvent) {
+      hovering = true;
+      targetPull = 1;
+      local(e);
+    }
+
+    function onMove(e: PointerEvent) {
+      if (e.pointerType === "touch" && pointerId !== e.pointerId) return;
+      hovering = true;
+      targetPull = 1;
+      local(e);
+    }
+
+    function onDown(e: PointerEvent) {
+      local(e);
+      hovering = true;
+      targetPull = 1.15;
+      pointerId = e.pointerId;
+      node.setPointerCapture(e.pointerId);
+      ripples.push({ x: tx, y: ty, born: performance.now() / 1000 });
+    }
+
+    function onUp(e: PointerEvent) {
+      if (pointerId === e.pointerId) pointerId = null;
+      if (e.pointerType === "touch" || e.pointerType === "pen") {
+        hovering = false;
+        targetPull = 0;
+      }
+    }
+
+    function onLeave() {
+      if (pointerId !== null) return;
+      hovering = false;
+      targetPull = 0;
     }
 
     resize();
-    if (reduce) {
-      draw(0);
-    } else {
-      frame = requestAnimationFrame(loop);
-    }
+    draw(performance.now());
+    frame = requestAnimationFrame(loop);
 
     const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
-
+    ro.observe(node);
     const io = new IntersectionObserver(
       ([entry]) => {
         inView = entry.isIntersecting;
       },
       { threshold: 0.05 },
     );
-    io.observe(canvas);
-
+    io.observe(node);
     const onVis = () => {
       pageVisible = document.visibilityState === "visible";
     };
     document.addEventListener("visibilitychange", onVis);
+    node.addEventListener("pointerenter", onEnter);
+    node.addEventListener("pointermove", onMove);
+    node.addEventListener("pointerdown", onDown);
+    node.addEventListener("pointerup", onUp);
+    node.addEventListener("pointercancel", onUp);
+    node.addEventListener("pointerleave", onLeave);
 
     return () => {
       cancelAnimationFrame(frame);
       ro.disconnect();
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
+      node.removeEventListener("pointerenter", onEnter);
+      node.removeEventListener("pointermove", onMove);
+      node.removeEventListener("pointerdown", onDown);
+      node.removeEventListener("pointerup", onUp);
+      node.removeEventListener("pointercancel", onUp);
+      node.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 
   return (
     <div className="absolute inset-0 bg-[#050505]">
-      <canvas ref={canvasRef} className="h-full w-full" aria-hidden />
-      <div className="hero-grain pointer-events-none absolute inset-0" />
+      <canvas
+        ref={canvasRef}
+        className="h-full w-full touch-none"
+        aria-hidden
+      />
     </div>
   );
 }
