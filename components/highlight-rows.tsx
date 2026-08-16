@@ -169,7 +169,7 @@ export function HighlightRows() {
       </Row>
 
       <Row kicker="Projects" title="The public set." href="/work">
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-3">
           <StreamTile
             href={grokeyeYouTube}
             external
@@ -177,6 +177,13 @@ export function HighlightRows() {
             detail="xAI Hackathon 2026 · Top 5 Finalist"
             clipId={streamClips.grokeye}
             poster={streamPoster(streamClips.grokeye)}
+          />
+          <StreamTile
+            href="/projects/to-mars-and-beyond"
+            label="To Mars and Beyond"
+            detail="8-bit Starship run · Starbase to Voyager 1"
+            clipId={streamClips.mars}
+            poster={streamPoster(streamClips.mars)}
           />
           <StreamTile
             href={hunterYouTube}

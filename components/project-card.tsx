@@ -2,13 +2,33 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { SilentClip } from "@/components/silent-clip";
+import { useInViewPlay } from "@/components/silent-youtube";
 import type { ProjectListing } from "@/lib/projects";
+import { streamPoster } from "@/lib/stream";
 
 export function ProjectCard({ project }: { project: ProjectListing }) {
-  const media = project.poster ? (
+  const { ref, active } = useInViewPlay();
+  const poster = project.poster;
+  const streamId = project.streamId;
+
+  const media = streamId ? (
+    <div
+      ref={ref}
+      className="relative aspect-[16/10] overflow-hidden rounded-xl bg-black"
+    >
+      <SilentClip
+        id={streamId}
+        poster={poster || streamPoster(streamId)}
+        title={project.title}
+        active={active}
+        className="absolute inset-0"
+      />
+    </div>
+  ) : poster ? (
     <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-surface">
       <Image
-        src={project.poster}
+        src={poster}
         alt=""
         fill
         sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
@@ -25,15 +45,16 @@ export function ProjectCard({ project }: { project: ProjectListing }) {
     </div>
   );
 
-  const copy = project.poster ? (
-    <div className="mt-3">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-[15px] tracking-tight">{project.title}</h2>
-        <p className="shrink-0 text-xs text-muted">{project.year}</p>
+  const copy =
+    poster || streamId ? (
+      <div className="mt-3">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-[15px] tracking-tight">{project.title}</h2>
+          <p className="shrink-0 text-xs text-muted">{project.year}</p>
+        </div>
+        <p className="mt-1 text-sm leading-relaxed text-muted">{project.summary}</p>
       </div>
-      <p className="mt-1 text-sm leading-relaxed text-muted">{project.summary}</p>
-    </div>
-  ) : null;
+    ) : null;
 
   const inner = (
     <>

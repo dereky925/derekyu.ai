@@ -7,7 +7,7 @@ import { SilentClip } from "@/components/silent-clip";
 import { useInViewPlay } from "@/components/silent-youtube";
 import { mediaUrl, muxMp4 } from "@/lib/media";
 import type { ProjectVideo } from "@/lib/projects";
-import { streamPoster } from "@/lib/stream";
+import { streamPoster, streamWatchSrc } from "@/lib/stream";
 
 type VideoPlayerProps = {
   poster: string;
@@ -130,6 +130,20 @@ export function VideoPlayer({ poster, title, video }: VideoPlayerProps) {
             >
               <source src={hostedSrc} type="video/mp4" />
             </video>
+            {!mediaReady ? (
+              <MediaLoader className="absolute inset-0 z-[1] bg-black/25" />
+            ) : null}
+          </>
+        ) : streamId && inView ? (
+          <>
+            <iframe
+              className="h-full w-full"
+              src={streamWatchSrc(streamId)}
+              title={`${title} video`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              onLoad={() => setMediaReady(true)}
+            />
             {!mediaReady ? (
               <MediaLoader className="absolute inset-0 z-[1] bg-black/25" />
             ) : null}

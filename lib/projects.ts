@@ -1,3 +1,5 @@
+import { streamClips, streamPoster } from "@/lib/stream";
+
 export type ProjectLink = {
   label: string;
   href: string;
@@ -96,11 +98,15 @@ export const projects: Project[] = [
     role: "Game",
     summary:
       "An 8-bit Starship run from Starbase to Voyager 1—dodge asteroids and UFOs, grab coins, hit planetary milestones.",
-    poster: "/media/projects/mars/poster.jpg",
+    poster: streamPoster(streamClips.mars),
     gallery: [
       "/media/projects/mars/gallery-1.jpg",
       "/media/projects/mars/gallery-2.jpg",
     ],
+    video: {
+      streamId: streamClips.mars,
+      caption: "Gameplay from Starbase out toward Voyager 1",
+    },
     links: [
       {
         label: "Play",
@@ -156,6 +162,7 @@ export type ProjectListing = {
   role: string;
   summary: string;
   poster?: string;
+  streamId?: string;
   href?: string;
   external?: boolean;
 };
@@ -192,7 +199,8 @@ export const projectListings: ProjectListing[] = [
     year: "2025",
     role: "Game",
     summary: "An 8-bit Starship run from Starbase to Voyager 1.",
-    poster: "/media/projects/mars/poster.jpg",
+    poster: streamPoster(streamClips.mars),
+    streamId: streamClips.mars,
     href: "/projects/to-mars-and-beyond",
   },
   {

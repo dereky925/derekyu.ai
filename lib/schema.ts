@@ -49,7 +49,9 @@ export function projectJsonLd(slug: string) {
     description: project.summary,
     dateCreated: project.year,
     url: absoluteUrl(`/projects/${project.slug}`),
-    image: absoluteUrl(project.poster),
+    image: project.poster.startsWith("http")
+      ? project.poster
+      : absoluteUrl(project.poster),
     author: {
       "@type": "Person",
       name: site.name,
