@@ -216,6 +216,7 @@ export const projectListings: ProjectListing[] = [
     role: "Trading",
     summary: "Momentum bot on Alpaca with a Gemini news check on each order.",
     poster: "/media/projects/claudecode/poster.jpg",
+    streamId: streamClips.claudecode,
     href: "/projects/claudecode",
   },
   {

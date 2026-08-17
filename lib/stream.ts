@@ -9,11 +9,13 @@ export const streamClips = {
   boat: "6cef76dbec3690e32ee8cf6b10450860",
   talentgrok: "521456d26280d9a6486fead44b9279f5",
   flappyfury: "87a465c5c56e2814ac2801a91ff25bd5",
+  claudecode: "8cc9a4c0d120f78732ad70649d965c57",
 } as const;
 
 /** Pixel aspect of the uploaded file (Mars is 2160×1080 / 2:1). */
 export const streamClipAspect: Record<string, number> = {
   [streamClips.mars]: 2160 / 1080,
+  [streamClips.claudecode]: 1920 / 1440,
 };
 
 /** Thumbnail loops skip the opening of these clips (seconds). */
