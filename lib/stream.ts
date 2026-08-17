@@ -6,6 +6,7 @@ export const streamClips = {
   grokeye: "644b9bc822bc50f3d8c70801f5f4f938",
   hunter: "f84d2847c975d5cf2e589a73190375b3",
   mars: "f34123e37124cff39ccc26c14da2d6ff",
+  boat: "6cef76dbec3690e32ee8cf6b10450860",
 } as const;
 
 /** Pixel aspect of the uploaded file (Mars is 2160×1080 / 2:1). */

@@ -233,5 +233,7 @@ export const projectListings: ProjectListing[] = [
     year: "2018",
     role: "UB boat race",
     summary: "First of 300+ engineering students.",
+    poster: "/media/projects/dbr/poster.jpg",
+    streamId: streamClips.boat,
   },
 ];
