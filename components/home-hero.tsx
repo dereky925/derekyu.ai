@@ -51,7 +51,7 @@ export function HomeHero() {
         >
           Modeling & Simulation Engineer at Anduril.
           <br />
-          Aerospace Engineer by trade — closeted tech bro, artist, and vibe coder.
+          Aerospace Engineer by trade. Closeted tech bro, artist, and vibe coder.
         </motion.p>
         <motion.div
           className="pointer-events-auto"
