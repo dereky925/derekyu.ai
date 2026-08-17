@@ -12,8 +12,15 @@ export function WorkHistory() {
             href={site.linkedin}
             target="_blank"
             rel="noreferrer"
-            className="text-sm text-muted transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-foreground"
           >
+            <img
+              src="/icons/linkedin.svg"
+              alt=""
+              width={16}
+              height={16}
+              className="h-4 w-4 invert"
+            />
             LinkedIn
           </a>
         </div>
