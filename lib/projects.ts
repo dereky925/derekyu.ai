@@ -243,6 +243,7 @@ export const projectListings: ProjectListing[] = [
     role: "Game",
     summary: "A one-file Fury Flappy Bird with synthesized audio.",
     poster: "/media/projects/flappy-fury/poster.jpg",
+    streamId: streamClips.flappyfury,
     href: "/projects/flappy-fury",
   },
   {

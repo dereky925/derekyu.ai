@@ -8,6 +8,7 @@ export const streamClips = {
   mars: "f34123e37124cff39ccc26c14da2d6ff",
   boat: "6cef76dbec3690e32ee8cf6b10450860",
   talentgrok: "521456d26280d9a6486fead44b9279f5",
+  flappyfury: "87a465c5c56e2814ac2801a91ff25bd5",
 } as const;
 
 /** Pixel aspect of the uploaded file (Mars is 2160×1080 / 2:1). */
