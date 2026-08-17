@@ -7,6 +7,7 @@ export const streamClips = {
   hunter: "f84d2847c975d5cf2e589a73190375b3",
   mars: "f34123e37124cff39ccc26c14da2d6ff",
   boat: "6cef76dbec3690e32ee8cf6b10450860",
+  talentgrok: "521456d26280d9a6486fead44b9279f5",
 } as const;
 
 /** Pixel aspect of the uploaded file (Mars is 2160×1080 / 2:1). */
@@ -23,6 +24,8 @@ export const streamClipStart: Record<string, number> = {
 
 export const grokeyeYouTube = "https://www.youtube.com/watch?v=lC4oP8kb9KE";
 export const hunterYouTube = "https://www.youtube.com/watch?v=nB1vAQlGqa4";
+export const talentGrokYouTube =
+  "https://www.youtube.com/watch?v=r3_mI0W5Xk4";
 
 export function streamPoster(id: string) {
   const src = `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/thumbnails/thumbnail.jpg`;

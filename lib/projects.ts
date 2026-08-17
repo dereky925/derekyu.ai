@@ -1,4 +1,4 @@
-import { hunterYouTube, streamClips, streamPoster } from "@/lib/stream";
+import { hunterYouTube, streamClips, streamPoster, talentGrokYouTube } from "@/lib/stream";
 
 export type ProjectLink = {
   label: string;
@@ -218,7 +218,8 @@ export const projectListings: ProjectListing[] = [
     role: "xAI Hackathon",
     summary: "Grok recruiting agent that sources, screens, and learns from replies.",
     poster: "/media/projects/talentgrok/poster.jpg",
-    href: "https://talent-grok.vercel.app",
+    streamId: streamClips.talentgrok,
+    href: talentGrokYouTube,
     external: true,
   },
   {
