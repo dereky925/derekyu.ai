@@ -262,6 +262,8 @@ export const projectListings: ProjectListing[] = [
     role: "Northrop hackathon",
     summary:
       "Solo radar-satellite pitch for debris under 1 cm². Top 3 of 16 teams.",
+    poster: "/media/projects/spacesweep/poster.jpg",
+    streamId: streamClips.spacesweep,
   },
   {
     title: "Design, Build, Race",

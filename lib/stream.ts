@@ -10,6 +10,7 @@ export const streamClips = {
   talentgrok: "521456d26280d9a6486fead44b9279f5",
   flappyfury: "87a465c5c56e2814ac2801a91ff25bd5",
   claudecode: "8cc9a4c0d120f78732ad70649d965c57",
+  spacesweep: "fe3dcdd17e41245dc367a57653290373",
 } as const;
 
 /** Pixel aspect of the uploaded file (Mars is 2160×1080 / 2:1). */
