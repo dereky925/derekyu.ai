@@ -15,7 +15,7 @@ export const streamClipAspect: Record<string, number> = {
 
 /** Thumbnail loops skip the opening of these clips (seconds). */
 export const streamClipStart: Record<string, number> = {
-  [streamClips.grokeye]: 10,
+  [streamClips.grokeye]: 12,
   [streamClips.mars]: 10,
   [streamClips.hunter]: 6,
 };
