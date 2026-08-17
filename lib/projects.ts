@@ -146,6 +146,39 @@ export const projects: Project[] = [
     outcome:
       "Playable instantly in a browser, 60fps with requestAnimationFrame, medals from bronze through platinum, high score in localStorage.",
   },
+  {
+    slug: "talentgrok",
+    title: "TalentGrok",
+    year: "2025",
+    role: "xAI Hackathon",
+    summary:
+      "Grok recruiting agent that sources, screens, and learns from replies.",
+    poster: "/media/projects/talentgrok/poster.jpg",
+    gallery: [],
+    video: {
+      youtubeId: "r3_mI0W5Xk4",
+      streamId: streamClips.talentgrok,
+      caption: "Walkthrough from the xAI Hackathon",
+    },
+    links: [
+      { label: "GitHub", href: "https://github.com/eus-lwq/TalentGrok" },
+      { label: "YouTube", href: talentGrokYouTube },
+    ],
+    stack: [
+      "Next.js",
+      "Python",
+      "Grok",
+      "FAISS",
+      "Supabase",
+      "Three.js",
+    ],
+    problem:
+      "Recruiting still leans on keyword search and cold LinkedIn blasts, which miss the people actually shipping research and treat every outreach the same.",
+    approach:
+      "Source from ArXiv into GitHub, rank with Grok plus FAISS instead of keywords, and close the loop with a bandit on hire/unhire. Outreach and calendar booking sit on Grok with Gmail and Google Calendar.",
+    outcome:
+      "Built at the xAI Hackathon with Mukta Jaiswal and Tyler Li. Live demo of the pipeline UI, sourcing, screening, and scheduled outreach.",
+  },
 ];
 
 export function getProject(slug: string) {
@@ -219,8 +252,7 @@ export const projectListings: ProjectListing[] = [
     summary: "Grok recruiting agent that sources, screens, and learns from replies.",
     poster: "/media/projects/talentgrok/poster.jpg",
     streamId: streamClips.talentgrok,
-    href: talentGrokYouTube,
-    external: true,
+    href: "/projects/talentgrok",
   },
   {
     title: "NG Space Sweep",
