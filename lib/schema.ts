@@ -21,7 +21,7 @@ export function personJsonLd() {
       { "@type": "CollegeOrUniversity", name: "University at Buffalo" },
     ],
     description: site.description,
-    sameAs: [site.github, site.cursor, site.x, site.linkedin],
+    sameAs: [site.github, site.x, site.linkedin],
     ...(site.email ? { email: site.email } : {}),
   };
 }
