@@ -165,6 +165,6 @@ export const extras = [
   {
     period: "2018",
     title: "UB Design, Build, Race",
-    detail: "1st of 300+ engineering students.",
+    detail: "Placed 1st of 300+ engineering students.",
   },
 ];
