@@ -33,7 +33,7 @@ export function HomeHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
         >
-          NYC → LA
+          Costa Mesa, CA
         </motion.p>
         <motion.h1
           className="mt-3 max-w-4xl text-5xl font-medium tracking-tight sm:text-7xl lg:text-8xl"
@@ -52,6 +52,8 @@ export function HomeHero() {
           Modeling & Simulation Engineer @ Anduril
           <br />
           Aerospace engineer, closeted tech bro.
+          <br />
+          NYC → LA
         </motion.p>
         <motion.div
           className="pointer-events-auto"
