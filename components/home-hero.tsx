@@ -51,7 +51,7 @@ export function HomeHero() {
         >
           Modeling & Simulation Engineer at Anduril.
           <br />
-          Aerospace Engineer by trade. Closeted tech bro.
+          Aerospace engineer, closeted tech bro.
         </motion.p>
         <motion.div
           className="pointer-events-auto"
