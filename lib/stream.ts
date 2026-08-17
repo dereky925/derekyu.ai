@@ -13,15 +13,26 @@ export const streamClipAspect: Record<string, number> = {
   [streamClips.mars]: 2160 / 1080,
 };
 
+/** Thumbnail loops skip the opening of these clips (seconds). */
+export const streamClipStart: Record<string, number> = {
+  [streamClips.grokeye]: 10,
+  [streamClips.mars]: 10,
+  [streamClips.hunter]: 6,
+};
+
 export const grokeyeYouTube = "https://www.youtube.com/watch?v=lC4oP8kb9KE";
 export const hunterYouTube = "https://www.youtube.com/watch?v=nB1vAQlGqa4";
 
 export function streamPoster(id: string) {
-  return `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/thumbnails/thumbnail.jpg`;
+  const src = `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/thumbnails/thumbnail.jpg`;
+  const start = streamClipStart[id];
+  return start ? `${src}?time=${start}s` : src;
 }
 
 export function streamHlsSrc(id: string) {
-  return `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/manifest/video.m3u8`;
+  const src = `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/manifest/video.m3u8`;
+  const start = streamClipStart[id];
+  return start ? `${src}#t=${start}` : src;
 }
 
 export function streamIframeSrc(id: string) {
@@ -33,6 +44,8 @@ export function streamIframeSrc(id: string) {
     preload: "auto",
     letterboxColor: "#050505",
   });
+  const start = streamClipStart[id];
+  if (start) params.set("startTime", String(start));
   return `https://${STREAM_CUSTOMER}.cloudflarestream.com/${id}/iframe?${params.toString()}`;
 }
 

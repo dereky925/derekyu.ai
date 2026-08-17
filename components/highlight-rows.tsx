@@ -180,7 +180,7 @@ export function HighlightRows() {
             label="GrokEye"
             detail="xAI Hackathon 2026 · Top 5 Finalist"
             clipId={streamClips.grokeye}
-            poster={streamPoster(streamClips.grokeye)}
+            poster="/media/projects/grokeye/poster.jpg"
           />
           <StreamTile
             href="/projects/to-mars-and-beyond"

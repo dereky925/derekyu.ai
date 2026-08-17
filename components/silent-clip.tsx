@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { MediaLoader } from "@/components/media-loader";
-import { streamHlsSrc, streamIframeSrc } from "@/lib/stream";
+import { streamClipStart, streamHlsSrc, streamIframeSrc } from "@/lib/stream";
 
 function supportsHls() {
   if (typeof document === "undefined") return false;
@@ -46,6 +46,7 @@ export function SilentClip({
   const shouldPlay = active && !reduce;
   const scale = iframeCoverScale(mediaAspect, frameAspect);
   const fillsParent = className.includes("absolute");
+  const startAt = streamClipStart[id] ?? 0;
 
   useEffect(() => {
     setHls(supportsHls());
@@ -70,6 +71,35 @@ export function SilentClip({
     }
   }, [shouldPlay, warm, hls]);
 
+  useEffect(() => {
+    const node = videoRef.current;
+    if (!node || !startAt) return;
+
+    const seekToStart = () => {
+      if (node.currentTime < startAt) node.currentTime = startAt;
+    };
+    const loopFromStart = () => {
+      node.currentTime = startAt;
+      if (shouldPlay) node.play().catch(() => {});
+    };
+    const keepInRange = () => {
+      if (!node.duration) return;
+      if (node.currentTime < startAt) node.currentTime = startAt;
+      if (node.currentTime >= node.duration - 0.2) loopFromStart();
+    };
+
+    node.addEventListener("loadedmetadata", seekToStart);
+    node.addEventListener("playing", seekToStart);
+    node.addEventListener("ended", loopFromStart);
+    node.addEventListener("timeupdate", keepInRange);
+    return () => {
+      node.removeEventListener("loadedmetadata", seekToStart);
+      node.removeEventListener("playing", seekToStart);
+      node.removeEventListener("ended", loopFromStart);
+      node.removeEventListener("timeupdate", keepInRange);
+    };
+  }, [shouldPlay, warm, hls, startAt, id]);
+
   return (
     <div
       className={`silent-clip overflow-hidden bg-black ${
@@ -81,14 +111,21 @@ export function SilentClip({
           ref={videoRef}
           className="h-full w-full object-cover"
           muted
-          loop
+          loop={!startAt}
           playsInline
           autoPlay={shouldPlay}
           preload="auto"
           poster={poster}
           disablePictureInPicture
           controlsList="nodownload nofullscreen noremoteplayback"
-          onPlaying={() => setReady(true)}
+          onPlaying={() => {
+            if (
+              !startAt ||
+              (videoRef.current && videoRef.current.currentTime >= startAt - 0.3)
+            ) {
+              setReady(true);
+            }
+          }}
         >
           <source src={streamHlsSrc(id)} type="application/vnd.apple.mpegURL" />
         </video>
