@@ -51,7 +51,7 @@ export function HomeHero() {
         >
           Modeling & Simulation Engineer @ Anduril
           <br />
-          Aerospace engineer, closeted tech bro.
+          Aerospace Engineering
           <br />
           NYC → LA
         </motion.p>
