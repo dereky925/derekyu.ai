@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FadeIn } from "@/components/fade-in";
+import { ModelSection } from "@/components/model-section";
 import { SilentClip } from "@/components/silent-clip";
 import { useInViewPlay } from "@/components/silent-youtube";
 import { clipPlaceDetail, photoClips } from "@/lib/photos";
@@ -200,6 +201,8 @@ export function HighlightRows() {
           />
         </div>
       </Row>
+
+      <ModelSection />
 
       <Row kicker="Photography" title="From the air." href="/photography">
         <div className="space-y-3">
