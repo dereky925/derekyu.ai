@@ -24,7 +24,7 @@ type ModelViewerProps = {
   rotation?: [number, number, number];
   /** >1 frames closer. Default 1. */
   zoom?: number;
-  appearance?: "default" | "matte-black";
+  appearance?: "default" | "matte-black" | "soft-cad";
 };
 
 function colorNear(
@@ -74,6 +74,27 @@ function applyMatteBlack(root: Object3D) {
   });
 }
 
+/** Soften CAD greys so light panels don’t blow out under studio HDR. */
+function applySoftCad(root: Object3D) {
+  root.traverse((obj) => {
+    if (!(obj as Mesh).isMesh) return;
+    const materials = Array.isArray((obj as Mesh).material)
+      ? ((obj as Mesh).material as MeshStandardMaterial[])
+      : [(obj as Mesh).material as MeshStandardMaterial];
+
+    for (const mat of materials) {
+      if (!(mat instanceof MeshStandardMaterial)) continue;
+      mat.metalness = Math.min(mat.metalness ?? 0, 0.08);
+      mat.roughness = Math.max(mat.roughness ?? 0.5, 0.72);
+      mat.envMapIntensity = 0.2;
+      // Pull near-white Onshape greys down so they stay readable
+      if (mat.color.r > 0.85 && mat.color.g > 0.85 && mat.color.b > 0.85) {
+        mat.color.multiplyScalar(0.72);
+      }
+    }
+  });
+}
+
 function Model({
   src,
   rotation = [0, 0, 0],
@@ -83,7 +104,7 @@ function Model({
   src: string;
   rotation?: [number, number, number];
   zoom?: number;
-  appearance?: "default" | "matte-black";
+  appearance?: "default" | "matte-black" | "soft-cad";
 }) {
   // Second arg enables the Draco decoder for compressed GLBs.
   const { scene } = useGLTF(src, true);
@@ -98,6 +119,7 @@ function Model({
         : mesh.material.clone();
     });
     if (appearance === "matte-black") applyMatteBlack(cloned);
+    if (appearance === "soft-cad") applySoftCad(cloned);
     return cloned;
   }, [appearance, scene]);
   const { camera, controls } = useThree();
@@ -154,21 +176,23 @@ export function ModelViewer({
   appearance = "default",
 }: ModelViewerProps) {
   const matte = appearance === "matte-black";
+  const soft = appearance === "soft-cad";
+  const cool = matte || soft;
 
   return (
     <div className={`relative overflow-hidden bg-black ${className}`}>
       <Canvas dpr={[1, 1.75]} gl={{ antialias: true, alpha: false }}>
         <color attach="background" args={["#050505"]} />
-        <ambientLight intensity={matte ? 0.22 : 0.4} />
+        <ambientLight intensity={soft ? 0.35 : matte ? 0.22 : 0.4} />
         <directionalLight
           position={[3.5, 5, 2.5]}
-          intensity={matte ? 1.15 : 1.55}
-          color={matte ? "#f2f4f7" : "#fff4e8"}
+          intensity={soft ? 0.55 : matte ? 1.15 : 1.55}
+          color={cool ? "#f2f4f7" : "#fff4e8"}
         />
         <directionalLight
           position={[-2.5, 2, -1.5]}
-          intensity={matte ? 0.4 : 0.55}
-          color={matte ? "#d8dde8" : "#c8d4e8"}
+          intensity={soft ? 0.28 : matte ? 0.4 : 0.55}
+          color={cool ? "#d8dde8" : "#c8d4e8"}
         />
         <Suspense fallback={null}>
           <Model
@@ -178,12 +202,12 @@ export function ModelViewer({
             appearance={appearance}
           />
           <Environment
-            preset={matte ? "studio" : "warehouse"}
-            environmentIntensity={matte ? 0.22 : 0.55}
+            preset={cool ? "studio" : "warehouse"}
+            environmentIntensity={soft ? 0.08 : matte ? 0.22 : 0.55}
           />
           <ContactShadows
             position={[0, 0, 0]}
-            opacity={matte ? 0.55 : 0.45}
+            opacity={soft ? 0.4 : matte ? 0.55 : 0.45}
             scale={6}
             blur={2.6}
             far={3}

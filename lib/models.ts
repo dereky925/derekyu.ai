@@ -7,8 +7,9 @@ export type SiteModel = {
   /**
    * Onshape “black” often exports as warm taupe; matte-black remaps that
    * and uses cooler studio lighting so it reads black in the viewer.
+   * soft-cad dials lights down for light-grey CAD that otherwise blows out.
    */
-  appearance?: "default" | "matte-black";
+  appearance?: "default" | "matte-black" | "soft-cad";
 };
 
 /** Nest export needs a 180° X flip after the upright bake. */
@@ -34,7 +35,7 @@ export const siteModels: SiteModel[] = [
     // Flat export → -90° upright, another -90° into flying (nose-forward) pose.
     rotation: [-Math.PI, 0, 0],
     zoom: 1.8,
-    // Cooler studio lights — same wash-out fix as B500 (no color remap needed).
-    appearance: "matte-black",
+    // Soft CAD lights — light greys blow out under the B500 studio preset.
+    appearance: "soft-cad",
   },
 ];
