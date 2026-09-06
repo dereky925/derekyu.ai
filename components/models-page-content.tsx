@@ -30,7 +30,7 @@ export function ModelsPageContent() {
 
       <FadeIn distance={24} duration={0.7} className="mt-14">
         <ModelViewer
-          src="/media/models/box.glb"
+          src="/media/models/nst-assembly.glb"
           className="min-h-[70vh] w-full rounded-2xl sm:aspect-[16/10] sm:min-h-0"
         />
       </FadeIn>

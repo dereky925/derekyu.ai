@@ -39,7 +39,7 @@ export function ModelSection() {
       </FadeIn>
       <FadeIn distance={24} duration={0.7}>
         <ModelViewer
-          src="/media/models/box.glb"
+          src="/media/models/nst-assembly.glb"
           className="aspect-[16/10] w-full rounded-2xl"
         />
       </FadeIn>

@@ -112,4 +112,4 @@ export function ModelViewer({
   );
 }
 
-useGLTF.preload("/media/models/box.glb", true);
+useGLTF.preload("/media/models/nst-assembly.glb", true);
