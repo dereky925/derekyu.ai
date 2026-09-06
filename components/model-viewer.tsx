@@ -227,15 +227,15 @@ export function ModelViewer({
           performance={{ min: 0.5 }}
         >
           <color attach="background" args={["#050505"]} />
-          <ambientLight intensity={soft ? 0.28 : matte ? 0.22 : 0.4} />
+          <ambientLight intensity={soft ? 0.32 : matte ? 0.22 : 0.4} />
           <directionalLight
             position={[3.5, 5, 2.5]}
-            intensity={soft ? 0.42 : matte ? 1.15 : 1.55}
+            intensity={soft ? 0.55 : matte ? 1.15 : 1.55}
             color={cool ? "#f2f4f7" : "#fff4e8"}
           />
           <directionalLight
             position={[-2.5, 2, -1.5]}
-            intensity={soft ? 0.2 : matte ? 0.4 : 0.55}
+            intensity={soft ? 0.28 : matte ? 0.4 : 0.55}
             color={cool ? "#d8dde8" : "#c8d4e8"}
           />
           <Suspense fallback={null}>
@@ -245,13 +245,10 @@ export function ModelViewer({
               zoom={zoom}
               appearance={appearance}
             />
-            {/* Soft-cad skips HDR env — big GPU win for dense CAD like Omen. */}
-            {!soft ? (
-              <Environment
-                preset={matte ? "studio" : "warehouse"}
-                environmentIntensity={matte ? 0.22 : 0.55}
-              />
-            ) : null}
+            <Environment
+              preset={soft || matte ? "studio" : "warehouse"}
+              environmentIntensity={soft ? 0.18 : matte ? 0.22 : 0.55}
+            />
             <ContactShadows
               position={[0, 0, 0]}
               opacity={soft ? 0.45 : matte ? 0.55 : 0.45}
