@@ -14,9 +14,6 @@ const ModelViewer = dynamic(
   },
 );
 
-/** Onshape/glTF Y-up: longest axis was Z; +90° X stands the box up like a can. */
-const BOX_UPRIGHT: [number, number, number] = [Math.PI / 2, 0, 0];
-
 export function ModelsPageContent() {
   return (
     <>
@@ -26,15 +23,14 @@ export function ModelsPageContent() {
           CAD you can spin.
         </h1>
         <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
-          Assemblies from Onshape, in the browser. Drag any direction to orbit —
-          top, sides, and underside.
+          Nest-style assemblies from Onshape, in the browser. Drag any direction
+          to orbit — top, sides, and underside.
         </p>
       </FadeIn>
 
       <FadeIn distance={24} duration={0.7} className="mt-14">
         <ModelViewer
           src="/media/models/box.glb"
-          rotation={BOX_UPRIGHT}
           className="min-h-[70vh] w-full rounded-2xl sm:aspect-[16/10] sm:min-h-0"
         />
       </FadeIn>

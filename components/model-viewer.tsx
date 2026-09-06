@@ -46,17 +46,21 @@ function Model({
     const center = scaled.getCenter(new Vector3());
     root.position.sub(center);
 
+    // Sit the base near the shadow plane
+    const grounded = new Box3().setFromObject(root);
+    root.position.y -= grounded.min.y + 0.02;
+
     const fit = new Box3().setFromObject(root).getSize(new Vector3());
     const radius = Math.max(fit.x, fit.y, fit.z) * 0.75;
-    camera.position.set(radius * 1.55, radius * 0.95, radius * 1.75);
+    camera.position.set(radius * 1.45, radius * 0.75, radius * 1.85);
     camera.near = radius / 100;
     camera.far = radius * 100;
-    camera.lookAt(0, 0, 0);
+    camera.lookAt(0, fit.y * 0.35, 0);
     camera.updateProjectionMatrix();
 
     const orbit = controls as { target?: Vector3; update?: () => void } | null;
     if (orbit?.target) {
-      orbit.target.set(0, 0, 0);
+      orbit.target.set(0, fit.y * 0.35, 0);
       orbit.update?.();
     }
   }, [camera, controls, root, rotation]);
@@ -74,24 +78,33 @@ export function ModelViewer({
     <div className={`relative overflow-hidden bg-black ${className}`}>
       <Canvas dpr={[1, 1.75]} gl={{ antialias: true, alpha: false }}>
         <color attach="background" args={["#050505"]} />
-        <ambientLight intensity={0.55} />
-        <directionalLight position={[3, 5, 2]} intensity={1.4} />
-        <directionalLight position={[-2, 1, -2]} intensity={0.4} />
+        <ambientLight intensity={0.4} />
+        <directionalLight
+          position={[3.5, 5, 2.5]}
+          intensity={1.55}
+          color="#fff4e8"
+        />
+        <directionalLight
+          position={[-2.5, 2, -1.5]}
+          intensity={0.55}
+          color="#c8d4e8"
+        />
         <Suspense fallback={null}>
           <Model src={src} rotation={rotation} />
-          <Environment preset="city" />
+          {/* Soft outdoor product look — closer to Nest field photography */}
+          <Environment preset="warehouse" environmentIntensity={0.55} />
           <ContactShadows
-            position={[0, -0.85, 0]}
-            opacity={0.35}
+            position={[0, 0, 0]}
+            opacity={0.45}
             scale={6}
-            blur={2.4}
+            blur={2.6}
             far={3}
           />
         </Suspense>
         <OrbitControls
           makeDefault
           autoRotate={autoRotate}
-          autoRotateSpeed={0.7}
+          autoRotateSpeed={0.65}
           enablePan={false}
         />
       </Canvas>
