@@ -7,7 +7,14 @@ import {
   useGLTF,
 } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Suspense, useLayoutEffect, useMemo } from "react";
+import {
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Box3,
   Mesh,
@@ -86,7 +93,7 @@ function applySoftCad(root: Object3D) {
       if (!(mat instanceof MeshStandardMaterial)) continue;
       mat.metalness = Math.min(mat.metalness ?? 0, 0.08);
       mat.roughness = Math.max(mat.roughness ?? 0.5, 0.72);
-      mat.envMapIntensity = 0.2;
+      mat.envMapIntensity = 0.15;
       // Pull near-white Onshape greys down so they stay readable
       if (mat.color.r > 0.85 && mat.color.g > 0.85 && mat.color.b > 0.85) {
         mat.color.multiplyScalar(0.72);
@@ -167,6 +174,24 @@ function Model({
   return <primitive object={root} />;
 }
 
+function useInView(rootMargin = "120px") {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin, threshold: 0.05 },
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, [rootMargin]);
+
+  return { ref, inView };
+}
+
 export function ModelViewer({
   src,
   className = "",
@@ -178,52 +203,75 @@ export function ModelViewer({
   const matte = appearance === "matte-black";
   const soft = appearance === "soft-cad";
   const cool = matte || soft;
+  const { ref, inView } = useInView();
+  // Mount once visible so scroll-away can freeze the loop without remounting.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    if (inView) setMounted(true);
+  }, [inView]);
 
   return (
-    <div className={`relative overflow-hidden bg-black ${className}`}>
-      <Canvas dpr={[1, 1.75]} gl={{ antialias: true, alpha: false }}>
-        <color attach="background" args={["#050505"]} />
-        <ambientLight intensity={soft ? 0.28 : matte ? 0.22 : 0.4} />
-        <directionalLight
-          position={[3.5, 5, 2.5]}
-          intensity={soft ? 0.42 : matte ? 1.15 : 1.55}
-          color={cool ? "#f2f4f7" : "#fff4e8"}
-        />
-        <directionalLight
-          position={[-2.5, 2, -1.5]}
-          intensity={soft ? 0.2 : matte ? 0.4 : 0.55}
-          color={cool ? "#d8dde8" : "#c8d4e8"}
-        />
-        <Suspense fallback={null}>
-          <Model
-            src={src}
-            rotation={rotation}
-            zoom={zoom}
-            appearance={appearance}
+    <div
+      ref={ref}
+      className={`relative overflow-hidden bg-black ${className}`}
+    >
+      {mounted ? (
+        <Canvas
+          dpr={[1, 1.25]}
+          frameloop={inView ? "always" : "never"}
+          gl={{
+            antialias: true,
+            alpha: false,
+            powerPreference: "high-performance",
+          }}
+          performance={{ min: 0.5 }}
+        >
+          <color attach="background" args={["#050505"]} />
+          <ambientLight intensity={soft ? 0.28 : matte ? 0.22 : 0.4} />
+          <directionalLight
+            position={[3.5, 5, 2.5]}
+            intensity={soft ? 0.42 : matte ? 1.15 : 1.55}
+            color={cool ? "#f2f4f7" : "#fff4e8"}
           />
-          <Environment
-            preset={cool ? "studio" : "warehouse"}
-            environmentIntensity={soft ? 0.05 : matte ? 0.22 : 0.55}
+          <directionalLight
+            position={[-2.5, 2, -1.5]}
+            intensity={soft ? 0.2 : matte ? 0.4 : 0.55}
+            color={cool ? "#d8dde8" : "#c8d4e8"}
           />
-          <ContactShadows
-            position={[0, 0, 0]}
-            opacity={soft ? 0.45 : matte ? 0.55 : 0.45}
-            scale={6}
-            blur={2.6}
-            far={3}
+          <Suspense fallback={null}>
+            <Model
+              src={src}
+              rotation={rotation}
+              zoom={zoom}
+              appearance={appearance}
+            />
+            {/* Soft-cad skips HDR env — big GPU win for dense CAD like Omen. */}
+            {!soft ? (
+              <Environment
+                preset={matte ? "studio" : "warehouse"}
+                environmentIntensity={matte ? 0.22 : 0.55}
+              />
+            ) : null}
+            <ContactShadows
+              position={[0, 0, 0]}
+              opacity={soft ? 0.45 : matte ? 0.55 : 0.45}
+              scale={6}
+              blur={soft ? 1.6 : 2.6}
+              far={3}
+              resolution={soft ? 256 : 512}
+              frames={1}
+            />
+          </Suspense>
+          <OrbitControls
+            makeDefault
+            autoRotate={autoRotate && inView}
+            autoRotateSpeed={0.85}
+            enablePan={false}
           />
-        </Suspense>
-        <OrbitControls
-          makeDefault
-          autoRotate={autoRotate}
-          autoRotateSpeed={1.05}
-          enablePan={false}
-        />
-      </Canvas>
+        </Canvas>
+      ) : (
+        <div className="absolute inset-0 animate-pulse bg-[#0a0a0a]" />
+      )}
     </div>
   );
 }
-
-useGLTF.preload("/media/models/nst-assembly-v2.glb", true);
-useGLTF.preload("/media/models/b500-v3.glb", true);
-useGLTF.preload("/media/models/omen-v2.glb", true);

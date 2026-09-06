@@ -31,7 +31,7 @@ export const siteModels: SiteModel[] = [
   },
   {
     title: "Omen",
-    src: "/media/models/omen-v2.glb",
+    src: "/media/models/omen-v3.glb",
     // Flat export → -180° X into flying pose; +180° Y so the nose faces the camera.
     rotation: [-Math.PI, Math.PI, 0],
     zoom: 2.5,
