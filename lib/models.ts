@@ -32,8 +32,8 @@ export const siteModels: SiteModel[] = [
   {
     title: "Omen",
     src: "/media/models/omen-v2.glb",
-    // Flat export → -90° upright, another -90° into flying (nose-forward) pose.
-    rotation: [-Math.PI, 0, 0],
+    // Flat export → -180° X into flying pose; +180° Y so the nose faces the camera.
+    rotation: [-Math.PI, Math.PI, 0],
     zoom: 2,
     // Soft CAD lights — light greys blow out under the B500 studio preset.
     appearance: "soft-cad",
