@@ -18,6 +18,8 @@ export const siteModels: SiteModel[] = [
   {
     title: "B500",
     detail: "From Onshape.",
-    src: "/media/models/b500-v2.glb",
+    src: "/media/models/b500-v3.glb",
+    // Original points nose-down; pitch -90° levels it without flipping.
+    rotation: [-Math.PI / 2, 0, 0],
   },
 ];
