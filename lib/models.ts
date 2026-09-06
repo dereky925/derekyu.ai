@@ -31,7 +31,7 @@ export const siteModels: SiteModel[] = [
   },
   {
     title: "Omen",
-    src: "/media/models/omen-v1.glb",
+    src: "/media/models/omen-v2.glb",
     // Flat export → -90° upright, another -90° into flying (nose-forward) pose.
     rotation: [-Math.PI, 0, 0],
     zoom: 2,
