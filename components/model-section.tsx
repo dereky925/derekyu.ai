@@ -10,7 +10,7 @@ export function ModelSection() {
         <div className="mb-8">
           <p className="text-sm text-muted">Models</p>
           <h2 className="mt-2 max-w-xl text-2xl tracking-tight sm:text-3xl">
-            CAD you can spin.
+            Hardware in the round.
           </h2>
           <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted">
             Onshape assemblies in the browser.{" "}

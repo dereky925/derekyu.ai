@@ -1,6 +1,5 @@
 export type SiteModel = {
   title: string;
-  detail: string;
   src: string;
   rotation?: [number, number, number];
 };
@@ -10,14 +9,12 @@ const nestUpright: [number, number, number] = [Math.PI, 0, 0];
 
 export const siteModels: SiteModel[] = [
   {
-    title: "NST Assembly",
-    detail: "Nest-style assembly from Onshape.",
+    title: "Nest",
     src: "/media/models/nst-assembly-v2.glb",
     rotation: nestUpright,
   },
   {
     title: "B500",
-    detail: "From Onshape.",
     src: "/media/models/b500-v3.glb",
     // Original points nose-down; pitch -90° levels it without flipping.
     rotation: [-Math.PI / 2, 0, 0],
