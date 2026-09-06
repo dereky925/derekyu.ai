@@ -183,15 +183,15 @@ export function ModelViewer({
     <div className={`relative overflow-hidden bg-black ${className}`}>
       <Canvas dpr={[1, 1.75]} gl={{ antialias: true, alpha: false }}>
         <color attach="background" args={["#050505"]} />
-        <ambientLight intensity={soft ? 0.35 : matte ? 0.22 : 0.4} />
+        <ambientLight intensity={soft ? 0.28 : matte ? 0.22 : 0.4} />
         <directionalLight
           position={[3.5, 5, 2.5]}
-          intensity={soft ? 0.55 : matte ? 1.15 : 1.55}
+          intensity={soft ? 0.42 : matte ? 1.15 : 1.55}
           color={cool ? "#f2f4f7" : "#fff4e8"}
         />
         <directionalLight
           position={[-2.5, 2, -1.5]}
-          intensity={soft ? 0.28 : matte ? 0.4 : 0.55}
+          intensity={soft ? 0.2 : matte ? 0.4 : 0.55}
           color={cool ? "#d8dde8" : "#c8d4e8"}
         />
         <Suspense fallback={null}>
@@ -203,11 +203,11 @@ export function ModelViewer({
           />
           <Environment
             preset={cool ? "studio" : "warehouse"}
-            environmentIntensity={soft ? 0.08 : matte ? 0.22 : 0.55}
+            environmentIntensity={soft ? 0.05 : matte ? 0.22 : 0.55}
           />
           <ContactShadows
             position={[0, 0, 0]}
-            opacity={soft ? 0.4 : matte ? 0.55 : 0.45}
+            opacity={soft ? 0.45 : matte ? 0.55 : 0.45}
             scale={6}
             blur={2.6}
             far={3}
