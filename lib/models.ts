@@ -25,7 +25,7 @@ export const siteModels: SiteModel[] = [
     src: "/media/models/b500-v3.glb",
     // Original points nose-down; pitch -90° levels it without flipping.
     rotation: [-Math.PI / 2, 0, 0],
-    zoom: 1.85,
+    zoom: 2.3,
     appearance: "matte-black",
   },
 ];
