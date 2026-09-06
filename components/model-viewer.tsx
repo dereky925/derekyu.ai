@@ -111,8 +111,8 @@ function Model({
     const box = new Box3().setFromObject(root);
     const size = box.getSize(new Vector3());
     const longest = Math.max(size.x, size.y, size.z, 0.001);
-    const scale = (2.35 * zoom) / longest;
-    root.scale.setScalar(scale);
+    // Keep model size fixed; zoom only pulls the camera in (scaling both cancels out).
+    root.scale.setScalar(2.35 / longest);
 
     const scaled = new Box3().setFromObject(root);
     const center = scaled.getCenter(new Vector3());
@@ -124,8 +124,13 @@ function Model({
 
     const fit = new Box3().setFromObject(root).getSize(new Vector3());
     const radius = Math.max(fit.x, fit.y, fit.z) * 0.75;
-    camera.position.set(radius * 0.95, radius * 0.5, radius * 1.15);
-    camera.near = radius / 100;
+    const dist = 1 / Math.max(zoom, 0.01);
+    camera.position.set(
+      radius * 0.95 * dist,
+      radius * 0.5 * dist,
+      radius * 1.15 * dist,
+    );
+    camera.near = (radius * dist) / 100;
     camera.far = radius * 100;
     camera.lookAt(0, fit.y * 0.4, 0);
     camera.updateProjectionMatrix();
