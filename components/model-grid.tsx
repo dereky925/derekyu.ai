@@ -47,6 +47,8 @@ export function ModelGrid({ compact = false }: ModelGridProps) {
           <ModelViewer
             src={model.src}
             rotation={model.rotation ?? [0, 0, 0]}
+            zoom={model.zoom ?? 1}
+            appearance={model.appearance ?? "default"}
             className="aspect-[4/3] w-full rounded-2xl sm:aspect-[16/10]"
           />
         </FadeIn>
