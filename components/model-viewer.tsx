@@ -113,3 +113,4 @@ export function ModelViewer({
 }
 
 useGLTF.preload("/media/models/nst-assembly-v2.glb", true);
+useGLTF.preload("/media/models/b500.glb", true);

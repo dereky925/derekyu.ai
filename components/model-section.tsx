@@ -27,12 +27,12 @@ export function ModelSection() {
               CAD you can spin.
             </h2>
             <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted">
-              Nest-style assembly from Onshape.{" "}
+              Onshape assemblies in the browser.{" "}
               <a
                 href="/models"
                 className="text-foreground/80 underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
               >
-                Full viewer
+                See all
               </a>
             </p>
           </div>
