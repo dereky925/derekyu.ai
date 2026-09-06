@@ -28,4 +28,10 @@ export const siteModels: SiteModel[] = [
     zoom: 1.5,
     appearance: "matte-black",
   },
+  {
+    title: "Omen",
+    src: "/media/models/omen-v1.glb",
+    // Onshape export lies flat; pitch -90° stands it up.
+    rotation: [-Math.PI / 2, 0, 0],
+  },
 ];

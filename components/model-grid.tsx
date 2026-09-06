@@ -22,7 +22,13 @@ type ModelGridProps = {
 
 export function ModelGrid({ compact = false }: ModelGridProps) {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
+    <div
+      className={
+        compact
+          ? "grid gap-6 sm:grid-cols-3 sm:gap-6"
+          : "grid gap-6 sm:grid-cols-2 sm:gap-8"
+      }
+    >
       {siteModels.map((model, index) => (
         <FadeIn
           key={model.src}
