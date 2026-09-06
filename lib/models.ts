@@ -31,7 +31,10 @@ export const siteModels: SiteModel[] = [
   {
     title: "Omen",
     src: "/media/models/omen-v1.glb",
-    // Onshape export lies flat; pitch -90° stands it up.
-    rotation: [-Math.PI / 2, 0, 0],
+    // Flat export → -90° upright, another -90° into flying (nose-forward) pose.
+    rotation: [-Math.PI, 0, 0],
+    zoom: 1.8,
+    // Cooler studio lights — same wash-out fix as B500 (no color remap needed).
+    appearance: "matte-black",
   },
 ];
