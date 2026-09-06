@@ -15,6 +15,8 @@ const ModelViewer = dynamic(
 );
 
 export function ModelSection() {
+  const nestUpright: [number, number, number] = [Math.PI, 0, 0];
+
   return (
     <section className="mt-24">
       <FadeIn>
@@ -40,6 +42,7 @@ export function ModelSection() {
       <FadeIn distance={24} duration={0.7}>
         <ModelViewer
           src="/media/models/nst-assembly.glb"
+          rotation={nestUpright}
           className="aspect-[16/10] w-full rounded-2xl"
         />
       </FadeIn>

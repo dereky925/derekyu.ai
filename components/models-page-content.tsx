@@ -15,6 +15,9 @@ const ModelViewer = dynamic(
 );
 
 export function ModelsPageContent() {
+  // Onshape export lands upside-down after the upright bake; flip 180° on X.
+  const nestUpright: [number, number, number] = [Math.PI, 0, 0];
+
   return (
     <>
       <FadeIn>
@@ -31,6 +34,7 @@ export function ModelsPageContent() {
       <FadeIn distance={24} duration={0.7} className="mt-14">
         <ModelViewer
           src="/media/models/nst-assembly.glb"
+          rotation={nestUpright}
           className="min-h-[70vh] w-full rounded-2xl sm:aspect-[16/10] sm:min-h-0"
         />
       </FadeIn>

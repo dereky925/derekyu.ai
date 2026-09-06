@@ -39,7 +39,7 @@ function Model({
     const box = new Box3().setFromObject(root);
     const size = box.getSize(new Vector3());
     const longest = Math.max(size.x, size.y, size.z, 0.001);
-    const scale = 1.6 / longest;
+    const scale = 2.35 / longest;
     root.scale.setScalar(scale);
 
     const scaled = new Box3().setFromObject(root);
@@ -52,15 +52,15 @@ function Model({
 
     const fit = new Box3().setFromObject(root).getSize(new Vector3());
     const radius = Math.max(fit.x, fit.y, fit.z) * 0.75;
-    camera.position.set(radius * 1.45, radius * 0.75, radius * 1.85);
+    camera.position.set(radius * 0.95, radius * 0.5, radius * 1.15);
     camera.near = radius / 100;
     camera.far = radius * 100;
-    camera.lookAt(0, fit.y * 0.35, 0);
+    camera.lookAt(0, fit.y * 0.4, 0);
     camera.updateProjectionMatrix();
 
     const orbit = controls as { target?: Vector3; update?: () => void } | null;
     if (orbit?.target) {
-      orbit.target.set(0, fit.y * 0.35, 0);
+      orbit.target.set(0, fit.y * 0.4, 0);
       orbit.update?.();
     }
   }, [camera, controls, root, rotation]);
@@ -104,7 +104,7 @@ export function ModelViewer({
         <OrbitControls
           makeDefault
           autoRotate={autoRotate}
-          autoRotateSpeed={0.65}
+          autoRotateSpeed={1.05}
           enablePan={false}
         />
       </Canvas>
