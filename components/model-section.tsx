@@ -41,7 +41,7 @@ export function ModelSection() {
       </FadeIn>
       <FadeIn distance={24} duration={0.7}>
         <ModelViewer
-          src="/media/models/nst-assembly.glb"
+          src="/media/models/nst-assembly-v2.glb"
           rotation={nestUpright}
           className="aspect-[16/10] w-full rounded-2xl"
         />
