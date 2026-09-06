@@ -1,34 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { FadeIn } from "@/components/fade-in";
-
-const ModelViewer = dynamic(
-  () =>
-    import("@/components/model-viewer").then((mod) => mod.ModelViewer),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-[55vh] animate-pulse rounded-2xl bg-surface sm:aspect-[16/10] sm:min-h-0" />
-    ),
-  },
-);
-
-const nestUpright: [number, number, number] = [Math.PI, 0, 0];
-
-const models = [
-  {
-    title: "NST Assembly",
-    detail: "Nest-style assembly from Onshape.",
-    src: "/media/models/nst-assembly-v2.glb",
-    rotation: nestUpright,
-  },
-  {
-    title: "B500",
-    detail: "From Onshape.",
-    src: "/media/models/b500.glb",
-  },
-] as const;
+import { ModelGrid } from "@/components/model-grid";
 
 export function ModelsPageContent() {
   return (
@@ -44,23 +17,8 @@ export function ModelsPageContent() {
         </p>
       </FadeIn>
 
-      <div className="mt-14 space-y-16">
-        {models.map((model, index) => (
-          <FadeIn key={model.src} distance={24} duration={0.7} delay={index * 0.04}>
-            <div className="mb-4 flex items-end justify-between gap-6">
-              <div>
-                <h2 className="text-xl tracking-tight sm:text-2xl">{model.title}</h2>
-                <p className="mt-1 text-sm text-muted">{model.detail}</p>
-              </div>
-              <p className="shrink-0 text-xs text-muted">Drag to orbit</p>
-            </div>
-            <ModelViewer
-              src={model.src}
-              rotation={"rotation" in model ? [...model.rotation] : [0, 0, 0]}
-              className="min-h-[55vh] w-full rounded-2xl sm:aspect-[16/10] sm:min-h-0"
-            />
-          </FadeIn>
-        ))}
+      <div className="mt-14">
+        <ModelGrid />
       </div>
     </>
   );
