@@ -9,10 +9,10 @@ export function ModelsPageContent() {
       <FadeIn>
         <p className="text-sm text-muted">Models</p>
         <h1 className="mt-3 max-w-3xl text-4xl font-medium tracking-tight sm:text-5xl">
-          Hardware in the round.
+          As designed.
         </h1>
         <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
-          Assemblies from Onshape. Drag to orbit.
+          Onshape assemblies from Nest and B500.
         </p>
       </FadeIn>
 

@@ -4,7 +4,7 @@ import { ModelsPageContent } from "@/components/models-page-content";
 export const metadata: Metadata = {
   title: "Models",
   description:
-    "Interactive Onshape CAD assemblies by Derek Yu — orbit hardware in the browser.",
+    "Onshape assemblies from Nest and B500 by Derek Yu.",
   alternates: { canonical: "/models" },
 };
 
