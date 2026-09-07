@@ -31,9 +31,8 @@ type ModelViewerProps = {
   rotation?: [number, number, number];
   /** >1 frames closer. Default 1. */
   zoom?: number;
-  appearance?: "default" | "matte-black" | "soft-cad";
+  appearance?: "default" | "matte-black" | "soft-cad" | "soft-dim";
 };
-
 function colorNear(
   mat: MeshStandardMaterial,
   r: number,
@@ -111,7 +110,7 @@ function Model({
   src: string;
   rotation?: [number, number, number];
   zoom?: number;
-  appearance?: "default" | "matte-black" | "soft-cad";
+  appearance?: "default" | "matte-black" | "soft-cad" | "soft-dim";
 }) {
   // Second arg enables the Draco decoder for compressed GLBs.
   const { scene } = useGLTF(src, true);
@@ -126,7 +125,9 @@ function Model({
         : mesh.material.clone();
     });
     if (appearance === "matte-black") applyMatteBlack(cloned);
-    if (appearance === "soft-cad") applySoftCad(cloned);
+    if (appearance === "soft-cad" || appearance === "soft-dim") {
+      applySoftCad(cloned);
+    }
     return cloned;
   }, [appearance, scene]);
   const { camera, controls } = useThree();
@@ -202,7 +203,8 @@ export function ModelViewer({
 }: ModelViewerProps) {
   const matte = appearance === "matte-black";
   const soft = appearance === "soft-cad";
-  const cool = matte || soft;
+  const dim = appearance === "soft-dim";
+  const cool = matte || soft || dim;
   const { ref, inView } = useInView();
   // Mount once visible so scroll-away can freeze the loop without remounting.
   const [mounted, setMounted] = useState(false);
@@ -227,15 +229,17 @@ export function ModelViewer({
           performance={{ min: 0.5 }}
         >
           <color attach="background" args={["#050505"]} />
-          <ambientLight intensity={soft ? 0.2 : matte ? 0.22 : 0.4} />
+          <ambientLight
+            intensity={dim ? 0.14 : soft ? 0.2 : matte ? 0.22 : 0.4}
+          />
           <directionalLight
             position={[3.5, 5, 2.5]}
-            intensity={soft ? 0.32 : matte ? 1.15 : 1.55}
+            intensity={dim ? 0.22 : soft ? 0.32 : matte ? 1.15 : 1.55}
             color={cool ? "#f2f4f7" : "#fff4e8"}
           />
           <directionalLight
             position={[-2.5, 2, -1.5]}
-            intensity={soft ? 0.14 : matte ? 0.4 : 0.55}
+            intensity={dim ? 0.1 : soft ? 0.14 : matte ? 0.4 : 0.55}
             color={cool ? "#d8dde8" : "#c8d4e8"}
           />
           <Suspense fallback={null}>
@@ -246,16 +250,18 @@ export function ModelViewer({
               appearance={appearance}
             />
             <Environment
-              preset={soft || matte ? "studio" : "warehouse"}
-              environmentIntensity={soft ? 0.07 : matte ? 0.22 : 0.55}
+              preset={cool ? "studio" : "warehouse"}
+              environmentIntensity={
+                dim ? 0.04 : soft ? 0.07 : matte ? 0.22 : 0.55
+              }
             />
             <ContactShadows
               position={[0, 0, 0]}
-              opacity={soft ? 0.45 : matte ? 0.55 : 0.45}
+              opacity={dim || soft ? 0.45 : matte ? 0.55 : 0.45}
               scale={6}
-              blur={soft ? 1.6 : 2.6}
+              blur={dim || soft ? 1.6 : 2.6}
               far={3}
-              resolution={soft ? 256 : 512}
+              resolution={dim || soft ? 256 : 512}
               frames={1}
             />
           </Suspense>

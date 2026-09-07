@@ -8,8 +8,9 @@ export type SiteModel = {
    * Onshape “black” often exports as warm taupe; matte-black remaps that
    * and uses cooler studio lighting so it reads black in the viewer.
    * soft-cad dials lights down for light-grey CAD that otherwise blows out.
+   * soft-dim is darker still — used for Models-page-only extras.
    */
-  appearance?: "default" | "matte-black" | "soft-cad";
+  appearance?: "default" | "matte-black" | "soft-cad" | "soft-dim";
 };
 
 /** Nest export needs a 180° X flip after the upright bake. */
@@ -54,30 +55,28 @@ export const modelsPageOnly: SiteModel[] = [
   {
     title: "Wisp",
     src: "/media/models/wisp-v1.glb",
-    rotation: [0, Math.PI, 0],
     zoom: 1.3,
-    appearance: "matte-black",
+    appearance: "soft-dim",
   },
   {
     title: "B250",
     src: "/media/models/b250-v1.glb",
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.5,
-    appearance: "soft-cad",
+    appearance: "soft-dim",
   },
   {
     title: "B100",
     src: "/media/models/b100-v1.glb",
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.5,
-    appearance: "soft-cad",
+    appearance: "soft-dim",
   },
   {
     title: "Roadrunner",
-    src: "/media/models/roadrunner-v1.glb",
-    rotation: [0, Math.PI, 0],
+    src: "/media/models/roadrunner-v2.glb",
     zoom: 1.3,
-    appearance: "soft-cad",
+    appearance: "soft-dim",
   },
 ];
 
