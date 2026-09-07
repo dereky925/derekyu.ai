@@ -17,14 +17,15 @@ function FloatingPaths({ position }: { position: number }) {
           684 - i * 5 * position
         } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
         width: 0.5 + i * 0.03,
-        duration: 22 + ((i * 7 + (position > 0 ? 3 : 0)) % 11),
+        // One-way speeds — staggered so the field never syncs to a pause
+        duration: 10 + ((i * 5 + (position > 0 ? 2 : 7)) % 12),
+        drawDelay: i * 0.035 + (position > 0 ? 0 : 0.25),
       })),
     [position],
   );
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Scale past the viewport so strokes fill edge-to-edge */}
       <svg
         className="absolute left-1/2 top-1/2 h-[160%] w-[160%] -translate-x-1/2 -translate-y-1/2 text-white"
         viewBox="0 0 696 316"
@@ -38,19 +39,20 @@ function FloatingPaths({ position }: { position: number }) {
             d={path.d}
             stroke="currentColor"
             strokeWidth={path.width}
-            strokeOpacity={0.08 + path.id * 0.025}
+            strokeOpacity={0.1 + path.id * 0.022}
             initial={
               reduce
-                ? { pathLength: 1, opacity: 0.35 }
-                : { pathLength: 0.5, opacity: 0.4 }
+                ? { pathLength: 0.4, pathOffset: 0, opacity: 0.35 }
+                : { pathLength: 0, pathOffset: 0, opacity: 0 }
             }
             animate={
               reduce
-                ? { pathLength: 1, opacity: 0.35 }
+                ? { pathLength: 0.4, pathOffset: 0, opacity: 0.35 }
                 : {
-                    pathLength: 1,
-                    opacity: [0.22, 0.5, 0.22],
-                    pathOffset: [0, 1, 0],
+                    // Grow onto blank, then keep a traveling segment flowing one way
+                    pathLength: 0.4,
+                    pathOffset: [0, 1],
+                    opacity: 0.45,
                   }
             }
             transition={
@@ -58,16 +60,18 @@ function FloatingPaths({ position }: { position: number }) {
                 ? { duration: 0 }
                 : {
                     pathLength: {
-                      duration: 2.4,
+                      duration: 2.6,
+                      delay: path.drawDelay,
                       ease: [0.22, 1, 0.36, 1],
                     },
                     opacity: {
-                      duration: path.duration,
-                      repeat: Number.POSITIVE_INFINITY,
-                      ease: "linear",
+                      duration: 1.1,
+                      delay: path.drawDelay,
+                      ease: "easeOut",
                     },
                     pathOffset: {
                       duration: path.duration,
+                      delay: path.drawDelay,
                       repeat: Number.POSITIVE_INFINITY,
                       ease: "linear",
                     },
