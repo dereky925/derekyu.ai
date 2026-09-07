@@ -11,10 +11,10 @@ const cities = [
 ] as const;
 
 /** Must match `.animate-city-rainbow-pulse` duration in globals.css */
-const PULSE_MS = 2600;
+const PULSE_MS = 2200;
 /** Extra time on a gray bar after the pulse fades, before flipping */
-const GRAY_HOLD_MS = 700;
-const REDUCE_HOLD_MS = 3200;
+const GRAY_HOLD_MS = 180;
+const REDUCE_HOLD_MS = 2800;
 
 /**
  * Cycles lived-in cities with a gray underline that gets a
