@@ -78,8 +78,8 @@ function compile(
 }
 
 /**
- * GPU topographic field — same gray isolines, without Safari's
- * Canvas2D path/GC stutter.
+ * GPU topographic “Damascus” field — gray isolines for the About hero.
+ * Kept as a named backdrop option via `lib/hero-background.ts`.
  */
 export function HeroField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
