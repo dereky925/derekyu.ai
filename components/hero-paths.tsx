@@ -7,7 +7,7 @@ function FloatingPaths({ position }: { position: number }) {
   const reduce = useReducedMotion();
   const paths = useMemo(
     () =>
-      Array.from({ length: 36 }, (_, i) => ({
+      Array.from({ length: 42 }, (_, i) => ({
         id: i,
         d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
           380 - i * 5 * position
@@ -16,17 +16,18 @@ function FloatingPaths({ position }: { position: number }) {
         } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
           684 - i * 5 * position
         } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-        width: 0.5 + i * 0.03,
-        // Stable per-path duration (avoids hydration/random flicker)
+        // Thicker strokes so they read on a full-bleed dark hero
+        width: 1.6 + i * 0.09,
         duration: 22 + ((i * 7 + (position > 0 ? 3 : 0)) % 11),
       })),
     [position],
   );
 
   return (
-    <div className="pointer-events-none absolute inset-0">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Scale past the viewport so strokes fill edge-to-edge */}
       <svg
-        className="h-full w-full text-white"
+        className="absolute left-1/2 top-1/2 h-[160%] w-[160%] -translate-x-1/2 -translate-y-1/2 text-white"
         viewBox="0 0 696 316"
         fill="none"
         preserveAspectRatio="xMidYMid slice"
@@ -38,18 +39,18 @@ function FloatingPaths({ position }: { position: number }) {
             d={path.d}
             stroke="currentColor"
             strokeWidth={path.width}
-            strokeOpacity={0.08 + path.id * 0.025}
+            strokeOpacity={0.1 + path.id * 0.028}
             initial={
               reduce
-                ? { pathLength: 1, opacity: 0.35 }
-                : { pathLength: 0.3, opacity: 0.45 }
+                ? { pathLength: 1, opacity: 0.4 }
+                : { pathLength: 0.3, opacity: 0.5 }
             }
             animate={
               reduce
-                ? { pathLength: 1, opacity: 0.35 }
+                ? { pathLength: 1, opacity: 0.4 }
                 : {
                     pathLength: 1,
-                    opacity: [0.22, 0.5, 0.22],
+                    opacity: [0.28, 0.62, 0.28],
                     pathOffset: [0, 1, 0],
                   }
             }
