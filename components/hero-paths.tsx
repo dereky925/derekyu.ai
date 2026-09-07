@@ -34,8 +34,9 @@ function buildLayer(position: 1 | -1, count: number): PathSpec[] {
       width: 0.45 + i * 0.028,
       opacity: 0.11 + i * 0.015,
       duration,
-      // Both layers fade in together — avoids a delayed “second wave” pop-in.
-      delay: i * 0.008,
+      // Cascade draw-in; mirror layer trails slightly so it isn’t one solid pop.
+      delay: i * 0.032 + (position > 0 ? 0 : 0.18),
+      // Negative phase = already mid-path when the dash grows (visible sooner, still blank at t=0).
       phase: -(startOffset * duration),
     };
   });
@@ -97,7 +98,6 @@ export function HeroPaths() {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeOpacity={path.opacity}
-              strokeDasharray="0.55 0.45"
               style={
                 {
                   "--hero-path-duration": `${path.duration}s`,
