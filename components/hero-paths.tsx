@@ -29,13 +29,7 @@ function FloatingPaths({ position }: { position: number }) {
         aria-hidden
       >
         <defs>
-          <linearGradient
-            id={gradId}
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="100%"
-          >
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#ffffff" />
             <stop offset="45%" stopColor="#9a9aa3" />
             <stop offset="100%" stopColor="#e8e8ec" />
@@ -49,9 +43,9 @@ function FloatingPaths({ position }: { position: number }) {
             strokeWidth={path.width}
             strokeLinecap="round"
             strokeLinejoin="round"
-            // Keep full continuous strokes; only drift + breathe brightness.
             pathLength={1}
-            initial={{ opacity: path.baseOpacity }}
+            // Visible immediately — no entrance fade-in.
+            initial={false}
             animate={{
               opacity: [
                 path.baseOpacity * 0.75,
@@ -72,6 +66,7 @@ function FloatingPaths({ position }: { position: number }) {
                 ease: "linear",
               },
             }}
+            style={{ opacity: path.baseOpacity }}
           />
         ))}
       </svg>
