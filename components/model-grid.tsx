@@ -25,7 +25,7 @@ export function ModelGrid({ compact = false }: ModelGridProps) {
     <div
       className={
         compact
-          ? "grid gap-6 sm:grid-cols-3 sm:gap-6"
+          ? "grid gap-6 sm:grid-cols-2 sm:gap-6"
           : "grid gap-6 sm:grid-cols-2 sm:gap-8"
       }
     >

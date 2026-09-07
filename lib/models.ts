@@ -38,4 +38,12 @@ export const siteModels: SiteModel[] = [
     // Soft CAD lights — light greys blow out under the B500 studio preset.
     appearance: "soft-cad",
   },
+  {
+    title: "Fury",
+    src: "/media/models/fury-v1.glb",
+    // Same flying framing as Omen.
+    rotation: [-Math.PI, Math.PI, 0],
+    zoom: 2.5,
+    appearance: "soft-cad",
+  },
 ];
