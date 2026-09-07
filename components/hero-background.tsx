@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeroField } from "@/components/hero-field";
 import { HeroPaths } from "@/components/hero-paths";
 import {
@@ -17,16 +17,27 @@ function pickBackground(): HeroBackgroundId {
   return heroBackgroundMode;
 }
 
-/** Stable for this JS realm so Strict Mode remounts keep the same pick. */
-let clientPick: HeroBackgroundId | null = null;
+/**
+ * Renders the configured About hero backdrop.
+ * Set `heroBackgroundMode` in `lib/hero-background.ts` to `"damascus"`,
+ * `"paths"`, or `"random"`.
+ */
+export function HeroBackground() {
+  const [id, setId] = useState<HeroBackgroundId | null>(
+    heroBackgroundMode === "random" ? null : heroBackgroundMode,
+  );
 
-function getClientPick(): HeroBackgroundId {
-  if (heroBackgroundMode !== "random") return heroBackgroundMode;
-  if (!clientPick) clientPick = pickBackground();
-  return clientPick;
-}
+  useEffect(() => {
+    if (heroBackgroundMode === "random") {
+      setId(pickBackground());
+    }
+  }, []);
 
-function Backdrop({ id }: { id: HeroBackgroundId }) {
+  // Avoid flashing the wrong backdrop before the random pick.
+  if (!id) {
+    return <div className="absolute inset-0 bg-[#050505]" aria-hidden />;
+  }
+
   switch (id) {
     case "damascus":
       return <HeroField />;
@@ -37,25 +48,4 @@ function Backdrop({ id }: { id: HeroBackgroundId }) {
       return _exhaustive;
     }
   }
-}
-
-/**
- * Renders the About hero backdrop.
- * Mode is set in `lib/hero-background.ts` (`"random"` | `"damascus"` | `"paths"`).
- */
-export function HeroBackground() {
-  // Locked modes can render immediately; random resolves before first paint.
-  const [id, setId] = useState<HeroBackgroundId | null>(
-    heroBackgroundMode === "random" ? null : heroBackgroundMode,
-  );
-
-  useLayoutEffect(() => {
-    setId(getClientPick());
-  }, []);
-
-  if (!id) {
-    return <div className="absolute inset-0 bg-[#050505]" aria-hidden />;
-  }
-
-  return <Backdrop id={id} />;
 }

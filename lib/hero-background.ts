@@ -1,15 +1,18 @@
 /**
  * About-page hero backdrop.
  *
- * - `"random"` — pick Damascus or Paths once per page load (client-side)
- * - `"damascus"` — topographic isoline WebGL field
- * - `"paths"` — white animated SVG strokes
+ * - `"damascus"` — WebGL topo / Damascus isolines (`hero-field.tsx`)
+ * - `"paths"` — white animated stroke field (`hero-paths.tsx`)
+ * - `"random"` — pick damascus or paths on each page load
  */
 export type HeroBackgroundId = "damascus" | "paths";
 
-export type HeroBackgroundMode = "random" | HeroBackgroundId;
+export type HeroBackgroundMode = HeroBackgroundId | "random";
 
-/** Active mode. Use `"damascus"` or `"paths"` to lock one; `"random"` to alternate. */
+/** Active About hero backdrop mode. */
 export const heroBackgroundMode: HeroBackgroundMode = "random";
 
-export const heroBackgroundOptions: HeroBackgroundId[] = ["damascus", "paths"];
+export const heroBackgroundOptions: HeroBackgroundId[] = [
+  "damascus",
+  "paths",
+];
