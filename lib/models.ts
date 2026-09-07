@@ -43,7 +43,4 @@ export const siteModels: SiteModel[] = [
     src: "/media/models/fury-v2.glb",
     // Already Y-up in the export; only yaw so the nose faces the camera.
     rotation: [0, Math.PI, 0],
-    zoom: 2.5,
-    appearance: "soft-cad",
-  },
-];
+    zoom: 1.8,
