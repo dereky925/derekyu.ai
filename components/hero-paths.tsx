@@ -9,13 +9,13 @@ type PathSpec = {
   opacity: number;
   duration: number;
   delay: number;
-  /** Normalized 0–1 start along the path (pathLength=1). */
-  startOffset: number;
+  /** Negative time into the flow loop so strokes start mid-path (no teleport). */
+  phase: number;
 };
 
 function buildLayer(position: 1 | -1, count: number): PathSpec[] {
   return Array.from({ length: count }, (_, i) => {
-    // Tighter spacing than the old i*5 / i*6 pack → denser field, same layer count.
+    // Tighter spacing than the old i*5 / i*6 pack → denser field.
     const o = i * 3.6 * position;
     const yo = i * 4.2;
     const x0 = -(380 - o);
@@ -26,14 +26,17 @@ function buildLayer(position: 1 | -1, count: number): PathSpec[] {
     const yj = 343 - yo;
     const x3 = 684 - o;
     const y3 = 875 - yo;
+    const duration = 10 + ((i * 5 + (position > 0 ? 2 : 7)) % 12);
+    const startOffset = 0.16 + ((i * 7 + (position > 0 ? 0 : 3)) % 11) * 0.015;
     return {
       id: `${position}:${i}`,
       d: `M${x0} ${y0}C${x0} ${y0} ${x1} ${y1} ${xj} ${yj}S${x3} ${y3} ${x3} ${y3}`,
       width: 0.45 + i * 0.028,
       opacity: 0.11 + i * 0.015,
-      duration: 10 + ((i * 5 + (position > 0 ? 2 : 7)) % 12),
-      delay: i * 0.01 + (position > 0 ? 0 : 0.05),
-      startOffset: 0.16 + ((i * 7 + (position > 0 ? 0 : 3)) % 11) * 0.015,
+      duration,
+      // Both layers fade in together — avoids a delayed “second wave” pop-in.
+      delay: i * 0.008,
+      phase: -(startOffset * duration),
     };
   });
 }
@@ -62,7 +65,7 @@ export function HeroPaths() {
     if (!node) return;
     const io = new IntersectionObserver(
       ([entry]) => setActive(entry.isIntersecting),
-      { rootMargin: "80px", threshold: 0.02 },
+      { rootMargin: "120px", threshold: 0 },
     );
     io.observe(node);
     return () => io.disconnect();
@@ -71,9 +74,9 @@ export function HeroPaths() {
   return (
     <div
       ref={rootRef}
-      className={`absolute inset-0 overflow-hidden bg-[#050505] ${
-        active && !reduce ? "hero-paths--running" : "hero-paths--paused"
-      }`}
+      className={`hero-paths absolute inset-0 overflow-hidden bg-[#050505] ${
+        reduce ? "hero-paths--static" : ""
+      } ${active ? "" : "hero-paths--paused"}`}
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <svg
@@ -86,7 +89,7 @@ export function HeroPaths() {
           {paths.map((path) => (
             <path
               key={path.id}
-              className={reduce ? undefined : "hero-path-stroke"}
+              className="hero-path-stroke"
               d={path.d}
               pathLength={1}
               stroke="currentColor"
@@ -94,20 +97,14 @@ export function HeroPaths() {
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeOpacity={path.opacity}
-              // Longer dash than the old 0.4 pathLength → denser without extra nodes.
-              strokeDasharray={reduce ? "0.55 0.45" : "0 1"}
+              strokeDasharray="0.55 0.45"
               style={
-                reduce
-                  ? {
-                      opacity: 0.35,
-                      strokeDashoffset: -path.startOffset,
-                    }
-                  : ({
-                      "--hero-path-duration": `${path.duration}s`,
-                      "--hero-path-delay": `${path.delay}s`,
-                      "--hero-path-opacity": "0.45",
-                      "--hero-path-from": `${-path.startOffset}`,
-                    } as CSSProperties)
+                {
+                  "--hero-path-duration": `${path.duration}s`,
+                  "--hero-path-delay": `${path.delay}s`,
+                  "--hero-path-phase": `${path.phase}s`,
+                  "--hero-path-opacity": "0.45",
+                } as CSSProperties
               }
             />
           ))}

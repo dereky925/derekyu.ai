@@ -110,38 +110,40 @@ body {
 /* About hero path field — CSS dash flow (cheaper than Framer per-stroke). */
 @keyframes hero-path-in {
   from {
-    stroke-dasharray: 0 1;
     opacity: 0;
   }
   to {
-    stroke-dasharray: 0.55 0.45;
     opacity: var(--hero-path-opacity, 0.45);
   }
 }
 
+/* Period matches pathLength=1 + dasharray sum 1.0 → seamless loop, no CSS vars. */
 @keyframes hero-path-flow {
   from {
-    stroke-dashoffset: var(--hero-path-from, 0);
+    stroke-dashoffset: 0;
   }
   to {
-    stroke-dashoffset: calc(var(--hero-path-from, 0) - 1);
+    stroke-dashoffset: -1;
   }
 }
 
-.hero-paths--running .hero-path-stroke {
+.hero-paths .hero-path-stroke {
   opacity: 0;
   animation:
-    hero-path-in 1.05s var(--hero-path-delay, 0s) cubic-bezier(0.22, 1, 0.36, 1)
-      forwards,
-    hero-path-flow var(--hero-path-duration, 12s) linear var(--hero-path-delay, 0s)
-      infinite;
+    hero-path-in 0.75s var(--hero-path-delay, 0s) ease-out forwards,
+    hero-path-flow var(--hero-path-duration, 12s) linear
+      var(--hero-path-phase, 0s) infinite;
 }
 
+/* Pause in place — do not clear animation (that restarts and teleports). */
 .hero-paths--paused .hero-path-stroke {
-  stroke-dasharray: 0.55 0.45;
-  stroke-dashoffset: var(--hero-path-from, 0);
-  opacity: 0.4;
+  animation-play-state: paused;
+}
+
+.hero-paths--static .hero-path-stroke {
+  opacity: 0.35;
   animation: none;
+  stroke-dashoffset: -0.22;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -168,10 +170,9 @@ body {
     animation-iteration-count: infinite !important;
   }
 
-  .hero-paths--running .hero-path-stroke,
-  .hero-paths--paused .hero-path-stroke {
+  .hero-paths .hero-path-stroke {
     animation: none !important;
-    stroke-dasharray: 0.55 0.45 !important;
     opacity: 0.35 !important;
+    stroke-dashoffset: -0.22 !important;
   }
 }
