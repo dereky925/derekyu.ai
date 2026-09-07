@@ -15,7 +15,8 @@ export type SiteModel = {
 /** Nest export needs a 180° X flip after the upright bake. */
 const nestUpright: [number, number, number] = [Math.PI, 0, 0];
 
-export const siteModels: SiteModel[] = [
+/** Shown on the About page (2×2). */
+export const aboutModels: SiteModel[] = [
   {
     title: "Nest",
     src: "/media/models/nst-assembly-v3.glb",
@@ -47,3 +48,38 @@ export const siteModels: SiteModel[] = [
     appearance: "soft-cad",
   },
 ];
+
+/** Extra models only on /models. */
+export const modelsPageOnly: SiteModel[] = [
+  {
+    title: "Wisp",
+    src: "/media/models/wisp-v1.glb",
+    rotation: [0, Math.PI, 0],
+    zoom: 1.3,
+    appearance: "matte-black",
+  },
+  {
+    title: "B250",
+    src: "/media/models/b250-v1.glb",
+    rotation: [-Math.PI / 2, 0, 0],
+    zoom: 1.5,
+    appearance: "soft-cad",
+  },
+  {
+    title: "B100",
+    src: "/media/models/b100-v1.glb",
+    rotation: [-Math.PI / 2, 0, 0],
+    zoom: 1.5,
+    appearance: "soft-cad",
+  },
+  {
+    title: "Roadrunner",
+    src: "/media/models/roadrunner-v1.glb",
+    rotation: [0, Math.PI, 0],
+    zoom: 1.3,
+    appearance: "soft-cad",
+  },
+];
+
+/** Full catalog for the Models page. */
+export const siteModels: SiteModel[] = [...aboutModels, ...modelsPageOnly];

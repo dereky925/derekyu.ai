@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { FadeIn } from "@/components/fade-in";
-import { siteModels } from "@/lib/models";
+import { aboutModels, siteModels, type SiteModel } from "@/lib/models";
 
 const ModelViewer = dynamic(
   () =>
@@ -18,9 +18,13 @@ const ModelViewer = dynamic(
 type ModelGridProps = {
   /** Tighter tiles on About; roomier on the Models page. */
   compact?: boolean;
+  /** Defaults: About → aboutModels; Models page → full catalog. */
+  models?: SiteModel[];
 };
 
-export function ModelGrid({ compact = false }: ModelGridProps) {
+export function ModelGrid({ compact = false, models }: ModelGridProps) {
+  const list = models ?? (compact ? aboutModels : siteModels);
+
   return (
     <div
       className={
@@ -29,7 +33,7 @@ export function ModelGrid({ compact = false }: ModelGridProps) {
           : "grid gap-6 sm:grid-cols-2 sm:gap-8"
       }
     >
-      {siteModels.map((model, index) => (
+      {list.map((model, index) => (
         <FadeIn
           key={model.src}
           distance={24}
