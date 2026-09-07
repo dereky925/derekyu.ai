@@ -13,10 +13,11 @@ function FloatingPaths({ position }: { position: number }) {
     } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
       684 - i * 5 * position
     } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-    width: 0.7 + i * 0.035,
-    duration: 28 + (i % 10) * 1.4,
-    // Outer lines quieter gray, inner closer to white
-    baseOpacity: 0.28 + (1 - i / 40) * 0.42,
+    width: 0.75 + i * 0.035,
+    duration: 26 + (i % 10) * 1.5,
+    baseOpacity: 0.32 + (1 - i / 40) * 0.48,
+    // Long dashes read as continuous ribbons while still allowing flow.
+    dash: `${220 + i * 2} ${36 + (i % 5) * 4}`,
   }));
 
   return (
@@ -43,30 +44,31 @@ function FloatingPaths({ position }: { position: number }) {
             strokeWidth={path.width}
             strokeLinecap="round"
             strokeLinejoin="round"
-            pathLength={1}
-            // Visible immediately — no entrance fade-in.
-            initial={false}
+            strokeDasharray={path.dash}
+            initial={{
+              opacity: path.baseOpacity,
+              strokeDashoffset: 0,
+            }}
             animate={{
               opacity: [
-                path.baseOpacity * 0.75,
-                Math.min(path.baseOpacity * 1.35, 0.95),
-                path.baseOpacity * 0.75,
+                path.baseOpacity * 0.7,
+                Math.min(path.baseOpacity * 1.25, 1),
+                path.baseOpacity * 0.7,
               ],
-              pathOffset: [0, 1],
+              strokeDashoffset: [0, -260],
             }}
             transition={{
               opacity: {
-                duration: path.duration * 0.45,
+                duration: 8 + (path.id % 5),
                 repeat: Number.POSITIVE_INFINITY,
                 ease: "easeInOut",
               },
-              pathOffset: {
+              strokeDashoffset: {
                 duration: path.duration,
                 repeat: Number.POSITIVE_INFINITY,
                 ease: "linear",
               },
             }}
-            style={{ opacity: path.baseOpacity }}
           />
         ))}
       </svg>
