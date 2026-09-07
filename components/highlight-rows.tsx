@@ -6,7 +6,7 @@ import { FadeIn } from "@/components/fade-in";
 import { ModelSection } from "@/components/model-section";
 import { SilentClip } from "@/components/silent-clip";
 import { useInViewPlay } from "@/components/silent-youtube";
-import { clipPlaceDetail, photoClips } from "@/lib/photos";
+import { clipDateLabel, clipPlaceDetail, photoClips } from "@/lib/photos";
 import {
   grokeyeYouTube,
   hunterYouTube,
@@ -145,9 +145,32 @@ function Row({
 
 const canyon = photoClips.find((clip) => clip.title === "Grand Canyon")!;
 const sedona = photoClips.find((clip) => clip.title === "Sedona")!;
+const sedonaZion = photoClips.find((clip) => clip.title === "Sedona to Zion")!;
 const cove = photoClips.find((clip) => clip.title === "Crystal Cove")!;
 const la = photoClips.find((clip) => clip.title === "Los Angeles")!;
 const fireworks = photoClips.find((clip) => clip.title === "LA fireworks")!;
+const sanDiego = photoClips.find((clip) => clip.title === "San Diego")!;
+const scottsdale = photoClips.find((clip) => clip.title === "Scottsdale")!;
+
+function PhotoStreamTile({
+  clip,
+  label,
+  detail,
+}: {
+  clip: (typeof photoClips)[number];
+  label?: string;
+  detail?: string;
+}) {
+  return (
+    <StreamTile
+      href="/photography"
+      label={label ?? clip.title}
+      detail={detail ?? clipPlaceDetail(clip)}
+      clipId={clip.id}
+      poster={clip.poster}
+    />
+  );
+}
 
 export function HighlightRows() {
   return (
@@ -205,44 +228,50 @@ export function HighlightRows() {
       <ModelSection />
 
       <Row kicker="Photography" title="From the air." href="/photography">
-        <div className="space-y-3">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <StreamTile
-              href="/photography"
-              label={cove.title}
-              detail={clipPlaceDetail(cove)}
-              clipId={cove.id}
-              poster={cove.poster}
-            />
-            <StreamTile
-              href="/photography"
-              label={canyon.title}
-              detail={clipPlaceDetail(canyon)}
-              clipId={canyon.id}
-              poster={canyon.poster}
-            />
-            <StreamTile
-              href="/photography"
-              label={sedona.title}
-              detail={clipPlaceDetail(sedona)}
-              clipId={sedona.id}
-              poster={sedona.poster}
+        {/* Mobile: 2 · 1 · 2 · 1 · 2 */}
+        <div className="space-y-3 sm:hidden">
+          <div className="grid grid-cols-2 gap-3">
+            <PhotoStreamTile clip={cove} />
+            <PhotoStreamTile clip={canyon} />
+          </div>
+          <div className="grid grid-cols-1 gap-3">
+            <PhotoStreamTile clip={sedona} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <PhotoStreamTile clip={la} />
+            <PhotoStreamTile clip={fireworks} />
+          </div>
+          <div className="grid grid-cols-1 gap-3">
+            <PhotoStreamTile clip={sanDiego} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <PhotoStreamTile clip={scottsdale} />
+            <PhotoStreamTile
+              clip={sedonaZion}
+              label="Sedona, Arizona"
+              detail={clipDateLabel(sedonaZion)}
             />
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <StreamTile
-              href="/photography"
-              label={la.title}
-              detail={clipPlaceDetail(la)}
-              clipId={la.id}
-              poster={la.poster}
-            />
-            <StreamTile
-              href="/photography"
-              label={fireworks.title}
-              detail={clipPlaceDetail(fireworks)}
-              clipId={fireworks.id}
-              poster={fireworks.poster}
+        </div>
+
+        {/* Desktop: 3 · 2 · 3 */}
+        <div className="hidden space-y-3 sm:block">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <PhotoStreamTile clip={cove} />
+            <PhotoStreamTile clip={canyon} />
+            <PhotoStreamTile clip={sedona} />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <PhotoStreamTile clip={la} />
+            <PhotoStreamTile clip={fireworks} />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <PhotoStreamTile clip={sanDiego} />
+            <PhotoStreamTile clip={scottsdale} />
+            <PhotoStreamTile
+              clip={sedonaZion}
+              label="Sedona, Arizona"
+              detail={clipDateLabel(sedonaZion)}
             />
           </div>
         </div>
