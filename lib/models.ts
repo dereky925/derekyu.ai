@@ -55,28 +55,32 @@ export const modelsPageOnly: SiteModel[] = [
   {
     title: "Wisp",
     src: "/media/models/wisp-v1.glb",
+    // Long axis is Z in the export; -90° X stands it vertical.
+    rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.3,
-    appearance: "soft-dim",
+    appearance: "matte-black",
   },
   {
     title: "B250",
     src: "/media/models/b250-v1.glb",
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.5,
-    appearance: "soft-dim",
+    appearance: "matte-black",
   },
   {
     title: "B100",
     src: "/media/models/b100-v1.glb",
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.5,
-    appearance: "soft-dim",
+    appearance: "matte-black",
   },
   {
     title: "Roadrunner",
     src: "/media/models/roadrunner-v2.glb",
+    // Long axis is Z in the export; -90° X stands it vertical.
+    rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.3,
-    appearance: "soft-dim",
+    appearance: "matte-black",
   },
 ];
 

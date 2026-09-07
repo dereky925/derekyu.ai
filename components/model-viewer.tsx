@@ -59,19 +59,32 @@ function applyMatteBlack(root: Object3D) {
       if (!(mat instanceof MeshStandardMaterial)) continue;
 
       // Primary body: warm taupe → matte charcoal black
-      if (colorNear(mat, 0.301961, 0.290196, 0.262745)) {
+      if (
+        colorNear(mat, 0.301961, 0.290196, 0.262745) ||
+        colorNear(mat, 0.4, 0.388235, 0.34902) ||
+        colorNear(mat, 0.501961, 0.486275, 0.439216)
+      ) {
         mat.color.setRGB(0.035, 0.035, 0.038);
         mat.roughness = Math.max(mat.roughness ?? 0.5, 0.78);
         mat.metalness = Math.min(mat.metalness ?? 0, 0.12);
         mat.envMapIntensity = 0.35;
       }
-      // Mid grey hardware → darker so it doesn’t wash warm
-      else if (colorNear(mat, 0.647059, 0.647059, 0.647059)) {
+      // Mid / dark CAD greys → charcoal
+      else if (
+        colorNear(mat, 0.647059, 0.647059, 0.647059) ||
+        colorNear(mat, 0.160784, 0.160784, 0.160784) ||
+        colorNear(mat, 0.301961, 0.301961, 0.301961)
+      ) {
         mat.color.setRGB(0.1, 0.1, 0.105);
         mat.roughness = Math.max(mat.roughness ?? 0.5, 0.7);
+        mat.envMapIntensity = 0.35;
       }
       // Near-white fasteners → soft metal grey
-      else if (colorNear(mat, 0.901961, 0.901961, 0.901961)) {
+      else if (
+        colorNear(mat, 0.901961, 0.901961, 0.901961) ||
+        colorNear(mat, 0.917647, 0.917647, 0.917647) ||
+        colorNear(mat, 0.8, 0.8, 0.8)
+      ) {
         mat.color.setRGB(0.22, 0.22, 0.23);
         mat.metalness = Math.max(mat.metalness ?? 0, 0.45);
         mat.roughness = Math.min(mat.roughness ?? 0.5, 0.45);
