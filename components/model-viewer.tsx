@@ -251,7 +251,6 @@ export function ModelViewer({
   const matteLift = appearance === "matte-lift";
   const soft = appearance === "soft-cad";
   const softDim = appearance === "soft-dim";
-  const dim = softDim || matteDim;
   const cool = matte || matteDim || matteLift || soft || softDim;
   const { ref, inView } = useInView("120px", !forceActive);
   const active = forceActive || inView;
