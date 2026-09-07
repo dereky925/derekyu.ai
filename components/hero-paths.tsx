@@ -42,7 +42,7 @@ function FloatingPaths({ position }: { position: number }) {
             initial={
               reduce
                 ? { pathLength: 1, opacity: 0.35 }
-                : { pathLength: 1, opacity: 0.45 }
+                : { pathLength: 0.5, opacity: 0.4 }
             }
             animate={
               reduce
@@ -57,9 +57,20 @@ function FloatingPaths({ position }: { position: number }) {
               reduce
                 ? { duration: 0 }
                 : {
-                    duration: path.duration,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
+                    pathLength: {
+                      duration: 2.4,
+                      ease: [0.22, 1, 0.36, 1],
+                    },
+                    opacity: {
+                      duration: path.duration,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "linear",
+                    },
+                    pathOffset: {
+                      duration: path.duration,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "linear",
+                    },
                   }
             }
           />
