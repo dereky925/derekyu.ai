@@ -44,3 +44,6 @@ export const siteModels: SiteModel[] = [
     // Already Y-up in the export; only yaw so the nose faces the camera.
     rotation: [0, Math.PI, 0],
     zoom: 1.8,
+    appearance: "soft-cad",
+  },
+];
