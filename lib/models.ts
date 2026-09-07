@@ -62,7 +62,7 @@ export const aboutModels: SiteModel[] = [
 export const modelsPageOnly: SiteModel[] = [
   {
     title: "Wisp",
-    src: "/media/models/wisp-v1.glb",
+    src: "/media/models/wisp-v2.glb",
     // Long axis is Z in the export; -90° X stands it vertical.
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.05,
