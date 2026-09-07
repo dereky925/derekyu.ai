@@ -354,7 +354,7 @@ export function ModelViewer({
           <OrbitControls
             makeDefault
             autoRotate={autoRotate && active}
-            autoRotateSpeed={0.85}
+            autoRotateSpeed={1.25}
             enablePan={false}
             enableRotate={enableOrbit}
             enableZoom={enableOrbit}
