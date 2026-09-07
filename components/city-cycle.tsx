@@ -13,8 +13,8 @@ const cities = [
 const HOLD_MS = 2600;
 
 /**
- * Cycles lived-in cities with a rainbow shimmer underline
- * (replaces the old “NYC → LA” line on the About hero).
+ * Cycles lived-in cities with a gray underline that gets a
+ * left→right rainbow pulse (like the reference screen recording).
  */
 export function CityCycle({ className = "" }: { className?: string }) {
   const reduce = useReducedMotion();
@@ -47,14 +47,19 @@ export function CityCycle({ className = "" }: { className?: string }) {
         </AnimatePresence>
         <span
           aria-hidden
-          className={`pointer-events-none absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-[length:220%_100%] ${
-            reduce ? "" : "animate-city-rainbow"
-          }`}
-          style={{
-            backgroundImage:
-              "linear-gradient(90deg, #ff4d6d, #ff9f1c, #ffd60a, #80ed99, #4cc9f0, #7b2cbf, #ff4d6d)",
-          }}
-        />
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] overflow-hidden rounded-full bg-white/35"
+        >
+          {!reduce ? (
+            <span
+              key={`gleam-${city}`}
+              className="absolute inset-y-0 left-0 w-[55%] animate-city-rainbow-pulse rounded-full"
+              style={{
+                backgroundImage:
+                  "linear-gradient(90deg, transparent, #7b2cbf, #ff4d6d, #ff9f1c, #ffd60a, #80ed99, #4cc9f0, transparent)",
+              }}
+            />
+          ) : null}
+        </span>
       </span>
     </span>
   );

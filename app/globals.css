@@ -84,17 +84,27 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
 }
 
-@keyframes city-rainbow-shift {
+@keyframes city-rainbow-pulse {
   0% {
-    background-position: 0% 50%;
+    transform: translateX(-120%);
+    opacity: 0;
   }
+  12% {
+    opacity: 1;
+  }
+  55% {
+    transform: translateX(180%);
+    opacity: 1;
+  }
+  65%,
   100% {
-    background-position: 220% 50%;
+    transform: translateX(180%);
+    opacity: 0;
   }
 }
 
-.animate-city-rainbow {
-  animation: city-rainbow-shift 2.8s linear infinite;
+.animate-city-rainbow-pulse {
+  animation: city-rainbow-pulse 2.6s ease-in-out 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
