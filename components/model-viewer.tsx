@@ -27,6 +27,7 @@ export type ModelAppearance =
   | "default"
   | "matte-black"
   | "matte-dim"
+  | "matte-lift"
   | "soft-cad"
   | "soft-dim";
 
@@ -161,7 +162,7 @@ function Model({
         ? mesh.material.map((m) => m.clone())
         : mesh.material.clone();
     });
-    if (appearance === "matte-black" || appearance === "matte-dim") {
+    if (appearance === "matte-black" || appearance === "matte-dim" || appearance === "matte-lift") {
       applyMatteBlack(cloned);
     }
     if (appearance === "soft-cad" || appearance === "soft-dim") {
@@ -248,10 +249,11 @@ export function ModelViewer({
 }: ModelViewerProps) {
   const matte = appearance === "matte-black";
   const matteDim = appearance === "matte-dim";
+  const matteLift = appearance === "matte-lift";
   const soft = appearance === "soft-cad";
   const softDim = appearance === "soft-dim";
   const dim = softDim || matteDim;
-  const cool = matte || matteDim || soft || softDim;
+  const cool = matte || matteDim || matteLift || soft || softDim;
   const { ref, inView } = useInView("120px", !forceActive);
   const active = forceActive || inView;
   // Mount once visible so scroll-away can freeze the loop without remounting.
@@ -280,36 +282,50 @@ export function ModelViewer({
           <color attach="background" args={["#050505"]} />
           <ambientLight
             intensity={
-              matteDim ? 0.16 : softDim ? 0.14 : soft ? 0.2 : matte ? 0.22 : 0.4
+              matteLift
+                ? 0.28
+                : matteDim
+                  ? 0.16
+                  : softDim
+                    ? 0.14
+                    : soft
+                      ? 0.2
+                      : matte
+                        ? 0.22
+                        : 0.4
             }
           />
           <directionalLight
             position={[3.5, 5, 2.5]}
             intensity={
-              matteDim
-                ? 0.7
-                : softDim
-                  ? 0.22
-                  : soft
-                    ? 0.32
-                    : matte
-                      ? 1.15
-                      : 1.55
+              matteLift
+                ? 1.35
+                : matteDim
+                  ? 0.7
+                  : softDim
+                    ? 0.22
+                    : soft
+                      ? 0.32
+                      : matte
+                        ? 1.15
+                        : 1.55
             }
             color={cool ? "#f2f4f7" : "#fff4e8"}
           />
           <directionalLight
             position={[-2.5, 2, -1.5]}
             intensity={
-              matteDim
-                ? 0.25
-                : softDim
-                  ? 0.1
-                  : soft
-                    ? 0.14
-                    : matte
-                      ? 0.4
-                      : 0.55
+              matteLift
+                ? 0.5
+                : matteDim
+                  ? 0.25
+                  : softDim
+                    ? 0.1
+                    : soft
+                      ? 0.14
+                      : matte
+                        ? 0.4
+                        : 0.55
             }
             color={cool ? "#d8dde8" : "#c8d4e8"}
           />
@@ -323,20 +339,22 @@ export function ModelViewer({
             <Environment
               preset={cool ? "studio" : "warehouse"}
               environmentIntensity={
-                matteDim
-                  ? 0.12
-                  : softDim
-                    ? 0.04
-                    : soft
-                      ? 0.07
-                      : matte
-                        ? 0.22
-                        : 0.55
+                matteLift
+                  ? 0.3
+                  : matteDim
+                    ? 0.12
+                    : softDim
+                      ? 0.04
+                      : soft
+                        ? 0.07
+                        : matte
+                          ? 0.22
+                          : 0.55
               }
             />
             <ContactShadows
               position={[0, 0, 0]}
-              opacity={dim || soft ? 0.45 : matte ? 0.55 : 0.45}
+              opacity={dim || soft ? 0.45 : matte || matteLift ? 0.55 : 0.45}
               scale={6}
               blur={dim || soft ? 1.6 : 2.6}
               far={3}
