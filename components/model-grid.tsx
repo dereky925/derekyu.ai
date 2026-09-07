@@ -33,7 +33,7 @@ export function ModelGrid({ compact = false, models }: ModelGridProps) {
       <div
         className={
           compact
-            ? "grid gap-6 sm:grid-cols-2 sm:gap-6"
+            ? "grid grid-cols-2 gap-3 sm:gap-6"
             : "grid gap-6 sm:grid-cols-2 sm:gap-8"
         }
       >
@@ -50,11 +50,11 @@ export function ModelGrid({ compact = false, models }: ModelGridProps) {
               className="group w-full cursor-pointer text-left"
               aria-label={`Inspect ${model.title}`}
             >
-              <div className={compact ? "mb-3" : "mb-4"}>
+              <div className={compact ? "mb-2 sm:mb-3" : "mb-4"}>
                 <h3
                   className={
                     compact
-                      ? "text-[15px] tracking-tight transition-colors group-hover:text-foreground/80"
+                      ? "text-[13px] tracking-tight transition-colors group-hover:text-foreground/80 sm:text-[15px]"
                       : "text-xl tracking-tight transition-colors group-hover:text-foreground/80 sm:text-2xl"
                   }
                 >
