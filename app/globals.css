@@ -92,19 +92,19 @@ body {
   12% {
     opacity: 1;
   }
-  55% {
-    transform: translateX(180%);
+  58% {
+    transform: translateX(160%);
     opacity: 1;
   }
-  65%,
+  72%,
   100% {
-    transform: translateX(180%);
+    transform: translateX(160%);
     opacity: 0;
   }
 }
 
 .animate-city-rainbow-pulse {
-  animation: city-rainbow-pulse 2.6s ease-in-out 1;
+  animation: city-rainbow-pulse 2.6s ease-in-out 1 forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

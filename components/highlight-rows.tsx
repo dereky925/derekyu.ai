@@ -221,7 +221,7 @@ function PhotoStreamTile({
 export function HighlightRows() {
   return (
     <>
-      <Row kicker="Work" title="Where the days go." href="/work">
+      <Row kicker="Work" title="Aerospace & Defense" href="/work">
         <div className="grid gap-3 md:grid-cols-2">
           <StreamTile
             href="/work"
@@ -242,7 +242,7 @@ export function HighlightRows() {
         </div>
       </Row>
 
-      <Row kicker="Projects" title="The public set." href="/work">
+      <Row kicker="Projects" title="Showcase" href="/work">
         <div className="grid gap-3 md:grid-cols-3">
           <StreamTile
             href={grokeyeYouTube}
@@ -273,7 +273,7 @@ export function HighlightRows() {
 
       <ModelSection />
 
-      <Row kicker="Photography" title="From the air." href="/photography">
+      <Row kicker="Photography" title="DJI Mavic 3 Pro & Avata 1/2" href="/photography">
         {/* Mobile: 2 · 1 · 2 · 1 · 2 */}
         <div className="space-y-3 sm:hidden">
           <div className="grid grid-cols-2 gap-3">

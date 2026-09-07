@@ -10,23 +10,28 @@ const cities = [
   "Los Angeles, CA",
 ] as const;
 
-const HOLD_MS = 2600;
+/** Must match `.animate-city-rainbow-pulse` duration in globals.css */
+const PULSE_MS = 2600;
+/** Extra time on a gray bar after the pulse fades, before flipping */
+const GRAY_HOLD_MS = 700;
+const REDUCE_HOLD_MS = 3200;
 
 /**
  * Cycles lived-in cities with a gray underline that gets a
  * left→right rainbow pulse (like the reference screen recording).
+ * City only flips after the gleam has crossed and the bar is gray again.
  */
 export function CityCycle({ className = "" }: { className?: string }) {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    if (reduce) return;
-    const id = window.setInterval(() => {
+    const delay = reduce ? REDUCE_HOLD_MS : PULSE_MS + GRAY_HOLD_MS;
+    const id = window.setTimeout(() => {
       setIndex((i) => (i + 1) % cities.length);
-    }, HOLD_MS);
-    return () => window.clearInterval(id);
-  }, [reduce]);
+    }, delay);
+    return () => window.clearTimeout(id);
+  }, [index, reduce]);
 
   const city = cities[index]!;
 
@@ -52,7 +57,7 @@ export function CityCycle({ className = "" }: { className?: string }) {
           {!reduce ? (
             <span
               key={`gleam-${city}`}
-              className="absolute inset-y-0 left-0 w-[55%] animate-city-rainbow-pulse rounded-full"
+              className="absolute inset-y-0 left-0 w-[140%] animate-city-rainbow-pulse rounded-full"
               style={{
                 backgroundImage:
                   "linear-gradient(90deg, transparent, #7b2cbf, #ff4d6d, #ff9f1c, #ffd60a, #80ed99, #4cc9f0, transparent)",

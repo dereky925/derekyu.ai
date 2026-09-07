@@ -7,20 +7,27 @@ function FloatingPaths({ position }: { position: number }) {
   const reduce = useReducedMotion();
   const paths = useMemo(
     () =>
-      Array.from({ length: 36 }, (_, i) => ({
-        id: i,
-        d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
-          380 - i * 5 * position
-        } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
-          152 - i * 5 * position
-        } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
-          684 - i * 5 * position
-        } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-        width: 0.5 + i * 0.03,
-        // One-way speeds — staggered so the field never syncs to a pause
-        duration: 10 + ((i * 5 + (position > 0 ? 2 : 7)) % 12),
-        drawDelay: i * 0.035 + (position > 0 ? 0 : 0.25),
-      })),
+      Array.from({ length: 36 }, (_, i) => {
+        const o = i * 5 * position;
+        const yo = i * 6;
+        // Two cubics with SVG `S` so the mid join stays C1-smooth (no kink).
+        const x0 = -(380 - o);
+        const y0 = -(189 + yo);
+        const x1 = -(312 - o);
+        const y1 = 216 - yo;
+        const xj = 152 - o;
+        const yj = 343 - yo;
+        const x3 = 684 - o;
+        const y3 = 875 - yo;
+        return {
+          id: i,
+          d: `M${x0} ${y0}C${x0} ${y0} ${x1} ${y1} ${xj} ${yj}S${x3} ${y3} ${x3} ${y3}`,
+          width: 0.5 + i * 0.03,
+          // One-way speeds — staggered so the field never syncs to a pause
+          duration: 10 + ((i * 5 + (position > 0 ? 2 : 7)) % 12),
+          drawDelay: i * 0.035 + (position > 0 ? 0 : 0.25),
+        };
+      }),
     [position],
   );
 
@@ -31,6 +38,7 @@ function FloatingPaths({ position }: { position: number }) {
         viewBox="0 0 696 316"
         fill="none"
         preserveAspectRatio="xMidYMid slice"
+        shapeRendering="geometricPrecision"
         aria-hidden
       >
         {paths.map((path) => (
@@ -39,6 +47,8 @@ function FloatingPaths({ position }: { position: number }) {
             d={path.d}
             stroke="currentColor"
             strokeWidth={path.width}
+            strokeLinecap="round"
+            strokeLinejoin="round"
             strokeOpacity={0.1 + path.id * 0.022}
             initial={
               reduce
