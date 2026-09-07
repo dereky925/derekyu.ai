@@ -7,7 +7,7 @@ function FloatingPaths({ position }: { position: number }) {
   const reduce = useReducedMotion();
   const paths = useMemo(
     () =>
-      Array.from({ length: 42 }, (_, i) => ({
+      Array.from({ length: 36 }, (_, i) => ({
         id: i,
         d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
           380 - i * 5 * position
@@ -16,8 +16,7 @@ function FloatingPaths({ position }: { position: number }) {
         } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
           684 - i * 5 * position
         } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-        // Thicker strokes so they read on a full-bleed dark hero
-        width: 1.6 + i * 0.09,
+        width: 0.5 + i * 0.03,
         duration: 22 + ((i * 7 + (position > 0 ? 3 : 0)) % 11),
       })),
     [position],
@@ -39,18 +38,18 @@ function FloatingPaths({ position }: { position: number }) {
             d={path.d}
             stroke="currentColor"
             strokeWidth={path.width}
-            strokeOpacity={0.1 + path.id * 0.028}
+            strokeOpacity={0.08 + path.id * 0.025}
             initial={
               reduce
-                ? { pathLength: 1, opacity: 0.4 }
+                ? { pathLength: 1, opacity: 0.35 }
                 : { pathLength: 1, opacity: 0.45 }
             }
             animate={
               reduce
-                ? { pathLength: 1, opacity: 0.4 }
+                ? { pathLength: 1, opacity: 0.35 }
                 : {
                     pathLength: 1,
-                    opacity: [0.28, 0.62, 0.28],
+                    opacity: [0.22, 0.5, 0.22],
                     pathOffset: [0, 1, 0],
                   }
             }
