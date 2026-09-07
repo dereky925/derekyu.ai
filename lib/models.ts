@@ -90,7 +90,7 @@ export const modelsPageOnly: SiteModel[] = [
     src: "/media/models/roadrunner-v2.glb",
     // Long axis is Z in the export; -90° X stands it vertical.
     rotation: [-Math.PI / 2, 0, 0],
-    zoom: 1.3,
+    zoom: 1.1,
     appearance: "matte-dim",
     solidWhite: true,
   },
