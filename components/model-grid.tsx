@@ -36,9 +36,7 @@ export function ModelGrid({ compact = false }: ModelGridProps) {
           duration={0.7}
           delay={Math.min(index * 0.05, 0.1)}
         >
-          <div
-            className={`flex items-baseline justify-between gap-3 ${compact ? "mb-3" : "mb-4"}`}
-          >
+          <div className={compact ? "mb-3" : "mb-4"}>
             <h3
               className={
                 compact
@@ -48,7 +46,6 @@ export function ModelGrid({ compact = false }: ModelGridProps) {
             >
               {model.title}
             </h3>
-            <p className="shrink-0 text-xs text-muted">Drag to orbit</p>
           </div>
           <ModelViewer
             src={model.src}
