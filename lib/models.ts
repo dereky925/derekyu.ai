@@ -19,6 +19,8 @@ export type SiteModel = {
     | "matte-lift"
     | "soft-cad"
     | "soft-dim";
+  /** Keep near-white CAD panels solid white instead of remapping to silver. */
+  solidWhite?: boolean;
 };
 
 /** Nest export needs a 180° X flip after the upright bake. */
@@ -67,6 +69,7 @@ export const modelsPageOnly: SiteModel[] = [
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.05,
     appearance: "matte-black",
+    solidWhite: true,
   },
   {
     title: "B250",
@@ -89,6 +92,7 @@ export const modelsPageOnly: SiteModel[] = [
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.3,
     appearance: "matte-dim",
+    solidWhite: true,
   },
 ];
 

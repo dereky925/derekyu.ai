@@ -76,6 +76,7 @@ export function ModelInspector({ model, onClose }: ModelInspectorProps) {
           rotation={model.rotation ?? [0, 0, 0]}
           zoom={model.zoom ?? 1}
           appearance={model.appearance ?? "default"}
+          solidWhite={model.solidWhite}
           forceActive
           enableOrbit
           className="h-full w-full rounded-2xl"

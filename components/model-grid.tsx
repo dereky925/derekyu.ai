@@ -66,6 +66,7 @@ export function ModelGrid({ compact = false, models }: ModelGridProps) {
                 rotation={model.rotation ?? [0, 0, 0]}
                 zoom={model.zoom ?? 1}
                 appearance={model.appearance ?? "default"}
+                solidWhite={model.solidWhite}
                 enableOrbit={false}
                 className="aspect-[4/3] w-full rounded-2xl sm:aspect-[16/10]"
               />

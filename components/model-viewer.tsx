@@ -39,6 +39,8 @@ type ModelViewerProps = {
   /** >1 frames closer. Default 1. */
   zoom?: number;
   appearance?: ModelAppearance;
+  /** Keep near-white panels solid white instead of silver metal. */
+  solidWhite?: boolean;
   /** When false, auto-rotate only — clicks pass through to the parent. */
   enableOrbit?: boolean;
   /** Keep the canvas running even when offscreen (inspector overlay). */
@@ -60,7 +62,10 @@ function colorNear(
 }
 
 /** Remap Onshape export greys that read as white/brown under PBR lights. */
-function applyMatteBlack(root: Object3D) {
+function applyMatteBlack(
+  root: Object3D,
+  opts: { solidWhite?: boolean } = {},
+) {
   root.traverse((obj) => {
     if (!(obj as Mesh).isMesh) return;
     const materials = Array.isArray((obj as Mesh).material)
@@ -91,15 +96,27 @@ function applyMatteBlack(root: Object3D) {
         mat.roughness = Math.max(mat.roughness ?? 0.5, 0.7);
         mat.envMapIntensity = 0.35;
       }
-      // Near-white fasteners → soft metal grey
+      // Near-white panels / fasteners
       else if (
         colorNear(mat, 0.901961, 0.901961, 0.901961) ||
         colorNear(mat, 0.917647, 0.917647, 0.917647) ||
-        colorNear(mat, 0.8, 0.8, 0.8)
+        colorNear(mat, 0.8, 0.8, 0.8) ||
+        (opts.solidWhite &&
+          mat.color.r > 0.72 &&
+          mat.color.g > 0.72 &&
+          mat.color.b > 0.72)
       ) {
-        mat.color.setRGB(0.22, 0.22, 0.23);
-        mat.metalness = Math.max(mat.metalness ?? 0, 0.45);
-        mat.roughness = Math.min(mat.roughness ?? 0.5, 0.45);
+        if (opts.solidWhite) {
+          // Roadrunner: keep bright panels as solid matte white (not silver)
+          mat.color.setRGB(0.94, 0.94, 0.95);
+          mat.metalness = Math.min(mat.metalness ?? 0, 0.04);
+          mat.roughness = Math.max(mat.roughness ?? 0.5, 0.78);
+          mat.envMapIntensity = 0.1;
+        } else {
+          mat.color.setRGB(0.22, 0.22, 0.23);
+          mat.metalness = Math.max(mat.metalness ?? 0, 0.45);
+          mat.roughness = Math.min(mat.roughness ?? 0.5, 0.45);
+        }
       }
       // Onshape “red” that reads orange under studio lights → true red
       else if (colorNear(mat, 1, 0.266667, 0.043137, 0.04)) {
@@ -143,11 +160,13 @@ function Model({
   rotation = [0, 0, 0],
   zoom = 1,
   appearance = "default",
+  solidWhite = false,
 }: {
   src: string;
   rotation?: [number, number, number];
   zoom?: number;
   appearance?: ModelAppearance;
+  solidWhite?: boolean;
 }) {
   // Second arg enables the Draco decoder for compressed GLBs.
   const { scene } = useGLTF(src, true);
@@ -162,13 +181,13 @@ function Model({
         : mesh.material.clone();
     });
     if (appearance === "matte-black" || appearance === "matte-dim" || appearance === "matte-lift") {
-      applyMatteBlack(cloned);
+      applyMatteBlack(cloned, { solidWhite });
     }
     if (appearance === "soft-cad" || appearance === "soft-dim") {
       applySoftCad(cloned);
     }
     return cloned;
-  }, [appearance, scene]);
+  }, [appearance, scene, solidWhite]);
   const { camera, controls } = useThree();
 
   useLayoutEffect(() => {
@@ -243,6 +262,7 @@ export function ModelViewer({
   rotation = [0, 0, 0],
   zoom = 1,
   appearance = "default",
+  solidWhite = false,
   enableOrbit = true,
   forceActive = false,
 }: ModelViewerProps) {
@@ -333,6 +353,7 @@ export function ModelViewer({
               rotation={rotation}
               zoom={zoom}
               appearance={appearance}
+              solidWhite={solidWhite}
             />
             <Environment
               preset={cool ? "studio" : "warehouse"}
