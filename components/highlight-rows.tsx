@@ -20,19 +20,53 @@ function TileFrame({
   role,
   detail,
   children,
+  dense,
 }: {
   label: string;
   role?: string;
   detail: string;
   children: ReactNode;
+  dense?: boolean;
 }) {
   return (
     <div className="relative aspect-video overflow-hidden rounded-2xl bg-black">
       {children}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-3 pt-16">
-        <p className="text-sm text-foreground">{label}</p>
-        {role ? <p className="mt-0.5 text-xs text-muted">{role}</p> : null}
-        {detail ? <p className="mt-0.5 text-xs text-muted">{detail}</p> : null}
+      <div
+        className={`pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent ${
+          dense ? "px-3 pb-2.5 pt-12 sm:px-4 sm:pb-3 sm:pt-16" : "px-4 pb-3 pt-16"
+        }`}
+      >
+        <p
+          className={
+            dense
+              ? "text-[11px] leading-snug text-foreground sm:text-sm"
+              : "text-sm text-foreground"
+          }
+        >
+          {label}
+        </p>
+        {role ? (
+          <p
+            className={
+              dense
+                ? "mt-0.5 text-[10px] text-muted sm:text-xs"
+                : "mt-0.5 text-xs text-muted"
+            }
+          >
+            {role}
+          </p>
+        ) : null}
+        {detail ? (
+          <p
+            className={
+              dense
+                ? "mt-0.5 text-[10px] text-muted sm:text-xs"
+                : "mt-0.5 text-xs text-muted"
+            }
+          >
+            {detail}
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -45,6 +79,7 @@ function Tile({
   detail,
   children,
   external,
+  dense,
 }: {
   href: string;
   label: string;
@@ -52,10 +87,11 @@ function Tile({
   detail: string;
   children: ReactNode;
   external?: boolean;
+  dense?: boolean;
 }) {
   const className = "group block min-w-0";
   const frame = (
-    <TileFrame label={label} role={role} detail={detail}>
+    <TileFrame label={label} role={role} detail={detail} dense={dense}>
       {children}
     </TileFrame>
   );
@@ -82,6 +118,7 @@ function StreamTile({
   poster,
   external,
   mediaAspect,
+  dense,
 }: {
   href: string;
   label: string;
@@ -91,11 +128,19 @@ function StreamTile({
   poster: string;
   external?: boolean;
   mediaAspect?: number;
+  dense?: boolean;
 }) {
   const { ref, active } = useInViewPlay();
   return (
     <div ref={ref}>
-      <Tile href={href} label={label} role={role} detail={detail} external={external}>
+      <Tile
+        href={href}
+        label={label}
+        role={role}
+        detail={detail}
+        external={external}
+        dense={dense}
+      >
         <SilentClip
           id={clipId}
           poster={poster}
@@ -168,6 +213,7 @@ function PhotoStreamTile({
       detail={detail ?? clipPlaceDetail(clip)}
       clipId={clip.id}
       poster={clip.poster}
+      dense
     />
   );
 }
