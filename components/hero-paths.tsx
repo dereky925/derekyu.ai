@@ -19,13 +19,16 @@ function FloatingPaths({ position }: { position: number }) {
         const yj = 343 - yo;
         const x3 = 684 - o;
         const y3 = 875 - yo;
+        // Start mid-path so growth/flow begins in the viewBox (path starts off-screen).
+        const startOffset = 0.18 + ((i * 7 + (position > 0 ? 0 : 3)) % 10) * 0.012;
         return {
           id: i,
           d: `M${x0} ${y0}C${x0} ${y0} ${x1} ${y1} ${xj} ${yj}S${x3} ${y3} ${x3} ${y3}`,
           width: 0.5 + i * 0.03,
           // One-way speeds — staggered so the field never syncs to a pause
           duration: 10 + ((i * 5 + (position > 0 ? 2 : 7)) % 12),
-          drawDelay: i * 0.035 + (position > 0 ? 0 : 0.25),
+          drawDelay: i * 0.012 + (position > 0 ? 0 : 0.06),
+          startOffset,
         };
       }),
     [position],
@@ -52,16 +55,28 @@ function FloatingPaths({ position }: { position: number }) {
             strokeOpacity={0.1 + path.id * 0.022}
             initial={
               reduce
-                ? { pathLength: 0.4, pathOffset: 0, opacity: 0.35 }
-                : { pathLength: 0, pathOffset: 0, opacity: 0 }
+                ? {
+                    pathLength: 0.4,
+                    pathOffset: path.startOffset,
+                    opacity: 0.35,
+                  }
+                : {
+                    pathLength: 0,
+                    pathOffset: path.startOffset,
+                    opacity: 0,
+                  }
             }
             animate={
               reduce
-                ? { pathLength: 0.4, pathOffset: 0, opacity: 0.35 }
-                : {
-                    // Grow onto blank, then keep a traveling segment flowing one way
+                ? {
                     pathLength: 0.4,
-                    pathOffset: [0, 1],
+                    pathOffset: path.startOffset,
+                    opacity: 0.35,
+                  }
+                : {
+                    // Grow from blank in-view, then keep a traveling segment flowing
+                    pathLength: 0.4,
+                    pathOffset: [path.startOffset, path.startOffset + 1],
                     opacity: 0.45,
                   }
             }
@@ -70,12 +85,12 @@ function FloatingPaths({ position }: { position: number }) {
                 ? { duration: 0 }
                 : {
                     pathLength: {
-                      duration: 2.6,
+                      duration: 1.15,
                       delay: path.drawDelay,
                       ease: [0.22, 1, 0.36, 1],
                     },
                     opacity: {
-                      duration: 1.1,
+                      duration: 0.55,
                       delay: path.drawDelay,
                       ease: "easeOut",
                     },
