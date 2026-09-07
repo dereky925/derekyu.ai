@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { HeroField } from "@/components/hero-field";
 import { HeroPaths } from "@/components/hero-paths";
 import {
@@ -27,13 +27,13 @@ export function HeroBackground() {
     heroBackgroundMode === "random" ? null : heroBackgroundMode,
   );
 
-  useEffect(() => {
+  // useLayoutEffect: pick before paint so random mode doesn’t sit on a blank frame.
+  useLayoutEffect(() => {
     if (heroBackgroundMode === "random") {
       setId(pickBackground());
     }
   }, []);
 
-  // Avoid flashing the wrong backdrop before the random pick.
   if (!id) {
     return <div className="absolute inset-0 bg-[#050505]" aria-hidden />;
   }

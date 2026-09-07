@@ -43,7 +43,7 @@ function FloatingPaths({ position }: { position: number }) {
             initial={
               reduce
                 ? { pathLength: 1, opacity: 0.4 }
-                : { pathLength: 0.3, opacity: 0.5 }
+                : { pathLength: 1, opacity: 0.45 }
             }
             animate={
               reduce
