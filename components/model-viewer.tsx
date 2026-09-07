@@ -24,6 +24,7 @@ import {
 
 export type ModelAppearance =
   | "default"
+  | "dim"
   | "matte-black"
   | "matte-dim"
   | "matte-lift"
@@ -271,6 +272,7 @@ export function ModelViewer({
   const matteLift = appearance === "matte-lift";
   const soft = appearance === "soft-cad";
   const softDim = appearance === "soft-dim";
+  const dim = appearance === "dim";
   const cool = matte || matteDim || matteLift || soft || softDim;
   const { ref, inView } = useInView("120px", !forceActive);
   const active = forceActive || inView;
@@ -310,7 +312,9 @@ export function ModelViewer({
                       ? 0.2
                       : matte
                         ? 0.22
-                        : 0.4
+                        : dim
+                          ? 0.28
+                          : 0.4
             }
           />
           <directionalLight
@@ -326,7 +330,9 @@ export function ModelViewer({
                       ? 0.32
                       : matte
                         ? 1.15
-                        : 1.55
+                        : dim
+                          ? 1.05
+                          : 1.55
             }
             color={cool ? "#f2f4f7" : "#fff4e8"}
           />
@@ -343,7 +349,9 @@ export function ModelViewer({
                       ? 0.14
                       : matte
                         ? 0.4
-                        : 0.55
+                        : dim
+                          ? 0.35
+                          : 0.55
             }
             color={cool ? "#d8dde8" : "#c8d4e8"}
           />
@@ -368,7 +376,9 @@ export function ModelViewer({
                         ? 0.07
                         : matte
                           ? 0.22
-                          : 0.55
+                          : dim
+                            ? 0.32
+                            : 0.55
               }
             />
           </Suspense>

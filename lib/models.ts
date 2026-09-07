@@ -9,11 +9,13 @@ export type SiteModel = {
    * and uses cooler studio lighting so it reads black in the viewer.
    * soft-cad dials lights down for light-grey CAD that otherwise blows out.
    * soft-dim is darker still — used for Models-page-only extras.
+   * dim is a light-only step down from default (Nest) — no material remaps.
    * matte-dim is B500-style materials with softer lights (Roadrunner).
    * matte-lift is the same materials with a touch more fill (B100 / B250).
    */
   appearance?:
     | "default"
+    | "dim"
     | "matte-black"
     | "matte-dim"
     | "matte-lift"
@@ -32,6 +34,7 @@ export const aboutModels: SiteModel[] = [
     title: "Nest",
     src: "/media/models/nst-assembly-v3.glb",
     rotation: nestUpright,
+    appearance: "dim",
   },
   {
     title: "B500",
