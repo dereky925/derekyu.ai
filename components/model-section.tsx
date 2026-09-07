@@ -10,7 +10,7 @@ export function ModelSection() {
         <div className="mb-8">
           <p className="text-sm text-muted">Models</p>
           <h2 className="mt-2 max-w-xl text-2xl tracking-tight sm:text-3xl">
-            3D CAD models, no AI used
+            3D CAD models (no AI used)
           </h2>
           <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted">
             Click to inspect.{" "}
