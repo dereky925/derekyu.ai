@@ -107,6 +107,43 @@ body {
   animation: city-rainbow-pulse 1.7s ease-in-out 1 forwards;
 }
 
+/* About hero path field — CSS dash flow (cheaper than Framer per-stroke). */
+@keyframes hero-path-in {
+  from {
+    stroke-dasharray: 0 1;
+    opacity: 0;
+  }
+  to {
+    stroke-dasharray: 0.55 0.45;
+    opacity: var(--hero-path-opacity, 0.45);
+  }
+}
+
+@keyframes hero-path-flow {
+  from {
+    stroke-dashoffset: var(--hero-path-from, 0);
+  }
+  to {
+    stroke-dashoffset: calc(var(--hero-path-from, 0) - 1);
+  }
+}
+
+.hero-paths--running .hero-path-stroke {
+  opacity: 0;
+  animation:
+    hero-path-in 1.05s var(--hero-path-delay, 0s) cubic-bezier(0.22, 1, 0.36, 1)
+      forwards,
+    hero-path-flow var(--hero-path-duration, 12s) linear var(--hero-path-delay, 0s)
+      infinite;
+}
+
+.hero-paths--paused .hero-path-stroke {
+  stroke-dasharray: 0.55 0.45;
+  stroke-dashoffset: var(--hero-path-from, 0);
+  opacity: 0.4;
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html:focus-within {
     scroll-behavior: auto;
@@ -129,5 +166,12 @@ body {
   .media-loader-core {
     animation: media-pulse 1.05s ease-in-out infinite !important;
     animation-iteration-count: infinite !important;
+  }
+
+  .hero-paths--running .hero-path-stroke,
+  .hero-paths--paused .hero-path-stroke {
+    animation: none !important;
+    stroke-dasharray: 0.55 0.45 !important;
+    opacity: 0.35 !important;
   }
 }
