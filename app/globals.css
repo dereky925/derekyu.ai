@@ -89,14 +89,13 @@ body {
     transform: translateX(-120%);
     opacity: 0;
   }
-  12% {
+  10% {
     opacity: 1;
   }
-  72% {
+  78% {
     transform: translateX(160%);
     opacity: 1;
   }
-  88%,
   100% {
     transform: translateX(160%);
     opacity: 0;
@@ -104,7 +103,7 @@ body {
 }
 
 .animate-city-rainbow-pulse {
-  animation: city-rainbow-pulse 2.2s ease-in-out 1 forwards;
+  animation: city-rainbow-pulse 2s ease-in-out 1 forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
