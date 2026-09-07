@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ContactShadows,
   Environment,
   OrbitControls,
   useGLTF,
@@ -351,15 +350,6 @@ export function ModelViewer({
                           ? 0.22
                           : 0.55
               }
-            />
-            <ContactShadows
-              position={[0, 0, 0]}
-              opacity={dim || soft ? 0.45 : matte || matteLift ? 0.55 : 0.45}
-              scale={6}
-              blur={dim || soft ? 1.6 : 2.6}
-              far={3}
-              resolution={dim || soft ? 256 : 512}
-              frames={1}
             />
           </Suspense>
           <OrbitControls
