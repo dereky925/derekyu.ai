@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { CityCycle } from "@/components/city-cycle";
 import { HeroBackground } from "@/components/hero-background";
 import { SocialLinks } from "@/components/social-icons";
 import { site } from "@/lib/site";
@@ -53,7 +54,7 @@ export function HomeHero() {
           <br />
           Aerospace Engineering
           <br />
-          NYC → LA
+          <CityCycle />
         </motion.p>
         <motion.div
           className="pointer-events-auto"
