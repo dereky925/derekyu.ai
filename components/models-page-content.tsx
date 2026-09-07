@@ -12,7 +12,7 @@ export function ModelsPageContent() {
           Onshape models, no AI used.
         </h1>
         <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
-          Drag to orbit.
+          Click to inspect. Drag to orbit.
         </p>
       </FadeIn>
 

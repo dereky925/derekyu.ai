@@ -23,6 +23,13 @@ import {
   Vector3,
 } from "three";
 
+export type ModelAppearance =
+  | "default"
+  | "matte-black"
+  | "matte-dim"
+  | "soft-cad"
+  | "soft-dim";
+
 type ModelViewerProps = {
   src: string;
   className?: string;
@@ -31,8 +38,13 @@ type ModelViewerProps = {
   rotation?: [number, number, number];
   /** >1 frames closer. Default 1. */
   zoom?: number;
-  appearance?: "default" | "matte-black" | "soft-cad" | "soft-dim";
+  appearance?: ModelAppearance;
+  /** When false, auto-rotate only — clicks pass through to the parent. */
+  enableOrbit?: boolean;
+  /** Keep the canvas running even when offscreen (inspector overlay). */
+  forceActive?: boolean;
 };
+
 function colorNear(
   mat: MeshStandardMaterial,
   r: number,
@@ -89,6 +101,18 @@ function applyMatteBlack(root: Object3D) {
         mat.metalness = Math.max(mat.metalness ?? 0, 0.45);
         mat.roughness = Math.min(mat.roughness ?? 0.5, 0.45);
       }
+      // Onshape “red” that reads orange under studio lights → true red
+      else if (colorNear(mat, 1, 0.266667, 0.043137, 0.04)) {
+        mat.color.setRGB(0.9, 0.04, 0.06);
+        mat.roughness = Math.max(mat.roughness ?? 0.5, 0.55);
+        mat.metalness = Math.min(mat.metalness ?? 0, 0.1);
+        mat.envMapIntensity = 0.25;
+      }
+      // Hot yellow-green accents (Roadrunner) — keep hue, cut glare
+      else if (mat.color.r > 0.75 && mat.color.g > 0.85 && mat.color.b < 0.15) {
+        mat.roughness = Math.max(mat.roughness ?? 0.5, 0.65);
+        mat.envMapIntensity = 0.2;
+      }
     }
   });
 }
@@ -123,7 +147,7 @@ function Model({
   src: string;
   rotation?: [number, number, number];
   zoom?: number;
-  appearance?: "default" | "matte-black" | "soft-cad" | "soft-dim";
+  appearance?: ModelAppearance;
 }) {
   // Second arg enables the Draco decoder for compressed GLBs.
   const { scene } = useGLTF(src, true);
@@ -137,7 +161,9 @@ function Model({
         ? mesh.material.map((m) => m.clone())
         : mesh.material.clone();
     });
-    if (appearance === "matte-black") applyMatteBlack(cloned);
+    if (appearance === "matte-black" || appearance === "matte-dim") {
+      applyMatteBlack(cloned);
+    }
     if (appearance === "soft-cad" || appearance === "soft-dim") {
       applySoftCad(cloned);
     }
@@ -188,11 +214,15 @@ function Model({
   return <primitive object={root} />;
 }
 
-function useInView(rootMargin = "120px") {
+function useInView(rootMargin = "120px", enabled = true) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
+    if (!enabled) {
+      setInView(true);
+      return;
+    }
     const node = ref.current;
     if (!node) return;
     const io = new IntersectionObserver(
@@ -201,9 +231,9 @@ function useInView(rootMargin = "120px") {
     );
     io.observe(node);
     return () => io.disconnect();
-  }, [rootMargin]);
+  }, [enabled, rootMargin]);
 
-  return { ref, inView };
+  return { ref, inView: enabled ? inView : true };
 }
 
 export function ModelViewer({
@@ -213,17 +243,22 @@ export function ModelViewer({
   rotation = [0, 0, 0],
   zoom = 1,
   appearance = "default",
+  enableOrbit = true,
+  forceActive = false,
 }: ModelViewerProps) {
   const matte = appearance === "matte-black";
+  const matteDim = appearance === "matte-dim";
   const soft = appearance === "soft-cad";
-  const dim = appearance === "soft-dim";
-  const cool = matte || soft || dim;
-  const { ref, inView } = useInView();
+  const softDim = appearance === "soft-dim";
+  const dim = softDim || matteDim;
+  const cool = matte || matteDim || soft || softDim;
+  const { ref, inView } = useInView("120px", !forceActive);
+  const active = forceActive || inView;
   // Mount once visible so scroll-away can freeze the loop without remounting.
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(forceActive);
   useEffect(() => {
-    if (inView) setMounted(true);
-  }, [inView]);
+    if (active) setMounted(true);
+  }, [active]);
 
   return (
     <div
@@ -232,27 +267,50 @@ export function ModelViewer({
     >
       {mounted ? (
         <Canvas
-          dpr={[1, 1.25]}
-          frameloop={inView ? "always" : "never"}
+          dpr={forceActive ? [1, 1.5] : [1, 1.25]}
+          frameloop={active ? "always" : "never"}
           gl={{
             antialias: true,
             alpha: false,
             powerPreference: "high-performance",
           }}
           performance={{ min: 0.5 }}
+          style={enableOrbit ? undefined : { pointerEvents: "none" }}
         >
           <color attach="background" args={["#050505"]} />
           <ambientLight
-            intensity={dim ? 0.14 : soft ? 0.2 : matte ? 0.22 : 0.4}
+            intensity={
+              matteDim ? 0.16 : softDim ? 0.14 : soft ? 0.2 : matte ? 0.22 : 0.4
+            }
           />
           <directionalLight
             position={[3.5, 5, 2.5]}
-            intensity={dim ? 0.22 : soft ? 0.32 : matte ? 1.15 : 1.55}
+            intensity={
+              matteDim
+                ? 0.7
+                : softDim
+                  ? 0.22
+                  : soft
+                    ? 0.32
+                    : matte
+                      ? 1.15
+                      : 1.55
+            }
             color={cool ? "#f2f4f7" : "#fff4e8"}
           />
           <directionalLight
             position={[-2.5, 2, -1.5]}
-            intensity={dim ? 0.1 : soft ? 0.14 : matte ? 0.4 : 0.55}
+            intensity={
+              matteDim
+                ? 0.25
+                : softDim
+                  ? 0.1
+                  : soft
+                    ? 0.14
+                    : matte
+                      ? 0.4
+                      : 0.55
+            }
             color={cool ? "#d8dde8" : "#c8d4e8"}
           />
           <Suspense fallback={null}>
@@ -265,7 +323,15 @@ export function ModelViewer({
             <Environment
               preset={cool ? "studio" : "warehouse"}
               environmentIntensity={
-                dim ? 0.04 : soft ? 0.07 : matte ? 0.22 : 0.55
+                matteDim
+                  ? 0.12
+                  : softDim
+                    ? 0.04
+                    : soft
+                      ? 0.07
+                      : matte
+                        ? 0.22
+                        : 0.55
               }
             />
             <ContactShadows
@@ -280,9 +346,11 @@ export function ModelViewer({
           </Suspense>
           <OrbitControls
             makeDefault
-            autoRotate={autoRotate && inView}
+            autoRotate={autoRotate && active}
             autoRotateSpeed={0.85}
             enablePan={false}
+            enableRotate={enableOrbit}
+            enableZoom={enableOrbit}
           />
         </Canvas>
       ) : (

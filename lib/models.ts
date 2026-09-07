@@ -9,8 +9,9 @@ export type SiteModel = {
    * and uses cooler studio lighting so it reads black in the viewer.
    * soft-cad dials lights down for light-grey CAD that otherwise blows out.
    * soft-dim is darker still — used for Models-page-only extras.
+   * matte-dim is B500-style materials with softer lights (Roadrunner).
    */
-  appearance?: "default" | "matte-black" | "soft-cad" | "soft-dim";
+  appearance?: "default" | "matte-black" | "matte-dim" | "soft-cad" | "soft-dim";
 };
 
 /** Nest export needs a 180° X flip after the upright bake. */
@@ -57,7 +58,7 @@ export const modelsPageOnly: SiteModel[] = [
     src: "/media/models/wisp-v1.glb",
     // Long axis is Z in the export; -90° X stands it vertical.
     rotation: [-Math.PI / 2, 0, 0],
-    zoom: 1.3,
+    zoom: 1.05,
     appearance: "matte-black",
   },
   {
@@ -80,7 +81,7 @@ export const modelsPageOnly: SiteModel[] = [
     // Long axis is Z in the export; -90° X stands it vertical.
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.3,
-    appearance: "matte-black",
+    appearance: "matte-dim",
   },
 ];
 

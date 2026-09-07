@@ -13,7 +13,7 @@ export function ModelSection() {
             Onshape models, no AI used.
           </h2>
           <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted">
-            Drag to orbit.{" "}
+            Click to inspect.{" "}
             <a
               href="/models"
               className="text-foreground/80 underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
