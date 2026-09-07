@@ -28,14 +28,15 @@ function buildLayer(position: 1 | -1, count: number): PathSpec[] {
     const y3 = 875 - yo;
     const duration = 10 + ((i * 5 + (position > 0 ? 2 : 7)) % 12);
     const startOffset = 0.16 + ((i * 7 + (position > 0 ? 0 : 3)) % 11) * 0.015;
+    // Scramble draw order so intro isn’t a clean bottom→top wipe with index.
+    const staggerSlot = (i * 13 + (position > 0 ? 5 : 11)) % count;
     return {
       id: `${position}:${i}`,
       d: `M${x0} ${y0}C${x0} ${y0} ${x1} ${y1} ${xj} ${yj}S${x3} ${y3} ${x3} ${y3}`,
       width: 0.45 + i * 0.028,
       opacity: 0.11 + i * 0.015,
       duration,
-      // Cascade draw-in; mirror layer trails slightly so it isn’t one solid pop.
-      delay: i * 0.032 + (position > 0 ? 0 : 0.18),
+      delay: staggerSlot * 0.028 + (position > 0 ? 0 : 0.12),
       // Negative phase = already mid-path when the dash grows (visible sooner, still blank at t=0).
       phase: -(startOffset * duration),
     };
