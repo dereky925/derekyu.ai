@@ -41,8 +41,8 @@ export const siteModels: SiteModel[] = [
   {
     title: "Fury",
     src: "/media/models/fury-v1.glb",
-    // Same flying framing as Omen.
-    rotation: [-Math.PI, Math.PI, 0],
+    // Already Y-up in the export; only yaw so the nose faces the camera.
+    rotation: [0, Math.PI, 0],
     zoom: 2.5,
     appearance: "soft-cad",
   },
