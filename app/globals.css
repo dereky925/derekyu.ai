@@ -109,11 +109,15 @@ body {
 
 /* About hero path field — CSS dash flow (cheaper than Framer per-stroke). */
 @keyframes hero-path-in {
-  from {
-    stroke-dasharray: 0 1;
+  0% {
+    /* Short tip at the edge — grows while dashoffset carries it into frame */
+    stroke-dasharray: 0.04 0.96;
     opacity: 0;
   }
-  to {
+  18% {
+    opacity: var(--hero-path-opacity, 0.45);
+  }
+  100% {
     stroke-dasharray: 0.55 0.45;
     opacity: var(--hero-path-opacity, 0.45);
   }
@@ -131,12 +135,12 @@ body {
 
 .hero-paths .hero-path-stroke {
   opacity: 0;
-  stroke-dasharray: 0 1;
+  stroke-dasharray: 0.04 0.96;
   animation:
-    hero-path-in 1.05s var(--hero-path-delay, 0s) cubic-bezier(0.22, 1, 0.36, 1)
+    hero-path-in 1.35s var(--hero-path-delay, 0s) cubic-bezier(0.22, 1, 0.36, 1)
       forwards,
     hero-path-flow var(--hero-path-duration, 12s) linear
-      var(--hero-path-phase, 0s) infinite;
+      var(--hero-path-flow-delay, 0s) infinite;
 }
 
 /* Pause in place — do not clear animation (that restarts and teleports). */

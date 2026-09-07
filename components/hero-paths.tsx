@@ -9,8 +9,8 @@ type PathSpec = {
   opacity: number;
   duration: number;
   delay: number;
-  /** Negative time into the flow loop so strokes start mid-path (no teleport). */
-  phase: number;
+  /** Absolute animation-delay for flow (includes stagger + small edge phase). */
+  flowDelay: number;
 };
 
 function buildLayer(position: 1 | -1, count: number): PathSpec[] {
@@ -27,18 +27,21 @@ function buildLayer(position: 1 | -1, count: number): PathSpec[] {
     const x3 = 684 - o;
     const y3 = 875 - yo;
     const duration = 10 + ((i * 5 + (position > 0 ? 2 : 7)) % 12);
-    const startOffset = 0.16 + ((i * 7 + (position > 0 ? 0 : 3)) % 11) * 0.015;
     // Scramble draw order so intro isn’t a clean bottom→top wipe with index.
     const staggerSlot = (i * 13 + (position > 0 ? 5 : 11)) % count;
+    const delay = staggerSlot * 0.03 + (position > 0 ? 0 : 0.1);
+    // Start just at the view edge — not mid-screen (that reads as a snap).
+    const enterOffset = 0.045 + (staggerSlot % 9) * 0.005;
+    const phase = -(enterOffset * duration);
     return {
       id: `${position}:${i}`,
       d: `M${x0} ${y0}C${x0} ${y0} ${x1} ${y1} ${xj} ${yj}S${x3} ${y3} ${x3} ${y3}`,
       width: 0.45 + i * 0.028,
       opacity: 0.11 + i * 0.015,
       duration,
-      delay: staggerSlot * 0.028 + (position > 0 ? 0 : 0.12),
-      // Negative phase = already mid-path when the dash grows (visible sooner, still blank at t=0).
-      phase: -(startOffset * duration),
+      delay,
+      // Flow begins with the draw so the tip travels in while the dash grows.
+      flowDelay: delay + phase,
     };
   });
 }
@@ -103,7 +106,7 @@ export function HeroPaths() {
                 {
                   "--hero-path-duration": `${path.duration}s`,
                   "--hero-path-delay": `${path.delay}s`,
-                  "--hero-path-phase": `${path.phase}s`,
+                  "--hero-path-flow-delay": `${path.flowDelay}s`,
                   "--hero-path-opacity": "0.45",
                 } as CSSProperties
               }
