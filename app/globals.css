@@ -89,22 +89,22 @@ body {
     transform: translateX(-120%);
     opacity: 0;
   }
-  12% {
+  10% {
     opacity: 1;
   }
-  58% {
-    transform: translateX(160%);
+  /* End near the right edge of the bar so we don't sit on gray after the gleam has left */
+  82% {
+    transform: translateX(100%);
     opacity: 1;
   }
-  72%,
   100% {
-    transform: translateX(160%);
+    transform: translateX(110%);
     opacity: 0;
   }
 }
 
 .animate-city-rainbow-pulse {
-  animation: city-rainbow-pulse 2.6s ease-in-out 1 forwards;
+  animation: city-rainbow-pulse 1.7s ease-in-out 1 forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
