@@ -10,7 +10,7 @@ export type HeroBackgroundId = "damascus" | "paths";
 export type HeroBackgroundMode = HeroBackgroundId | "random";
 
 /** Active About hero backdrop mode. */
-export const heroBackgroundMode: HeroBackgroundMode = "random";
+export const heroBackgroundMode: HeroBackgroundMode = "damascus";
 
 export const heroBackgroundOptions: HeroBackgroundId[] = [
   "damascus",
