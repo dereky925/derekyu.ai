@@ -3,7 +3,7 @@ import { site, socials } from "@/lib/site";
 const icons = {
   Email: "/icons/gmail.svg",
   GitHub: "/icons/github.svg",
-  X: "/icons/x.svg",
+  "@dyu925": "/icons/x.svg",
   LinkedIn: "/icons/linkedin.svg",
 } as const;
 

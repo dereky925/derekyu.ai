@@ -13,7 +13,7 @@ export const site = {
 
 export const socials = [
   { label: "GitHub", href: site.github },
-  { label: "X", href: site.x },
+  { label: "@dyu925", href: site.x },
   { label: "LinkedIn", href: site.linkedin },
 ] as const;
 
