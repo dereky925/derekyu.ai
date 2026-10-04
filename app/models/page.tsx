@@ -3,7 +3,7 @@ import { ModelsPageContent } from "@/components/models-page-content";
 
 export const metadata: Metadata = {
   title: "Models",
-  description: "Onshape models by Derek Yu — no AI used.",
+  description: "Onshape models by Derek Yu.",
   alternates: { canonical: "/models" },
 };
 
