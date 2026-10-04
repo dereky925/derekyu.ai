@@ -54,11 +54,11 @@ export const aboutModels: SiteModel[] = [
   },
   {
     title: "Fury",
-    src: "/media/models/fury-v2.glb",
+    src: "/media/models/fury-v3.glb",
     // Already Y-up in the export; only yaw so the nose faces the camera.
     rotation: [0, Math.PI, 0],
     zoom: 1.3,
-    appearance: "soft-cad",
+    appearance: "dim",
   },
 ];
 
