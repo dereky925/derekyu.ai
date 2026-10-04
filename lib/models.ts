@@ -38,7 +38,7 @@ export const aboutModels: SiteModel[] = [
   },
   {
     title: "B500",
-    src: "/media/models/b500-v4.glb",
+    src: "/media/models/b500-v5.glb",
     // Original points nose-down; pitch -90° levels it without flipping.
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.5,
