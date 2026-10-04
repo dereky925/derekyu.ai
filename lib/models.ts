@@ -62,35 +62,29 @@ export const aboutModels: SiteModel[] = [
 export const modelsPageOnly: SiteModel[] = [
   {
     title: "Wisp",
-    src: "/media/models/wisp-v2.glb",
+    src: "/media/models/wisp-v3.glb",
     // Long axis is Z in the export; -90° X stands it vertical.
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.05,
-    appearance: "matte-black",
-    solidWhite: true,
   },
   {
     title: "B250",
-    src: "/media/models/b250-v1.glb",
+    src: "/media/models/b250-v2.glb",
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.5,
-    appearance: "matte-lift",
   },
   {
     title: "B100",
-    src: "/media/models/b100-v1.glb",
+    src: "/media/models/b100-v2.glb",
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.5,
-    appearance: "matte-lift",
   },
   {
     title: "Roadrunner",
-    src: "/media/models/roadrunner-v4.glb",
+    src: "/media/models/roadrunner-v5.glb",
     // Long axis is Z in the export; -90° X stands it vertical.
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.1,
-    appearance: "matte-dim",
-    solidWhite: true,
   },
 ];
 
