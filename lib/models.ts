@@ -32,9 +32,8 @@ const nestUpright: [number, number, number] = [Math.PI, 0, 0];
 export const aboutModels: SiteModel[] = [
   {
     title: "Nest",
-    src: "/media/models/nst-assembly-v3.glb",
+    src: "/media/models/nest-v4.glb",
     rotation: nestUpright,
-    appearance: "dim",
   },
   {
     title: "B500",
