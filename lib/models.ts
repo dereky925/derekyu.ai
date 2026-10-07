@@ -88,7 +88,7 @@ export const modelsPageOnly: SiteModel[] = [
   },
   {
     title: "Dive XL",
-    src: "/media/models/divexl-v2.glb",
+    src: "/media/models/divexl-v3.glb",
     zoom: 1.5,
   },
 ];
