@@ -86,6 +86,11 @@ export const modelsPageOnly: SiteModel[] = [
     rotation: [-Math.PI / 2, 0, 0],
     zoom: 1.1,
   },
+  {
+    title: "Dive XL",
+    src: "/media/models/divexl-v1.glb",
+    zoom: 1.5,
+  },
 ];
 
 /** Full catalog for the Models page. */
