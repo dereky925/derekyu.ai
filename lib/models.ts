@@ -69,8 +69,9 @@ export const modelsPageOnly: SiteModel[] = [
   },
   {
     title: "B250",
-    src: "/media/models/b250-v2.glb",
-    rotation: [-Math.PI / 2, 0, 0],
+    src: "/media/models/b250-v3.glb",
+    // Wings ride on top in the export; the extra yaw keeps it upright with the nose toward the camera.
+    rotation: [-Math.PI / 2, Math.PI, 0],
     zoom: 1.5,
   },
   {
